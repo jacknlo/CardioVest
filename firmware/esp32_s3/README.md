@@ -19,6 +19,8 @@ Firmware for the **CardioCore V1** board of the **CardioVest** project — an 8-
 
 Each frame is one ADS1298 RDATAC record: **24-bit status + 8 × 24-bit channels = 27 bytes**, raw.
 
+> **Demo stream:** if **no AFE is detected**, the firmware synthesizes an ECG-like signal and streams it over BLE/SD anyway (`ENABLE_DEMO_STREAM` in `config.h`). This lets you validate the whole wireless pipeline (ESP32-S3 → BLE → web viewer) with **just the dev board**, before any ADS129x is wired. Synthetic data is obviously not a real measurement.
+
 ## 2. Module layout
 
 ```

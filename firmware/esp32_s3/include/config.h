@@ -50,6 +50,11 @@ static constexpr bool ENABLE_BLE       = true;
 static constexpr bool ENABLE_SD        = true;
 static constexpr bool ENABLE_INTERLOCK = true;   // battery-only body-measurement gate
 
+// When no AFE is detected, synthesize ECG frames so the BLE/SD pipeline can be
+// tested end-to-end with just the ESP32-S3 (no analog front-end). Dev aid only;
+// synthetic data is clearly not a real measurement.
+static constexpr bool ENABLE_DEMO_STREAM = true;
+
 // --- Misc --------------------------------------------------------------------
 static constexpr uint32_t SERIAL_BAUD  = 115200;
 static constexpr uint32_t HEARTBEAT_MS = 5000;
