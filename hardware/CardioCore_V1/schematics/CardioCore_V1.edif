@@ -1,0 +1,2204 @@
+(edif "Wearable 8-Channel ECG Acquisition Board"
+    (edifVersion 2 0 0)
+    (edifLevel 0)
+    (keywordMap (keywordLevel 0))
+    (status
+        (written
+            (timestamp 2026 06 30 01 40 52.095)
+            (program "Flux" (version "1.0"))
+            (author "Flux")
+        )
+    )
+    (library FluxLibrary
+        (edifLevel 0)
+        (technology (numberDefinition))
+        (cell "Net Portal"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port P1 (direction inout))
+                )
+            )
+        )
+        (cell Ground
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port GND (direction inout))
+                )
+            )
+        )
+        (cell "No Connect"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port "9201aa3c-1b67-467a-b9c3-91b2ad883cd9" (direction inout))
+                )
+            )
+        )
+        (cell "Generic Capacitor"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port P1 (direction inout))
+                (port P2 (direction inout))
+                )
+            )
+        )
+        (cell "B2B-PH-K-S"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port 2 (direction inout))
+                (port 1 (direction inout))
+                )
+            )
+        )
+        (cell REF5025IDGK
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port Vin (direction inout))
+                (port DNC (direction inout))
+                (port DNC (direction inout))
+                (port NC (direction inout))
+                (port Temp (direction inout))
+                (port GND (direction inout))
+                (port Vout (direction inout))
+                (port "Trim/NR" (direction inout))
+                )
+            )
+        )
+        (cell "AP2112K-3.3TRG1"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port VIN (direction inout))
+                (port EN (direction inout))
+                (port GND (direction inout))
+                (port NC (direction inout))
+                (port VOUT (direction inout))
+                )
+            )
+        )
+        (cell "Generic Resistor"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port P2 (direction inout))
+                (port P1 (direction inout))
+                )
+            )
+        )
+        (cell ADS1298IPAGR
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port VREFP (direction inout))
+                (port NC (direction inout))
+                (port CLKSEL (direction inout))
+                (port DGND (direction inout))
+                (port DIN (direction inout))
+                (port AVSS (direction inout))
+                (port RLDREF (direction inout))
+                (port "~{PWDN}" (direction inout))
+                (port NC (direction inout))
+                (port IN1N (direction inout))
+                (port IN7N (direction inout))
+                (port GPIO3 (direction inout))
+                (port VCAP4 (direction inout))
+                (port AVSS (direction inout))
+                (port VCAP3 (direction inout))
+                (port "~{RESET}" (direction inout))
+                (port WCT (direction inout))
+                (port DOUT (direction inout))
+                (port IN6N (direction inout))
+                (port "~{DRDY}" (direction inout))
+                (port DVDD (direction inout))
+                (port VCAP2 (direction inout))
+                (port IN3N (direction inout))
+                (port IN8P (direction inout))
+                (port IN4N (direction inout))
+                (port IN5P (direction inout))
+                (port RESV1 (direction inout))
+                (port RLDINV (direction inout))
+                (port IN2P (direction inout))
+                (port IN4P (direction inout))
+                (port DVDD (direction inout))
+                (port AVSS1 (direction inout))
+                (port VREFN (direction inout))
+                (port TESTN_PACE_OUT2 (direction inout))
+                (port "~{CS}" (direction inout))
+                (port AVSS (direction inout))
+                (port AVDD (direction inout))
+                (port IN6P (direction inout))
+                (port AVDD1 (direction inout))
+                (port AVDD (direction inout))
+                (port RLDOUT (direction inout))
+                (port DGND (direction inout))
+                (port START (direction inout))
+                (port AVSS (direction inout))
+                (port GPIO1 (direction inout))
+                (port DGND (direction inout))
+                (port GPIO2 (direction inout))
+                (port TESTP_PACE_OUT1 (direction inout))
+                (port IN3P (direction inout))
+                (port IN5N (direction inout))
+                (port RLDIN (direction inout))
+                (port IN8N (direction inout))
+                (port AVDD (direction inout))
+                (port SCLK (direction inout))
+                (port AVDD (direction inout))
+                (port IN1P (direction inout))
+                (port CLK (direction inout))
+                (port AVDD (direction inout))
+                (port DAISY_IN (direction inout))
+                (port VCAP1 (direction inout))
+                (port GPIO4 (direction inout))
+                (port AVSS (direction inout))
+                (port IN2N (direction inout))
+                (port IN7P (direction inout))
+                )
+            )
+        )
+        (cell 5034801000
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port 7 (direction inout))
+                (port 2 (direction inout))
+                (port 9 (direction inout))
+                (port 3 (direction inout))
+                (port 5 (direction inout))
+                (port 6 (direction inout))
+                (port 10 (direction inout))
+                (port 8 (direction inout))
+                (port 4 (direction inout))
+                (port 1 (direction inout))
+                )
+            )
+        )
+        (cell "TS-1088-AR02016"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port 2 (direction inout))
+                (port 1 (direction inout))
+                )
+            )
+        )
+        (cell PESD3V3L5UY
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port K4 (direction inout))
+                (port A (direction inout))
+                (port K2 (direction inout))
+                (port K1 (direction inout))
+                (port K5 (direction inout))
+                (port K3 (direction inout))
+                )
+            )
+        )
+        (cell MP2662
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port SCL (direction inout))
+                (port BATT (direction inout))
+                (port SDA (direction inout))
+                (port INT (direction inout))
+                (port VDD (direction inout))
+                (port SYS (direction inout))
+                (port GND (direction inout))
+                (port NTC (direction inout))
+                (port IN (direction inout))
+                )
+            )
+        )
+        (cell "DS1139-06-08SS4BSR"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port D1 (direction inout))
+                (port D3 (direction inout))
+                (port D2 (direction inout))
+                (port GND (direction inout))
+                (port GND (direction inout))
+                (port GND (direction inout))
+                (port VSS (direction inout))
+                (port VDD (direction inout))
+                (port D0 (direction inout))
+                (port CMD (direction inout))
+                (port GND (direction inout))
+                (port CLK (direction inout))
+                )
+            )
+        )
+        (cell "2.54-2*20"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port 31 (direction inout))
+                (port 11 (direction inout))
+                (port 3 (direction inout))
+                (port 33 (direction inout))
+                (port 7 (direction inout))
+                (port 10 (direction inout))
+                (port 35 (direction inout))
+                (port 19 (direction inout))
+                (port 34 (direction inout))
+                (port 25 (direction inout))
+                (port 8 (direction inout))
+                (port 9 (direction inout))
+                (port 17 (direction inout))
+                (port 32 (direction inout))
+                (port 14 (direction inout))
+                (port 20 (direction inout))
+                (port 40 (direction inout))
+                (port 30 (direction inout))
+                (port 16 (direction inout))
+                (port 38 (direction inout))
+                (port 28 (direction inout))
+                (port 1 (direction inout))
+                (port 15 (direction inout))
+                (port 29 (direction inout))
+                (port 24 (direction inout))
+                (port 13 (direction inout))
+                (port 37 (direction inout))
+                (port 23 (direction inout))
+                (port 36 (direction inout))
+                (port 26 (direction inout))
+                (port 4 (direction inout))
+                (port 5 (direction inout))
+                (port 22 (direction inout))
+                (port 27 (direction inout))
+                (port 2 (direction inout))
+                (port 21 (direction inout))
+                (port 39 (direction inout))
+                (port 18 (direction inout))
+                (port 6 (direction inout))
+                (port 12 (direction inout))
+                )
+            )
+        )
+        (cell "ESP32-S3-WROOM-1-N16R8"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port IO41 (direction inout))
+                (port IO4 (direction inout))
+                (port IO20 (direction inout))
+                (port GND_5 (direction inout))
+                (port IO18 (direction inout))
+                (port IO1 (direction inout))
+                (port IO11 (direction inout))
+                (port IO7 (direction inout))
+                (port IO15 (direction inout))
+                (port IO19 (direction inout))
+                (port GND_10 (direction inout))
+                (port IO35 (direction inout))
+                (port IO37 (direction inout))
+                (port IO8 (direction inout))
+                (port IO2 (direction inout))
+                (port GND_6 (direction inout))
+                (port IO3 (direction inout))
+                (port GND_8 (direction inout))
+                (port IO14 (direction inout))
+                (port IO42 (direction inout))
+                (port GND_7 (direction inout))
+                (port IO5 (direction inout))
+                (port IO40 (direction inout))
+                (port IO39 (direction inout))
+                (port GND_9 (direction inout))
+                (port IO6 (direction inout))
+                (port IO46 (direction inout))
+                (port IO12 (direction inout))
+                (port IO38 (direction inout))
+                (port IO9 (direction inout))
+                (port IO16 (direction inout))
+                (port RXD0 (direction inout))
+                (port IO13 (direction inout))
+                (port GND_2 (direction inout))
+                (port IO21 (direction inout))
+                (port 3V3 (direction inout))
+                (port IO10 (direction inout))
+                (port GND_4 (direction inout))
+                (port GND_3 (direction inout))
+                (port IO47 (direction inout))
+                (port GND_1 (direction inout))
+                (port IO45 (direction inout))
+                (port IO48 (direction inout))
+                (port IO17 (direction inout))
+                (port EN (direction inout))
+                (port TXD0 (direction inout))
+                (port IO36 (direction inout))
+                (port IO0 (direction inout))
+                (port GND_11 (direction inout))
+                )
+            )
+        )
+        (cell "TYPE-C-2.0-16PIN-SMT-3-OR"
+            (cellType generic)
+            (view schematic
+                (viewType schematic)
+                (interface
+                    (port 17 (direction inout))
+                (port 20 (direction inout))
+                (port VBUS (direction inout))
+                (port SBU1 (direction inout))
+                (port CC1 (direction inout))
+                (port 18 (direction inout))
+                (port SBU2 (direction inout))
+                (port DN1 (direction inout))
+                (port DN2 (direction inout))
+                (port GND (direction inout))
+                (port GND (direction inout))
+                (port DP1 (direction inout))
+                (port DP2 (direction inout))
+                (port CC2 (direction inout))
+                (port 19 (direction inout))
+                (port VBUS (direction inout))
+                )
+            )
+        )
+    )
+    
+    (library Main
+            (edifLevel 0)
+            (technology (numberDefinition))
+            (cell "Wearable 8-Channel ECG Acquisition Board_top"
+                (cellType generic)
+                (view schematic
+                    (viewType schematic)
+                    (interface)
+                    (contents
+                        (instance "J3 6 - D1 K5"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 RLDOUT - J3 4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 2 - D1 K2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "0b346a15-d4ca-45bd-a52e-7dbfdc913763"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance C9
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP1 - C10 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "0e154494-02d9-4e91-a175-71475db58fda"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 GND_3 - U1 GND_4"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN7P - J5 17"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J2 GND - J2 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J2 GND - U2 DGND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN6P - J5 15"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J2 GND - U2 DGND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 10 - D2 K4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN6N - J5 16"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 INT - U1 IO6"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 GND - U3 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance C2
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "19d8ec58-5232-4343-a96a-a614a192c796"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance J4
+                (viewRef schematic (cellRef "B2B-PH-K-S" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 DN2 - U1 IO19"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO12 - U2 SCLK"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 NTC - R8 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "21fa3904-44d0-4015-80ed-250ec365ef3d"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO17 - U2 ~{PWDN}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP4 - C13 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "266b0210-2f83-4c7d-a054-aa139364a7dc"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 SYS - U4 VIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 EN - R3 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "277f5ba8-4145-41fe-80cb-da95ec581510"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN8P - J5 19"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO11 - U2 DIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP1 - C10 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 VBUS - U3 IN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "3338217c-b1c6-4838-bf85-ce840a58fcfe"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance C4
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO10 - U2 ~{CS}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C11
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance U5
+                (viewRef schematic (cellRef REF5025IDGK (libraryRef FluxLibrary)))
+            )
+                        (instance "35557fea-4940-4bb5-a860-7b095fc0aa9e"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance U4
+                (viewRef schematic (cellRef "AP2112K-3.3TRG1" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "35bcd5a9-aee7-4266-b0d5-8adb333801ca"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "361e6b57-71d8-4c83-b046-452028939cf9"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "3979251b-1c8f-498a-abb4-2275a3274b41"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 GND_3 - U1 GND_4"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 EN - R3 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C8
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN8N - J5 20"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance R4
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP2 - C11 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 GND_3 - U1 GND_4"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 VBUS - U3 IN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO5 - U3 SCL"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN7N - J5 18"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DGND - U2 AVSS"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "402c566e-1f27-4a23-8d6e-f0b364fe16aa"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance C13
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance U2
+                (viewRef schematic (cellRef ADS1298IPAGR (libraryRef FluxLibrary)))
+            )
+                        (instance "U5 Vout - U2 VREFP"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "430984e0-2556-4a5c-a460-39cfd36df45b"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "450043dd-50a2-46de-8a29-98afed118cdb"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "4663760d-24ad-49d4-bd33-cf2806aed90a"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN8P - J5 19"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO15 - U2 START"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO4 - U3 SDA"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO4 - U3 SDA"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J5 22 - U1 IO8"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C5
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN8N - J5 20"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "4a2c8e4e-fedc-4421-80c2-db7f48245f4d"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 8 - D2 K2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance J3
+                (viewRef schematic (cellRef 5034801000 (libraryRef FluxLibrary)))
+            )
+                        (instance "4b8590af-67d2-48f6-84d7-68cbdc64b641"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO5 - U3 SCL"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO10 - U2 ~{CS}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J5 21 - U1 IO7"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 9 - D2 K3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "51638320-1e4f-4a63-b0a2-ae09f97587e2"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO9 - J2 D3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "52b96d5e-8636-49aa-9e41-5692a2d1f05f"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "52e0995d-7638-4e2f-87a9-72e6edac7852"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 CC1 - R1 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "54df2539-cf39-47d9-939c-ad88aef25cbe"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance C7
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J4 1 - U3 BATT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO4 - U3 SDA"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C6
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "5c70b496-ce67-4cc4-9137-d7bd57e83b9f"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO14 - U2 ~{DRDY}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO16 - U2 ~{RESET}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "5dc96021-8be9-4635-a84a-9113a514d51c"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "5febc844-5a49-4504-9dac-664bf15813f2"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 RLDREF - C14 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C14
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO5 - U3 SCL"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "63027c83-66f2-40ac-912d-2a2a67893725"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "6640866e-caab-4b3e-9fbf-e8bf5aef8393"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 5 - D1 K4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP4 - C13 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO5 - U3 SCL"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 8 - D2 K2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance R8
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 GND - U3 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "D2 K5 - U2 IN5N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "6c16bd6a-7ebf-4b65-b093-a7f5e63cc4ce"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "6d070055-9919-4db5-a7f2-0d299685f0e2"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO13 - U2 DOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "70f35912-5145-4b22-aa77-48091ad4bc89"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN7N - J5 18"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 3 - D1 K3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "74909b7a-cdea-4455-88ae-0038e4ce298f"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J2 GND - J2 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 3 - D1 K3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "781ee91e-bc9f-417b-bcf9-eb06840bf0e3"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance C10
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance R6
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "J5 22 - U1 IO8"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN6N - J5 16"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 GND - U3 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 GND_7 - U1 GND_8"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "7da99deb-8618-4774-b69c-4fe0a382f2bd"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO14 - U2 ~{DRDY}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "8177ba22-1951-4f99-95ad-9ed214482ceb"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 GND - U3 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U5 Vout - U2 VREFP"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "87d9935f-749b-4a42-bd79-e2e1e4719c54"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "888cb23e-19dc-489c-83ee-daf48ce65efb"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "8a5cc9c0-fda5-4721-bcbd-5a069d4143e0"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "8a9f0737-11e6-486b-9d98-0e69ad9a6970"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "8b9c1cc7-4ed9-4273-8b2d-53a3c89ef78b"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "8e7916be-858f-466e-adc3-833b1c7c1dfe"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO12 - U2 SCLK"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN7P - J5 17"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance R2
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R5
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO0 - R4 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance R7
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO11 - U2 DIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "975cc617-b4bf-4a3b-a655-95e17b8c8e2f"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance SW1
+                (viewRef schematic (cellRef "TS-1088-AR02016" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO15 - U2 START"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C1
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "989a0841-3094-4d88-9917-6c9ac32082a6"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "98ae97d1-7a5f-4bb3-b17b-7df76b609949"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "99685501-c439-4e6c-b845-3be7786cfa58"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO13 - U2 DOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 7 - D2 K1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 INT - U1 IO6"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J5 21 - U1 IO7"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C12
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance D2
+                (viewRef schematic (cellRef PESD3V3L5UY (libraryRef FluxLibrary)))
+            )
+                        (instance "a2dfeb90-5198-4689-8d88-3097cb95231c"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO11 - U2 DIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO11 - U2 DIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "a824cb4c-8075-4fa7-8000-757db989b174"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "a8e8e2fa-6597-42fb-a5de-4f1caa29c559"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance R3
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO11 - U2 DIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 CC2 - R2 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance C3
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 1 - D1 K1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO17 - U2 ~{PWDN}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance U3
+                (viewRef schematic (cellRef MP2662 (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP3 - C12 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance R1
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 CC1 - R1 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "b8db8948-b3bf-4064-83c7-5f5c519f403a"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "b8dc04aa-3509-479c-a07e-28aa03da75ab"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 7 - D2 K1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO9 - J2 D3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO10 - U2 ~{CS}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 5 - D1 K4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP3 - C12 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO12 - U2 SCLK"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 VCAP2 - C11 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "c55aa4b6-237c-4614-8295-154529270253"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO0 - R4 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO13 - U2 DOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 DVDD - U5 Vin"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "c83e4ce9-b10e-47be-beb2-afef27b2df44"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance J2
+                (viewRef schematic (cellRef "DS1139-06-08SS4BSR" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 DN2 - U1 IO19"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 CC2 - R2 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 DP2 - U1 IO20"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 RLDREF - C14 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO13 - U2 DOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 SYS - U4 VIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "cd2b28ee-df24-43e2-94bb-4c9851695fe7"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 IN6P - J5 15"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 SYS - U4 VIN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO12 - U2 SCLK"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "d21eebcb-e423-45fb-b51d-2e2f305d77f5"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "d2e1a42d-26da-4b3a-8eb6-26be4b6f74ad"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance SW2
+                (viewRef schematic (cellRef "TS-1088-AR02016" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO12 - U2 SCLK"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "d68e9012-de85-4f9f-9383-e45e366de286"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance J5
+                (viewRef schematic (cellRef "2.54-2*20" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 10 - D2 K4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 EN - R3 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 GND - U3 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 1 - D1 K1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "dbdec014-c7d3-4741-a13a-530255e5469a"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "dc4d427a-0c1d-4c16-9374-7e943106e1ec"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO13 - U2 DOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO4 - U3 SDA"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO16 - U2 ~{RESET}"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 2 - D1 K2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "e0c288a8-1571-43e6-b223-6a6d1f8b8819"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance U1
+                (viewRef schematic (cellRef "ESP32-S3-WROOM-1-N16R8" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "e309b7b2-9653-4eb9-92fb-2c633bdfd8eb"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "e4b175b4-d57b-4495-899e-842d5c7f67fb"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J4 1 - U3 BATT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "e5f1d572-38b8-4f1c-aafc-795ad1debb31"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 EN - R3 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U3 NTC - R8 P1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "ea5891da-1ef4-4371-8cb0-78980362ab27"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO4 - U3 SDA"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "eb11abdd-b0bd-4cfa-9fc9-7778226c7e04"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 VBUS - U3 IN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance J1
+                (viewRef schematic (cellRef "TYPE-C-2.0-16PIN-SMT-3-OR" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 6 - D1 K5"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance D1
+                (viewRef schematic (cellRef PESD3V3L5UY (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 GND_7 - U1 GND_8"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "J1 DP2 - U1 IO20"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO0 - R4 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U5 Vout - U2 VREFP"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U1 IO5 - U3 SCL"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVSS - U5 GND"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "fe37c2d7-ef44-4003-b88f-7c037599666b"
+                (viewRef schematic (cellRef "No Connect" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 9 - D2 K3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance R9
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R10
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R11
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R12
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R13
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R14
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R15
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R16
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R17
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R18
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R19
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance R20
+                (viewRef schematic (cellRef "Generic Resistor" (libraryRef FluxLibrary)))
+            )
+                        (instance C15
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C16
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C17
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C18
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C19
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C20
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C21
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C22
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C23
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C24
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C25
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C26
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C27
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C28
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C29
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance C30
+                (viewRef schematic (cellRef "Generic Capacitor" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 1 - D1 K1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R9 P2 - U2 IN1P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R9 P2 - U2 IN1P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R9 P2 - U2 IN1P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R9 P2 - U2 IN1P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 2 - D1 K2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R10 P2 - U2 IN1N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R10 P2 - U2 IN1N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R10 P2 - U2 IN1N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R10 P2 - U2 IN1N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 3 - D1 K3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R11 P2 - U2 IN2P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R11 P2 - U2 IN2P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R11 P2 - U2 IN2P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R11 P2 - U2 IN2P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 5 - D1 K4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R12 P2 - U2 IN2N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R12 P2 - U2 IN2N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R12 P2 - U2 IN2N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R12 P2 - U2 IN2N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 6 - D1 K5"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R13 P2 - U2 IN3P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R13 P2 - U2 IN3P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R13 P2 - U2 IN3P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R13 P2 - U2 IN3P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 7 - D2 K1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R14 P2 - U2 IN3N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R14 P2 - U2 IN3N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R14 P2 - U2 IN3N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R14 P2 - U2 IN3N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 8 - D2 K2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R15 P2 - U2 IN4P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R15 P2 - U2 IN4P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R15 P2 - U2 IN4P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R15 P2 - U2 IN4P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 9 - D2 K3"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R16 P2 - U2 IN4N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R16 P2 - U2 IN4N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R16 P2 - U2 IN4N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R16 P2 - U2 IN4N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "J3 10 - D2 K4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R17 P2 - U2 IN5P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R17 P2 - U2 IN5P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R17 P2 - U2 IN5P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R17 P2 - U2 IN5P"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "D2 K5 - U2 IN5N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R18 P2 - U2 IN5N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R18 P2 - U2 IN5N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R18 P2 - U2 IN5N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R18 P2 - U2 IN5N"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "C15 P2 - C16 P2"
+                (viewRef schematic (cellRef Ground (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 RLDOUT - J3 4"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R19 P2 - U2 RLDOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R19 P2 - U2 RLDOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R19 P2 - U2 RLDOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R19 P2 - U2 RLDOUT"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R20 P2 - C30 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R20 P2 - C30 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "R20 P2 - C30 P2"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVDD - U2 AVDD1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U2 AVDD - U2 AVDD1"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (instance "U4 VOUT - U4 EN"
+                (viewRef schematic (cellRef "Net Portal" (libraryRef FluxLibrary)))
+            )
+                        (Net ECG_RL_RLD
+                            (joined (portRef P1 (instanceRef "U2 RLDOUT - J3 4"))
+                            (portRef 4 (instanceRef J3))
+                            (portRef P1 (instanceRef "U2 RLDOUT - J3 4"))
+                            (portRef P1 (instanceRef R19)))
+                        )
+                        (Net ECG_V5_IN4N
+                            (joined (portRef 9 (instanceRef J3))
+                            (portRef P1 (instanceRef "J3 9 - D2 K3"))
+                            (portRef K3 (instanceRef D2))
+                            (portRef P1 (instanceRef "J3 9 - D2 K3"))
+                            (portRef P1 (instanceRef "J3 9 - D2 K3"))
+                            (portRef P1 (instanceRef R16)))
+                        )
+                        (Net EXP_GPIO2
+                            (joined (portRef P1 (instanceRef "J5 22 - U1 IO8"))
+                            (portRef P1 (instanceRef "J5 22 - U1 IO8"))
+                            (portRef 22 (instanceRef J5))
+                            (portRef IO8 (instanceRef U1)))
+                        )
+                        (Net ECG_V4_IN4P
+                            (joined (portRef P1 (instanceRef "J3 8 - D2 K2"))
+                            (portRef 8 (instanceRef J3))
+                            (portRef P1 (instanceRef "J3 8 - D2 K2"))
+                            (portRef K2 (instanceRef D2))
+                            (portRef P1 (instanceRef "J3 8 - D2 K2"))
+                            (portRef P1 (instanceRef R15)))
+                        )
+                        (Net USB_DN
+                            (joined (portRef P1 (instanceRef "J1 DN2 - U1 IO19"))
+                            (portRef P1 (instanceRef "J1 DN2 - U1 IO19"))
+                            (portRef IO19 (instanceRef U1))
+                            (portRef DN1 (instanceRef J1))
+                            (portRef DN2 (instanceRef J1)))
+                        )
+                        (Net ECG_V2_IN3P
+                            (joined (portRef P1 (instanceRef "J3 6 - D1 K5"))
+                            (portRef 6 (instanceRef J3))
+                            (portRef P1 (instanceRef "J3 6 - D1 K5"))
+                            (portRef K5 (instanceRef D1))
+                            (portRef P1 (instanceRef "J3 6 - D1 K5"))
+                            (portRef P1 (instanceRef R13)))
+                        )
+                        (Net SPI_MISO
+                            (joined (portRef DOUT (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO13 - U2 DOUT"))
+                            (portRef P1 (instanceRef "U1 IO13 - U2 DOUT"))
+                            (portRef P1 (instanceRef "U1 IO13 - U2 DOUT"))
+                            (portRef D0 (instanceRef J2))
+                            (portRef P1 (instanceRef "U1 IO13 - U2 DOUT"))
+                            (portRef 10 (instanceRef J5))
+                            (portRef 9 (instanceRef J5))
+                            (portRef P1 (instanceRef "U1 IO13 - U2 DOUT"))
+                            (portRef IO13 (instanceRef U1)))
+                        )
+                        (Net USB_DP
+                            (joined (portRef P1 (instanceRef "J1 DP2 - U1 IO20"))
+                            (portRef IO20 (instanceRef U1))
+                            (portRef DP1 (instanceRef J1))
+                            (portRef DP2 (instanceRef J1))
+                            (portRef P1 (instanceRef "J1 DP2 - U1 IO20")))
+                        )
+                        (Net EXP_GPIO1
+                            (joined (portRef P1 (instanceRef "J5 21 - U1 IO7"))
+                            (portRef P1 (instanceRef "J5 21 - U1 IO7"))
+                            (portRef 21 (instanceRef J5))
+                            (portRef IO7 (instanceRef U1)))
+                        )
+                        (Net ADS_RESET
+                            (joined (portRef "~{RESET}" (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO16 - U2 ~{RESET}"))
+                            (portRef P1 (instanceRef "U1 IO16 - U2 ~{RESET}"))
+                            (portRef IO16 (instanceRef U1)))
+                        )
+                        (Net ECG_V6_IN5P
+                            (joined (portRef P1 (instanceRef "J3 10 - D2 K4"))
+                            (portRef 10 (instanceRef J3))
+                            (portRef K4 (instanceRef D2))
+                            (portRef P1 (instanceRef "J3 10 - D2 K4"))
+                            (portRef P1 (instanceRef "J3 10 - D2 K4"))
+                            (portRef P1 (instanceRef R17)))
+                        )
+                        (Net ECG_EXP_IN8P
+                            (joined (portRef P1 (instanceRef "U2 IN8P - J5 19"))
+                            (portRef IN8P (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 IN8P - J5 19"))
+                            (portRef 19 (instanceRef J5)))
+                        )
+                        (Net ADS_VCAP1
+                            (joined (portRef P1 (instanceRef "U2 VCAP1 - C10 P1"))
+                            (portRef P1 (instanceRef "U2 VCAP1 - C10 P1"))
+                            (portRef VCAP1 (instanceRef U2))
+                            (portRef P1 (instanceRef C10)))
+                        )
+                        (Net ESP_BOOT
+                            (joined (portRef P2 (instanceRef R4))
+                            (portRef P1 (instanceRef "U1 IO0 - R4 P2"))
+                            (portRef P1 (instanceRef "U1 IO0 - R4 P2"))
+                            (portRef 1 (instanceRef SW2))
+                            (portRef IO0 (instanceRef U1))
+                            (portRef P1 (instanceRef "U1 IO0 - R4 P2")))
+                        )
+                        (Net I2C_SDA
+                            (joined (portRef P1 (instanceRef "U1 IO4 - U3 SDA"))
+                            (portRef P1 (instanceRef "U1 IO4 - U3 SDA"))
+                            (portRef P1 (instanceRef "U1 IO4 - U3 SDA"))
+                            (portRef P2 (instanceRef R6))
+                            (portRef SDA (instanceRef U3))
+                            (portRef 11 (instanceRef J5))
+                            (portRef 12 (instanceRef J5))
+                            (portRef P1 (instanceRef "U1 IO4 - U3 SDA"))
+                            (portRef IO4 (instanceRef U1))
+                            (portRef P1 (instanceRef "U1 IO4 - U3 SDA")))
+                        )
+                        (Net ECG_EXP_IN8N
+                            (joined (portRef P1 (instanceRef "U2 IN8N - J5 20"))
+                            (portRef IN8N (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 IN8N - J5 20"))
+                            (portRef 20 (instanceRef J5)))
+                        )
+                        (Net ECG_V1_IN2N
+                            (joined (portRef P1 (instanceRef "J3 5 - D1 K4"))
+                            (portRef P1 (instanceRef "J3 5 - D1 K4"))
+                            (portRef P1 (instanceRef R12))
+                            (portRef P1 (instanceRef "J3 5 - D1 K4"))
+                            (portRef 5 (instanceRef J3))
+                            (portRef K4 (instanceRef D1)))
+                        )
+                        (Net VSYS
+                            (joined (portRef P1 (instanceRef C2))
+                            (portRef P1 (instanceRef "U3 SYS - U4 VIN"))
+                            (portRef VIN (instanceRef U4))
+                            (portRef SYS (instanceRef U3))
+                            (portRef P1 (instanceRef "U3 SYS - U4 VIN"))
+                            (portRef P1 (instanceRef "U3 SYS - U4 VIN")))
+                        )
+                        (Net ECG_AUX_IN5N
+                            (joined (portRef P1 (instanceRef "D2 K5 - U2 IN5N"))
+                            (portRef K5 (instanceRef D2))
+                            (portRef P1 (instanceRef "D2 K5 - U2 IN5N"))
+                            (portRef P1 (instanceRef R18)))
+                        )
+                        (Net I2C_SCL
+                            (joined (portRef P1 (instanceRef "U1 IO5 - U3 SCL"))
+                            (portRef P1 (instanceRef "U1 IO5 - U3 SCL"))
+                            (portRef P1 (instanceRef "U1 IO5 - U3 SCL"))
+                            (portRef P1 (instanceRef "U1 IO5 - U3 SCL"))
+                            (portRef P2 (instanceRef R7))
+                            (portRef SCL (instanceRef U3))
+                            (portRef 14 (instanceRef J5))
+                            (portRef 13 (instanceRef J5))
+                            (portRef IO5 (instanceRef U1))
+                            (portRef P1 (instanceRef "U1 IO5 - U3 SCL")))
+                        )
+                        (Net ADS_VCAP4
+                            (joined (portRef P1 (instanceRef "U2 VCAP4 - C13 P1"))
+                            (portRef P1 (instanceRef C13))
+                            (portRef VCAP4 (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 VCAP4 - C13 P1")))
+                        )
+                        (Net ADS_CS
+                            (joined (portRef P1 (instanceRef "U1 IO10 - U2 ~{CS}"))
+                            (portRef "~{CS}" (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO10 - U2 ~{CS}"))
+                            (portRef P2 (instanceRef R5))
+                            (portRef P1 (instanceRef "U1 IO10 - U2 ~{CS}"))
+                            (portRef IO10 (instanceRef U1)))
+                        )
+                        (Net ESP_EN
+                            (joined (portRef P1 (instanceRef "U1 EN - R3 P2"))
+                            (portRef P1 (instanceRef "U1 EN - R3 P2"))
+                            (portRef P1 (instanceRef C8))
+                            (portRef 1 (instanceRef SW1))
+                            (portRef P2 (instanceRef R3))
+                            (portRef P1 (instanceRef "U1 EN - R3 P2"))
+                            (portRef EN (instanceRef U1))
+                            (portRef P1 (instanceRef "U1 EN - R3 P2")))
+                        )
+                        (Net ECG_V3_IN3N
+                            (joined (portRef 7 (instanceRef J3))
+                            (portRef P1 (instanceRef "J3 7 - D2 K1"))
+                            (portRef K1 (instanceRef D2))
+                            (portRef P1 (instanceRef "J3 7 - D2 K1"))
+                            (portRef P1 (instanceRef "J3 7 - D2 K1"))
+                            (portRef P1 (instanceRef R14)))
+                        )
+                        (Net CHG_INT
+                            (joined (portRef P1 (instanceRef "U3 INT - U1 IO6"))
+                            (portRef P1 (instanceRef "U3 INT - U1 IO6"))
+                            (portRef INT (instanceRef U3))
+                            (portRef IO6 (instanceRef U1)))
+                        )
+                        (Net 3V3
+                            (joined (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef C4))
+                            (portRef Vin (instanceRef U5))
+                            (portRef EN (instanceRef U4))
+                            (portRef VOUT (instanceRef U4))
+                            (portRef P1 (instanceRef R4))
+                            (portRef DVDD (instanceRef U2))
+                            (portRef DVDD (instanceRef U2))
+                            (portRef AVDD (instanceRef U2))
+                            (portRef P1 (instanceRef C5))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef R6))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef R5))
+                            (portRef P1 (instanceRef R7))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef R3))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef C3))
+                            (portRef VDD (instanceRef U3))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef "U2 DVDD - U5 Vin"))
+                            (portRef VDD (instanceRef J2))
+                            (portRef 3 (instanceRef J5))
+                            (portRef 1 (instanceRef J5))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef 3V3 (instanceRef U1))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef C7))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef P1 (instanceRef C6))
+                            (portRef P1 (instanceRef "U4 VOUT - U4 EN"))
+                            (portRef AVDD (instanceRef U2))
+                            (portRef AVDD (instanceRef U2))
+                            (portRef AVDD1 (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 AVDD - U2 AVDD1"))
+                            (portRef P1 (instanceRef "U2 AVDD - U2 AVDD1"))
+                            (portRef AVDD (instanceRef U2))
+                            (portRef AVDD (instanceRef U2)))
+                        )
+                        (Net ADS_DRDY
+                            (joined (portRef "~{DRDY}" (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO14 - U2 ~{DRDY}"))
+                            (portRef P1 (instanceRef "U1 IO14 - U2 ~{DRDY}"))
+                            (portRef IO14 (instanceRef U1)))
+                        )
+                        (Net SPI_MOSI
+                            (joined (portRef P1 (instanceRef "U1 IO11 - U2 DIN"))
+                            (portRef DIN (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO11 - U2 DIN"))
+                            (portRef P1 (instanceRef "U1 IO11 - U2 DIN"))
+                            (portRef P1 (instanceRef "U1 IO11 - U2 DIN"))
+                            (portRef P1 (instanceRef "U1 IO11 - U2 DIN"))
+                            (portRef CMD (instanceRef J2))
+                            (portRef 7 (instanceRef J5))
+                            (portRef 8 (instanceRef J5))
+                            (portRef IO11 (instanceRef U1)))
+                        )
+                        (Net SPI_SCLK
+                            (joined (portRef P1 (instanceRef "U1 IO12 - U2 SCLK"))
+                            (portRef SCLK (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO12 - U2 SCLK"))
+                            (portRef P1 (instanceRef "U1 IO12 - U2 SCLK"))
+                            (portRef CLK (instanceRef J2))
+                            (portRef P1 (instanceRef "U1 IO12 - U2 SCLK"))
+                            (portRef P1 (instanceRef "U1 IO12 - U2 SCLK"))
+                            (portRef 5 (instanceRef J5))
+                            (portRef 6 (instanceRef J5))
+                            (portRef IO12 (instanceRef U1)))
+                        )
+                        (Net USB_CC2
+                            (joined (portRef P1 (instanceRef R2))
+                            (portRef P1 (instanceRef "J1 CC2 - R2 P1"))
+                            (portRef P1 (instanceRef "J1 CC2 - R2 P1"))
+                            (portRef CC2 (instanceRef J1)))
+                        )
+                        (Net ECG_EXP_IN7N
+                            (joined (portRef P1 (instanceRef "U2 IN7N - J5 18"))
+                            (portRef IN7N (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 IN7N - J5 18"))
+                            (portRef 18 (instanceRef J5)))
+                        )
+                        (Net GND
+                            (joined (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef C9))
+                            (portRef GND (instanceRef "U1 GND_3 - U1 GND_4"))
+                            (portRef GND (instanceRef "J2 GND - J2 GND"))
+                            (portRef GND (instanceRef "J2 GND - U2 DGND"))
+                            (portRef GND (instanceRef "J2 GND - U2 DGND"))
+                            (portRef GND (instanceRef "J1 GND - U3 GND"))
+                            (portRef P2 (instanceRef C2))
+                            (portRef 2 (instanceRef J4))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef C4))
+                            (portRef P2 (instanceRef C11))
+                            (portRef GND (instanceRef U5))
+                            (portRef GND (instanceRef U4))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U1 GND_3 - U1 GND_4"))
+                            (portRef P2 (instanceRef C8))
+                            (portRef GND (instanceRef "U1 GND_3 - U1 GND_4"))
+                            (portRef GND (instanceRef "U2 DGND - U2 AVSS"))
+                            (portRef P2 (instanceRef C13))
+                            (portRef DGND (instanceRef U2))
+                            (portRef AVSS (instanceRef U2))
+                            (portRef AVSS (instanceRef U2))
+                            (portRef AVSS1 (instanceRef U2))
+                            (portRef AVSS (instanceRef U2))
+                            (portRef DGND (instanceRef U2))
+                            (portRef AVSS (instanceRef U2))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef C5))
+                            (portRef P2 (instanceRef C7))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef C6))
+                            (portRef P2 (instanceRef C14))
+                            (portRef P2 (instanceRef R8))
+                            (portRef GND (instanceRef "J1 GND - U3 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "J2 GND - J2 GND"))
+                            (portRef P2 (instanceRef C10))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "J1 GND - U3 GND"))
+                            (portRef GND (instanceRef "U1 GND_7 - U1 GND_8"))
+                            (portRef GND (instanceRef "J1 GND - U3 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef R2))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef 2 (instanceRef SW1))
+                            (portRef P2 (instanceRef C1))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef C12))
+                            (portRef A (instanceRef D2))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef P2 (instanceRef C3))
+                            (portRef GND (instanceRef U3))
+                            (portRef P2 (instanceRef R1))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef J2))
+                            (portRef GND (instanceRef J2))
+                            (portRef GND (instanceRef J2))
+                            (portRef VSS (instanceRef J2))
+                            (portRef GND (instanceRef J2))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef 2 (instanceRef SW2))
+                            (portRef 4 (instanceRef J5))
+                            (portRef 2 (instanceRef J5))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "J1 GND - U3 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND_5 (instanceRef U1))
+                            (portRef GND_10 (instanceRef U1))
+                            (portRef GND_6 (instanceRef U1))
+                            (portRef GND_8 (instanceRef U1))
+                            (portRef GND_7 (instanceRef U1))
+                            (portRef GND_9 (instanceRef U1))
+                            (portRef GND_2 (instanceRef U1))
+                            (portRef GND_4 (instanceRef U1))
+                            (portRef GND_3 (instanceRef U1))
+                            (portRef GND_1 (instanceRef U1))
+                            (portRef GND_11 (instanceRef U1))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef J1))
+                            (portRef GND (instanceRef J1))
+                            (portRef A (instanceRef D1))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "U1 GND_7 - U1 GND_8"))
+                            (portRef GND (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef VREFN (instanceRef U2))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C24))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C23))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C22))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C21))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C20))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C19))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C18))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C17))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C16))
+                            (portRef GND (instanceRef "C15 P2 - C16 P2"))
+                            (portRef P2 (instanceRef C15))
+                            (portRef AVSS (instanceRef U2)))
+                        )
+                        (Net ADS_PWDN
+                            (joined (portRef P1 (instanceRef "U1 IO17 - U2 ~{PWDN}"))
+                            (portRef "~{PWDN}" (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO17 - U2 ~{PWDN}"))
+                            (portRef IO17 (instanceRef U1)))
+                        )
+                        (Net ECG_EXP_IN6P
+                            (joined (portRef P1 (instanceRef "U2 IN6P - J5 15"))
+                            (portRef IN6P (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 IN6P - J5 15"))
+                            (portRef 15 (instanceRef J5)))
+                        )
+                        (Net RLDREF
+                            (joined (portRef RLDREF (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 RLDREF - C14 P1"))
+                            (portRef P1 (instanceRef C14))
+                            (portRef P1 (instanceRef "U2 RLDREF - C14 P1")))
+                        )
+                        (Net ADS_VCAP2
+                            (joined (portRef P1 (instanceRef C11))
+                            (portRef P1 (instanceRef "U2 VCAP2 - C11 P1"))
+                            (portRef VCAP2 (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 VCAP2 - C11 P1")))
+                        )
+                        (Net ECG_EXP_IN6N
+                            (joined (portRef P1 (instanceRef "U2 IN6N - J5 16"))
+                            (portRef IN6N (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 IN6N - J5 16"))
+                            (portRef 16 (instanceRef J5)))
+                        )
+                        (Net ECG_EXP_IN7P
+                            (joined (portRef P1 (instanceRef "U2 IN7P - J5 17"))
+                            (portRef IN7P (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 IN7P - J5 17"))
+                            (portRef 17 (instanceRef J5)))
+                        )
+                        (Net VBAT
+                            (joined (portRef 1 (instanceRef J4))
+                            (portRef P1 (instanceRef "J4 1 - U3 BATT"))
+                            (portRef BATT (instanceRef U3))
+                            (portRef P1 (instanceRef "J4 1 - U3 BATT")))
+                        )
+                        (Net SD_CS
+                            (joined (portRef P1 (instanceRef "U1 IO9 - J2 D3"))
+                            (portRef P1 (instanceRef "U1 IO9 - J2 D3"))
+                            (portRef D3 (instanceRef J2))
+                            (portRef IO9 (instanceRef U1)))
+                        )
+                        (Net ADS_VCAP3
+                            (joined (portRef VCAP3 (instanceRef U2))
+                            (portRef P1 (instanceRef C12))
+                            (portRef P1 (instanceRef "U2 VCAP3 - C12 P1"))
+                            (portRef P1 (instanceRef "U2 VCAP3 - C12 P1")))
+                        )
+                        (Net USB_5V
+                            (joined (portRef P1 (instanceRef "J1 VBUS - U3 IN"))
+                            (portRef P1 (instanceRef "J1 VBUS - U3 IN"))
+                            (portRef P1 (instanceRef C1))
+                            (portRef IN (instanceRef U3))
+                            (portRef P1 (instanceRef "J1 VBUS - U3 IN"))
+                            (portRef VBUS (instanceRef J1))
+                            (portRef VBUS (instanceRef J1)))
+                        )
+                        (Net ECG_LA_IN1N
+                            (joined (portRef P1 (instanceRef "J3 2 - D1 K2"))
+                            (portRef P1 (instanceRef "J3 2 - D1 K2"))
+                            (portRef P1 (instanceRef R10))
+                            (portRef P1 (instanceRef "J3 2 - D1 K2"))
+                            (portRef 2 (instanceRef J3))
+                            (portRef K2 (instanceRef D1)))
+                        )
+                        (Net USB_CC1
+                            (joined (portRef P1 (instanceRef "J1 CC1 - R1 P1"))
+                            (portRef P1 (instanceRef R1))
+                            (portRef P1 (instanceRef "J1 CC1 - R1 P1"))
+                            (portRef CC1 (instanceRef J1)))
+                        )
+                        (Net BATT_NTC
+                            (joined (portRef P1 (instanceRef "U3 NTC - R8 P1"))
+                            (portRef P1 (instanceRef R8))
+                            (portRef NTC (instanceRef U3))
+                            (portRef P1 (instanceRef "U3 NTC - R8 P1")))
+                        )
+                        (Net ECG_RA_IN1P
+                            (joined (portRef P1 (instanceRef "J3 1 - D1 K1"))
+                            (portRef P1 (instanceRef "J3 1 - D1 K1"))
+                            (portRef P1 (instanceRef R9))
+                            (portRef P1 (instanceRef "J3 1 - D1 K1"))
+                            (portRef K1 (instanceRef D1))
+                            (portRef 1 (instanceRef J3)))
+                        )
+                        (Net GND
+                            (joined (portRef P1 (instanceRef "U2 AVSS - U5 GND"))
+                            (portRef CLKSEL (instanceRef U2))
+                            (portRef DGND (instanceRef U2))
+                            (portRef P1 (instanceRef "U2 AVSS - U5 GND")))
+                        )
+                        (Net VREF_2V5
+                            (joined (portRef P1 (instanceRef C9))
+                            (portRef Vout (instanceRef U5))
+                            (portRef VREFP (instanceRef U2))
+                            (portRef P1 (instanceRef "U5 Vout - U2 VREFP"))
+                            (portRef P1 (instanceRef "U5 Vout - U2 VREFP"))
+                            (portRef P1 (instanceRef "U5 Vout - U2 VREFP")))
+                        )
+                        (Net ADS_START
+                            (joined (portRef START (instanceRef U2))
+                            (portRef P1 (instanceRef "U1 IO15 - U2 START"))
+                            (portRef P1 (instanceRef "U1 IO15 - U2 START"))
+                            (portRef IO15 (instanceRef U1)))
+                        )
+                        (Net ECG_LL_IN2P
+                            (joined (portRef 3 (instanceRef J3))
+                            (portRef P1 (instanceRef "J3 3 - D1 K3"))
+                            (portRef P1 (instanceRef "J3 3 - D1 K3"))
+                            (portRef P1 (instanceRef R11))
+                            (portRef P1 (instanceRef "J3 3 - D1 K3"))
+                            (portRef K3 (instanceRef D1)))
+                        )
+                        (Net AFE_IN1P_RA
+                            (joined (portRef P2 (instanceRef R9))
+                            (portRef P1 (instanceRef "R9 P2 - U2 IN1P"))
+                            (portRef P1 (instanceRef "R9 P2 - U2 IN1P"))
+                            (portRef P1 (instanceRef C25))
+                            (portRef P1 (instanceRef "R9 P2 - U2 IN1P"))
+                            (portRef P1 (instanceRef C15))
+                            (portRef P1 (instanceRef "R9 P2 - U2 IN1P"))
+                            (portRef IN1P (instanceRef U2)))
+                        )
+                        (Net AFE_IN1N_LA
+                            (joined (portRef P2 (instanceRef R10))
+                            (portRef P1 (instanceRef "R10 P2 - U2 IN1N"))
+                            (portRef P1 (instanceRef "R10 P2 - U2 IN1N"))
+                            (portRef P2 (instanceRef C25))
+                            (portRef P1 (instanceRef "R10 P2 - U2 IN1N"))
+                            (portRef P1 (instanceRef C16))
+                            (portRef P1 (instanceRef "R10 P2 - U2 IN1N"))
+                            (portRef IN1N (instanceRef U2)))
+                        )
+                        (Net AFE_IN2P_LL
+                            (joined (portRef P2 (instanceRef R11))
+                            (portRef P1 (instanceRef "R11 P2 - U2 IN2P"))
+                            (portRef P1 (instanceRef "R11 P2 - U2 IN2P"))
+                            (portRef P1 (instanceRef C26))
+                            (portRef P1 (instanceRef "R11 P2 - U2 IN2P"))
+                            (portRef P1 (instanceRef C17))
+                            (portRef P1 (instanceRef "R11 P2 - U2 IN2P"))
+                            (portRef IN2P (instanceRef U2)))
+                        )
+                        (Net AFE_IN2N_V1
+                            (joined (portRef P2 (instanceRef R12))
+                            (portRef P1 (instanceRef "R12 P2 - U2 IN2N"))
+                            (portRef P1 (instanceRef "R12 P2 - U2 IN2N"))
+                            (portRef P2 (instanceRef C26))
+                            (portRef P1 (instanceRef "R12 P2 - U2 IN2N"))
+                            (portRef P1 (instanceRef C18))
+                            (portRef P1 (instanceRef "R12 P2 - U2 IN2N"))
+                            (portRef IN2N (instanceRef U2)))
+                        )
+                        (Net AFE_IN3P_V2
+                            (joined (portRef P2 (instanceRef R13))
+                            (portRef P1 (instanceRef "R13 P2 - U2 IN3P"))
+                            (portRef P1 (instanceRef "R13 P2 - U2 IN3P"))
+                            (portRef P1 (instanceRef C27))
+                            (portRef P1 (instanceRef "R13 P2 - U2 IN3P"))
+                            (portRef P1 (instanceRef C19))
+                            (portRef P1 (instanceRef "R13 P2 - U2 IN3P"))
+                            (portRef IN3P (instanceRef U2)))
+                        )
+                        (Net AFE_IN3N_V3
+                            (joined (portRef P2 (instanceRef R14))
+                            (portRef P1 (instanceRef "R14 P2 - U2 IN3N"))
+                            (portRef P1 (instanceRef "R14 P2 - U2 IN3N"))
+                            (portRef P2 (instanceRef C27))
+                            (portRef P1 (instanceRef "R14 P2 - U2 IN3N"))
+                            (portRef P1 (instanceRef C20))
+                            (portRef P1 (instanceRef "R14 P2 - U2 IN3N"))
+                            (portRef IN3N (instanceRef U2)))
+                        )
+                        (Net AFE_IN4P_V4
+                            (joined (portRef P2 (instanceRef R15))
+                            (portRef P1 (instanceRef "R15 P2 - U2 IN4P"))
+                            (portRef P1 (instanceRef "R15 P2 - U2 IN4P"))
+                            (portRef P1 (instanceRef C28))
+                            (portRef P1 (instanceRef "R15 P2 - U2 IN4P"))
+                            (portRef P1 (instanceRef C21))
+                            (portRef P1 (instanceRef "R15 P2 - U2 IN4P"))
+                            (portRef IN4P (instanceRef U2)))
+                        )
+                        (Net AFE_IN4N_V5
+                            (joined (portRef P2 (instanceRef R16))
+                            (portRef P1 (instanceRef "R16 P2 - U2 IN4N"))
+                            (portRef P1 (instanceRef "R16 P2 - U2 IN4N"))
+                            (portRef P2 (instanceRef C28))
+                            (portRef P1 (instanceRef "R16 P2 - U2 IN4N"))
+                            (portRef P1 (instanceRef C22))
+                            (portRef P1 (instanceRef "R16 P2 - U2 IN4N"))
+                            (portRef IN4N (instanceRef U2)))
+                        )
+                        (Net AFE_IN5P_V6
+                            (joined (portRef P2 (instanceRef R17))
+                            (portRef P1 (instanceRef "R17 P2 - U2 IN5P"))
+                            (portRef P1 (instanceRef "R17 P2 - U2 IN5P"))
+                            (portRef P1 (instanceRef C29))
+                            (portRef P1 (instanceRef "R17 P2 - U2 IN5P"))
+                            (portRef P1 (instanceRef C23))
+                            (portRef P1 (instanceRef "R17 P2 - U2 IN5P"))
+                            (portRef IN5P (instanceRef U2)))
+                        )
+                        (Net AFE_IN5N_AUX
+                            (joined (portRef P2 (instanceRef R18))
+                            (portRef P1 (instanceRef "R18 P2 - U2 IN5N"))
+                            (portRef P1 (instanceRef "R18 P2 - U2 IN5N"))
+                            (portRef P2 (instanceRef C29))
+                            (portRef P1 (instanceRef "R18 P2 - U2 IN5N"))
+                            (portRef P1 (instanceRef C24))
+                            (portRef P1 (instanceRef "R18 P2 - U2 IN5N"))
+                            (portRef IN5N (instanceRef U2)))
+                        )
+                        (Net RLD_DRIVE_OUT
+                            (joined (portRef P2 (instanceRef R19))
+                            (portRef P1 (instanceRef "R19 P2 - U2 RLDOUT"))
+                            (portRef P1 (instanceRef "R19 P2 - U2 RLDOUT"))
+                            (portRef P1 (instanceRef C30))
+                            (portRef P1 (instanceRef "R19 P2 - U2 RLDOUT"))
+                            (portRef P1 (instanceRef R20))
+                            (portRef P1 (instanceRef "R19 P2 - U2 RLDOUT"))
+                            (portRef RLDOUT (instanceRef U2)))
+                        )
+                        (Net RLD_FB_TBD
+                            (joined (portRef P2 (instanceRef R20))
+                            (portRef P1 (instanceRef "R20 P2 - C30 P2"))
+                            (portRef P1 (instanceRef "R20 P2 - C30 P2"))
+                            (portRef RLDINV (instanceRef U2))
+                            (portRef RLDIN (instanceRef U2))
+                            (portRef P1 (instanceRef "R20 P2 - C30 P2"))
+                            (portRef P2 (instanceRef C30)))
+                        )
+                    )
+                )
+            )
+        )
+        (design "Wearable 8-Channel ECG Acquisition Board"
+            (cellRef "Wearable 8-Channel ECG Acquisition Board_top" (libraryRef Main))
+        )
+)

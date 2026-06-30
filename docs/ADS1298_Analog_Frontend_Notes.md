@@ -14,6 +14,14 @@
 > decision-making. These notes cover signal-integrity and electrical-design
 > concerns only. Any human-subject use must go through the appropriate ethics /
 > safety review and isolation provisions, which are out of scope for this file.
+>
+> **Design source:** the part references below come from the CardioCore V1
+> flux.ai project — see the BOM
+> [`../hardware/CardioCore_V1/bom/preliminary_bom.md`](../hardware/CardioCore_V1/bom/preliminary_bom.md)
+> and the EDIF netlist
+> [`../hardware/CardioCore_V1/schematics/CardioCore_V1.edif`](../hardware/CardioCore_V1/schematics/CardioCore_V1.edif).
+> The schematic already places the protection / filter / ESD / reference parts;
+> the remaining **TBD** items are the component *values* flagged below.
 
 ---
 
@@ -49,7 +57,8 @@ still open:
 ## 2. Series protection resistors (TBD)
 
 Each electrode line should have a **series resistor** on the subject side,
-before the RC filter and the ADS1298 pin.
+before the RC filter and the ADS1298 pin. In the flux.ai schematic these are
+**R9–R20** (12 × 0402, value **TBD**).
 
 - **Purpose:**
   - **Current limiting** — bound the worst-case current that could flow into or
@@ -76,7 +85,8 @@ before the RC filter and the ADS1298 pin.
 
 A passive **RC low-pass** per input line provides anti-alias attenuation and
 **EMI/RF input filtering** (rejecting RF that would otherwise rectify in the PGA
-and appear as offset/baseline error).
+and appear as offset/baseline error). In the flux.ai schematic the filter
+capacitors are **C15–C30** (16 × 0402, value **TBD**; prefer C0G/NP0).
 
 - **Considerations / what to size:**
   - **Anti-alias:** the ADS1298 has a built-in (sinc) digital decimation filter,
@@ -112,7 +122,9 @@ producing **DC offset, baseline shift, and per-channel drift** — and any
   the series R to form an unintended pole and can mismatch between legs.
 - Select for: low reverse leakage (specified vs. temperature), low junction
   capacitance, appropriate clamp voltage relative to the analog supply, and
-  matched P/N behavior. **Specific part: TBD.**
+  matched P/N behavior. The flux.ai design uses **PESD3V3L5UY** 5-channel
+  low-capacitance ESD arrays (**D1, D2**) at the connector; **still verify** its
+  reverse-leakage spec is low enough for these high-impedance inputs.
 - Keep ESD parts close to the connector, ahead of the series R where possible so
   the resistor limits clamp current.
 
@@ -147,10 +159,10 @@ producing **DC offset, baseline shift, and per-channel drift** — and any
 
 ## 6. REF5025 external 2.5 V reference notes
 
-CardioCore V1 uses the **REF5025** (2.5 V precision reference) as the external
-reference for the ADS1298 (rather than the internal reference) for lower noise /
-better drift, feeding **VREFP** (with **VREFN** = analog ground / AVSS per
-datasheet).
+CardioCore V1 uses the **REF5025IDGK** (2.5 V precision reference, VSSOP-8;
+**U5**) as the external reference for the ADS1298 (rather than the internal
+reference) for lower noise / better drift, feeding **VREFP** (with **VREFN** =
+analog ground / AVSS per datasheet).
 
 - **Wiring:** REF5025 output → VREFP; VREFN to the analog reference ground.
   Confirm the ADS1298 is configured for **external reference** (internal ref
@@ -199,10 +211,12 @@ all TBD** until verified against datasheet recommendations and bench results.
 
 ## 8. ADS1298 pin audit placeholder
 
-Working audit of the key ADS1298 signals. **All connections are candidates and
-every Status is TBD** until schematic capture is reviewed against the datasheet
-and the CardioCore V1 net list. (Exact pin numbers depend on the chosen package
-— **package: TBD** — so this table is organized by signal, not pin number.)
+Working audit of the key ADS1298 signals. The package is now fixed —
+**ADS1298IPAGR, TQFP-64** (U2) — and the connectivity can be cross-checked
+against the committed EDIF netlist
+([`../hardware/CardioCore_V1/schematics/CardioCore_V1.edif`](../hardware/CardioCore_V1/schematics/CardioCore_V1.edif)).
+The **Connected To** column is still being verified against that netlist and the
+datasheet, so each Status remains **TBD**. The table is organized by signal name.
 
 | Pin / Signal      | Function                                              | Connected To                             | Status |
 |-------------------|------------------------------------------------------|------------------------------------------|--------|
@@ -254,7 +268,8 @@ and the CardioCore V1 net list. (Exact pin numbers depend on the chosen package
 - Final **series protection resistor** value, tolerance, and pulse/power rating?
 - Final **RC filter** corner(s) — differential and common-mode caps, dielectric,
   and matching tolerance?
-- Selected **low-leakage, low-capacitance ESD/TVS** part for the inputs?
+- ESD part **selected (PESD3V3L5UY, D1/D2)** — confirm its reverse-leakage and
+  capacitance suit the high-impedance inputs?
 - **RLD** feedback network (Rf, Cf), output series resistor, sensed-channel set,
   and **loop stability** verification?
 - REF5025: standalone or **buffered**? Output/decoupling cap values? Need a
@@ -263,7 +278,8 @@ and the CardioCore V1 net list. (Exact pin numbers depend on the chosen package
   impact on the AFE?
 - **Grounding strategy:** AGND/DGND partition and single-point tie location;
   ferrite/filter between domains?
-- ADS1298 **package** selection (drives pinout, footprint, thermal)?
+- ADS1298 package: **resolved — TQFP-64 (ADS1298IPAGR)**; confirm footprint and
+  thermal handling in layout.
 - Lead/derived-lead computation (WCT handling): **hardware vs. firmware**?
 - Lead-off detection scheme and its interaction with the input network and RLD?
 

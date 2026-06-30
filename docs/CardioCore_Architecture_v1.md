@@ -87,6 +87,12 @@ Signal flow summary:
 supplying the ADS1298 voltage reference and the **1S LiPo → charger/power-path → 3.3 V regulator**
 chain supplying power. The **RL/RLD** node is an *output* (driven reference), not a sense input.
 
+> **Design source:** the concrete parts named in this document come from the
+> CardioCore V1 flux.ai project — see the BOM
+> [`../hardware/CardioCore_V1/bom/preliminary_bom.md`](../hardware/CardioCore_V1/bom/preliminary_bom.md)
+> and the EDIF netlist
+> [`../hardware/CardioCore_V1/schematics/CardioCore_V1.edif`](../hardware/CardioCore_V1/schematics/CardioCore_V1.edif).
+
 ---
 
 ## 4. Hardware Blocks
@@ -103,13 +109,14 @@ chain supplying power. The **RL/RLD** node is an *output* (driven reference), no
 6. **USB-C subsystem** — connector, CC handling, USB data (programming / native USB-Serial-JTAG of
    the ESP32-S3), and 5 V input to the charger.
 7. **Battery charger + power-path** — 1S LiPo charge management with USB present/absent power-path
-   to the system load (part **TBD**).
-8. **3.3 V regulation** — main 3.3 V rail with attention to analog vs digital supply quality.
+   to the system load (**MP2662**, U3).
+8. **3.3 V regulation** — main 3.3 V rail (**AP2112K-3.3** LDO, U4, 600 mA) with attention to analog
+   vs digital supply quality.
 9. **Clocking** — ADS1298 clock source (internal oscillator vs externally supplied clock — **TBD**,
    relevant for multi-device synchronization).
-10. **Status / indication** — charge/status LEDs, optional user button(s).
-11. **Expansion connector** — header(s) exposing shared SPI/clock/control for daisy-chaining
-    additional ADS1298 devices (see Section 12).
+10. **Status / indication** — charge/status LEDs and user buttons (**SW1 = BOOT/GPIO0**, **SW2 = EN/reset**).
+11. **Expansion connector** — a 2×20 0.1″ header (**J5**) exposing shared 3V3/GND/SPI/I2C/sync-control
+    GPIO for daisy-chaining additional ADS1298 devices (see Section 11).
 
 ---
 
@@ -158,7 +165,7 @@ The ADS1298 provides raw digitized leads only; no interpretation occurs in the A
 
 ## 7. REF5025 Role
 
-The **REF5025** provides a **precision external 2.5 V reference** to the ADS1298 reference inputs.
+The **REF5025IDGK** (U5, VSSOP-8) provides a **precision external 2.5 V reference** to the ADS1298 reference inputs.
 
 **Why external rather than the ADS1298's internal reference:**
 
@@ -179,13 +186,14 @@ ADS1298 reference operating point; final bypass/buffer network values are **TBD*
 ## 8. Power System
 
 - **Source:** single-cell **1S LiPo** (~3.0–4.2 V). Pack capacity **TBD** based on target runtime.
-- **USB-C charging:** 5 V from USB-C feeds a **dedicated LiPo charger** (charge current and part
-  **TBD**). Charging and acquisition coexistence (charge-while-running) policy is **TBD**.
-- **Power-path:** a power-path front end selects USB vs battery so the system can run from USB while
-  charging and switch seamlessly to battery; specific charger/power-path IC is **TBD**.
-- **3.3 V rail:** main system regulator producing the 3V3 digital rail for the ESP32-S3, microSD,
-  and digital side of the ADS1298 (DVDD). Regulator type (buck vs LDO) is **TBD**; an LDO or a
-  low-noise post-regulator is favored for the analog domain to minimize switching noise.
+- **USB-C charging:** 5 V from USB-C feeds the **MP2662** 1S LiPo charger/power-path (U3); charge
+  current **TBD**. Charging and acquisition coexistence (charge-while-running) policy is **TBD**
+  (note: do not measure ECG on a subject while on non-isolated USB — see the safety doc).
+- **Power-path:** the MP2662 power-path selects USB vs battery so the system can run from USB while
+  charging and switch seamlessly to battery.
+- **3.3 V rail:** the **AP2112K-3.3** LDO (U4, 600 mA) produces the 3V3 rail for the ESP32-S3,
+  microSD, and the digital side of the ADS1298 (DVDD). A low-noise LDO is used to minimize switching
+  noise into the analog domain.
 - **Analog/digital supply separation:** the ADS1298 distinguishes AVDD (analog) and DVDD (digital).
   The design intent is to derive a **clean analog supply** (AVDD/AVSS) for the AFE and reference —
   ideally from an LDO and ferrite-isolated net — kept separate from noisy digital switching rails.
@@ -194,8 +202,9 @@ ADS1298 reference operating point; final bypass/buffer network values are **TBD*
 - **Battery sensing:** battery voltage / state-of-charge sensing via ESP32-S3 ADC divider or a
   dedicated fuel gauge — part and method **TBD**.
 
-All exact part numbers above are **TBD** and must be confirmed against availability, noise, and
-thermal budgets before layout.
+Core power parts are now set in the flux.ai design (charger **MP2662**, LDO **AP2112K-3.3**,
+reference **REF5025IDGK**). Remaining power details — cell capacity, charge current, battery sensing,
+and clean analog-supply (AVDD) generation — are **TBD** pending the power budget and bench results.
 
 ---
 
@@ -226,8 +235,9 @@ Notes:
 - The 8 simultaneous channels are allocated across the precordial and/or limb-derived leads; the
   precise channel-to-electrode mapping (and how 6 precordial + limb leads map onto 8 channels) is a
   firmware/configuration decision marked **TBD**.
-- Each input includes series protection and high-impedance-friendly filtering; component values are
-  **TBD** pending input-network design.
+- Each input includes series protection (**R9–R20**), high-impedance-friendly filtering
+  (**C15–C30**), and ESD protection (**PESD3V3L5UY**, D1/D2); component **values** are **TBD**
+  pending input-network design (see [`ADS1298_Analog_Frontend_Notes.md`](./ADS1298_Analog_Frontend_Notes.md)).
 
 ---
 
@@ -271,9 +281,10 @@ The conceptual scaling path:
   scheme must be feasible.
 - **Shared reference:** a single REF5025 (suitably buffered) or matched references across devices to
   keep inter-device gain consistent.
-- **Connector / stacking strategy:** an **expansion connector** carries shared SPI/clock/control/
-  power so additional AFE boards can be **stacked or ribbon-connected**. Mechanical/connector choice
-  and how many devices one ESP32-S3 SPI bus can sustain at the target sample rate are **TBD**.
+- **Connector / stacking strategy:** the **expansion connector** (**J5**, a 2×20 0.1″ header)
+  carries shared 3V3/GND/SPI/I2C/sync-control GPIO so additional AFE boards can be **stacked or
+  ribbon-connected**. How many devices one ESP32-S3 SPI bus can sustain at the target sample rate,
+  and the final mechanical/stacking approach, are **TBD**.
 - **Data-rate scaling:** higher channel counts multiply SPI throughput and BLE/SD bandwidth demands;
   PSRAM buffering and possibly bulk transport (USB/SD-first at high channel counts) become more
   important — quantification is **TBD**.
@@ -291,8 +302,8 @@ This section is conceptual; no expansion hardware is committed in V1 beyond expo
 3. **microSD bus:** dedicated SPI vs SDIO, and whether it shares or contends with the AFE SPI bus.
 4. **BLE throughput:** achievable sustained sample rate × channels over BLE GATT; required MTU,
    connection interval, and packetization; fallback to SD/USB at high rates.
-5. **Power-path / charger / regulator parts:** specific ICs, charge current, charge-while-acquire
-   policy, and analog-supply generation (LDO vs post-regulated buck).
+5. **Power-path / charger / regulator parts:** ICs now selected (MP2662 / AP2112K-3.3 / REF5025IDGK);
+   remaining: charge current, charge-while-acquire policy, and clean analog-supply (AVDD) generation.
 6. **Analog supply topology:** single-supply vs bipolar operation of the ADS1298 and resulting input
    common-mode range.
 7. **Battery sensing:** ADC divider vs dedicated fuel gauge.
@@ -307,8 +318,8 @@ This section is conceptual; no expansion hardware is committed in V1 beyond expo
 
 1. Lock the ADS1298 **clock decision** (internal vs external) since it gates the expansion strategy.
 2. Define the **channel-to-electrode mapping** and reference (WCT) scheme in firmware terms.
-3. Select **power-path / charger / 3.3 V regulator** candidate parts and draft the power budget
-   (resolve relevant **TBD**s).
+3. Power parts are selected (MP2662 / AP2112K-3.3); draft the **power budget** and set charge current,
+   battery sensing, and clean analog-supply (AVDD) generation.
 4. Draft the **ADS1298 register configuration** (sample rate, PGA, RLD, lead-off) and a bring-up
    plan using the internal test signal.
 5. Define the **BLE GATT service** layout and the **SD log format** (frame structure, timestamps,

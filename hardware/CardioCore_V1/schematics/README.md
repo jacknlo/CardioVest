@@ -11,33 +11,40 @@ ECG acquisition board (ESP32-S3 + TI ADS1298 + REF5025).
 
 ## Current status
 
-**Not started.** No schematic source files exist yet. This README defines the
-conventions to follow once design work begins.
+**Captured in flux.ai.** The schematic is being designed in flux.ai. The exported
+EDIF netlist [`CardioCore_V1.edif`](./CardioCore_V1.edif) is committed here, and the
+editable project lives in [`../flux_project/CardioCore_V1.flx`](../flux_project/CardioCore_V1.flx).
+A flattened PDF export should be added alongside each released revision.
 
 ## What goes here
 
-- **Schematic sources** — the editable design files (see tool note below).
+- **EDIF netlist** — [`CardioCore_V1.edif`](./CardioCore_V1.edif), the schematic
+  netlist exported from flux.ai (components + connectivity).
 - **Exported PDFs** — a flattened, human-readable PDF export of each released
   schematic revision, committed alongside the source.
 - **Revision notes** — a short changelog describing what changed between
-  revisions and why (see `CHANGELOG` section below).
+  revisions and why (see the Changelog section below).
+
+> The editable schematic + PCB source itself lives one level up in
+> [`../flux_project/CardioCore_V1.flx`](../flux_project/CardioCore_V1.flx).
 
 ## EDA tool
 
-- **Planned tool: KiCad — TBD.** KiCad is the intended schematic capture tool,
-  but this is **not final**. The exact tool and version should be confirmed and
-  recorded here before the first commit of design sources.
+- **flux.ai** is the schematic-capture and PCB-design tool for CardioCore V1. The
+  native project (`CardioCore_V1.flx`) is the editable source of truth; the EDIF
+  netlist and the per–fab-house BOM CSVs are exported artifacts committed for review
+  and tooling interoperability.
 
 ## Naming and versioning conventions
 
 Use the following patterns (replace `?` with the integer revision number,
 starting at `1`):
 
-| Artifact            | Pattern                                   | Example                              |
-|---------------------|-------------------------------------------|--------------------------------------|
-| KiCad schematic     | `CardioCore_V1_schematic_rev?.kicad_sch`  | `CardioCore_V1_schematic_rev1.kicad_sch` |
-| KiCad project       | `CardioCore_V1.kicad_pro`                 | `CardioCore_V1.kicad_pro`            |
-| Exported PDF        | `CardioCore_V1_schematic_rev?.pdf`        | `CardioCore_V1_schematic_rev2.pdf`   |
+| Artifact            | Pattern                                     | Example                              |
+|---------------------|---------------------------------------------|--------------------------------------|
+| flux.ai project     | `CardioCore_V1.flx` (in `../flux_project/`) | `CardioCore_V1.flx`                  |
+| EDIF netlist export | `CardioCore_V1.edif`                        | `CardioCore_V1.edif`                 |
+| Exported PDF        | `CardioCore_V1_schematic_rev?.pdf`          | `CardioCore_V1_schematic_rev2.pdf`   |
 
 Conventions:
 
@@ -53,9 +60,9 @@ Conventions:
 
 Maintain revision history here (newest first). TBD until the first revision.
 
-| Rev | Date       | Author | Summary        |
-|-----|------------|--------|----------------|
-| —   | TBD        | TBD    | Not started.   |
+| Rev | Date       | Author  | Summary        |
+|-----|------------|---------|----------------|
+| 1   | 2026-06-30 | jacknlo | Initial flux.ai schematic captured; EDIF netlist + per-vendor BOM exported. |
 
 ## Design consistency
 

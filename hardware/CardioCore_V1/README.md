@@ -10,12 +10,13 @@ CardioCore V1 is the first hardware module of the **CardioVest** research platfo
 - **MCU module — ESP32-S3-WROOM-1-N16R8:** Dual-core Xtensa LX7 with Wi-Fi/BLE, 16 MB flash and 8 MB PSRAM; hosts firmware, BLE streaming, and microSD logging.
 - **ECG analog front-end — TI ADS1298:** 8-channel, 24-bit, simultaneous-sampling delta-sigma AFE with integrated PGAs, internal right-leg-drive (RLD) amplifier, and lead-off detection; interfaces to the ESP32-S3 over SPI.
 - **Voltage reference — TI REF5025:** External 2.5 V precision, low-drift reference supplying the ADS1298 to improve measurement stability over the internal reference.
-- **LiPo charger / power-path:** Single-cell (1S) Li-ion/LiPo charger with USB-C input and load-sharing power path so the board can run while charging. Specific charger IC — TBD.
-- **3.3 V regulator:** Low-noise LDO supplying the digital and analog rails for the ESP32-S3, ADS1298, and peripherals. Exact part and analog/digital rail split — TBD.
-- **microSD:** SPI- or SDMMC-attached card slot for local raw-sample logging. Interface mode — TBD.
-- **USB-C:** Single USB-C connector for battery charging and firmware programming / serial. Native-USB vs. UART-bridge programming path — TBD.
-- **ECG electrode connector:** Input connector for the 10 electrodes (RA, LA, LL, RL/RLD, V1–V6). Connector type and pinout — TBD.
-- **ESD / input protection:** Per-channel input protection network (series resistance, ESD diodes/TVS, RF/EMI filtering) on every electrode line ahead of the AFE. Component selection — TBD.
+- **LiPo charger / power-path — MP2662 (MPS):** Single-cell (1S) LiPo charger with USB-C 5 V input and power-path so the board can run while charging. Charge current to be set conservatively for the wearable cell.
+- **3.3 V regulator — AP2112K-3.3 (Diodes Inc.):** Low-noise 600 mA LDO feeding the 3.3 V rail (~340 mA active load plus ESP32 transient margin).
+- **microSD — DS1139-06-08SS4BSR (CONNFLY):** Push-style microSD socket for local raw-sample logging over SPI.
+- **USB-C — 16-pin receptacle (J1):** Sink-only USB-C for battery charging and native-USB programming/serial (D+/D− to the ESP32-S3). CC1/CC2 pull-downs (R1/R2, 5.1 kΩ) set the sink role.
+- **ECG electrode connector — Molex 5034801000 (J3):** Input connector for the 10 electrodes (RA, LA, LL, RL/RLD, V1–V6), routed through ESD/protection/filtering to the ADS1298.
+- **ESD / input protection — PESD3V3L5UY (D1/D2):** 5-channel low-capacitance ESD arrays at the electrode connector, ahead of the per-channel series resistors (R9–R20, **TBD**) and filter caps (C15–C30, **TBD**).
+- **Expansion header — 2×20, 2.54 mm (J5):** Carries 3V3, GND, SPI, I2C, sync/control GPIO, and spare GPIO for stacking additional ECG-channel modules (the path toward 16/32/64 channels).
 
 ## Current Status
 
@@ -24,10 +25,10 @@ CardioCore V1 is the first hardware module of the **CardioVest** research platfo
 | Item | Status |
 | --- | --- |
 | Architecture concept | Drafted (see architecture doc below) |
-| Schematic | TBD — not yet captured |
-| PCB layout | None yet |
-| Bill of materials | Preliminary / incomplete |
-| Manufacturing files | None yet |
+| Schematic | Captured in flux.ai (source `flux_project/`, EDIF netlist in `schematics/`) |
+| PCB layout | In the flux.ai project; no fab outputs exported yet |
+| Bill of materials | Derived from the flux.ai export — 64 components (some values TBD) |
+| Manufacturing files | None released yet |
 
 Where a real engineering value is still open, it is marked **TBD** rather than guessed. Do not treat any value in this repository as final until the schematic is captured and reviewed.
 
@@ -35,10 +36,11 @@ Where a real engineering value is still open, it is marked **TBD** rather than g
 
 This module's deliverables are organized into the following subfolders:
 
-- [`schematics/`](./schematics/) — Schematic source and exports (circuit design, net connectivity, design notes). Currently TBD.
-- [`pcb/`](./pcb/) — PCB layout source, board stackup, and fabrication outputs (Gerbers, drill files). Currently empty; no PCB exists yet.
-- [`bom/`](./bom/) — Bill of materials: component selections, manufacturer part numbers, and sourcing notes. Preliminary only.
-- [`manufacturing/`](./manufacturing/) — Assembly and fabrication packages: pick-and-place files, assembly drawings, panelization, and fab-house notes. Generated once a PCB exists.
+- [`flux_project/`](./flux_project/) — **Editable design source** (`CardioCore_V1.flx`): the native flux.ai project (schematic + PCB).
+- [`schematics/`](./schematics/) — Schematic exports and notes, including the EDIF netlist (`CardioCore_V1.edif`) exported from flux.ai.
+- [`pcb/`](./pcb/) — PCB layout outputs (board stackup, Gerbers, drill files). The live layout currently lives in the flux.ai project; no fab outputs exported here yet.
+- [`bom/`](./bom/) — Bill of materials: [`preliminary_bom.md`](./bom/preliminary_bom.md) (human-readable summary) plus [`flux_export/`](./bom/flux_export/) (the flux.ai CSV exports, per fab house).
+- [`manufacturing/`](./manufacturing/) — Assembly and fabrication packages: pick-and-place files, assembly drawings, panelization, and fab-house notes. Generated once the PCB is finalized.
 
 ## Further Reading
 
