@@ -1,0 +1,32 @@
+# ---------------------------------------------------------------------------
+# Line-ending normalization: store text as LF in the repo; check out native.
+# Removes the "LF will be replaced by CRLF" warnings on Windows.
+# ---------------------------------------------------------------------------
+* text=auto eol=lf
+
+# Source / text formats (explicit for clarity)
+*.md     text
+*.cpp    text
+*.h      text
+*.ino    text
+*.py     text
+*.html   text
+*.css    text
+*.js     text
+*.json   text
+*.csv    text
+*.edif   text
+*.ini    text
+*.yml    text
+*.yaml   text
+
+# Binary assets — never EOL-convert or text-diff.
+*.flx    binary
+*.zip    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.pdf    binary
+*.bin    binary
+*.hex    binary

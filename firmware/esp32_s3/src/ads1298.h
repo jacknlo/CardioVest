@@ -75,8 +75,9 @@ class Ads1298 {
   void startConversions();               // RDATAC + START (pin/command)
   void stopConversions();                // STOP + SDATAC
 
-  // If DRDY is asserted (low), read one FRAME_BYTES frame into `out` and
-  // return true; otherwise return false. RAW bytes only.
+  // Clock out one FRAME_BYTES raw frame into `out` (call in response to the
+  // latched DRDY interrupt; does not re-check the DRDY pin). Returns true.
+  // RAW bytes only.
   bool readFrame(uint8_t* out);
 
  private:

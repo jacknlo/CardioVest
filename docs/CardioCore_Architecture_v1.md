@@ -114,7 +114,7 @@ chain supplying power. The **RL/RLD** node is an *output* (driven reference), no
    vs digital supply quality.
 9. **Clocking** — ADS1298 clock source (internal oscillator vs externally supplied clock — **TBD**,
    relevant for multi-device synchronization).
-10. **Status / indication** — charge/status LEDs and user buttons (**SW1 = BOOT/GPIO0**, **SW2 = EN/reset**).
+10. **Status / indication** — charge/status LEDs and user buttons (**SW2 = BOOT/GPIO0**, **SW1 = EN/reset**, per the netlist).
 11. **Expansion connector** — a 2×20 0.1″ header (**J5**) exposing shared 3V3/GND/SPI/I2C/sync-control
     GPIO for daisy-chaining additional ADS1298 devices (see Section 11).
 
@@ -157,7 +157,7 @@ interpret signals.
 - **Lead-off detection capability** — current-source/comparator-based detection of disconnected or
   high-impedance electrodes, reported via status bits in each data frame.
 - **Data interface** — streams conversions over SPI with a DRDY signal to the ESP32-S3; supports
-  daisy-chain modes relevant to expansion (Section 12).
+  daisy-chain modes relevant to expansion (Section 11).
 
 The ADS1298 provides raw digitized leads only; no interpretation occurs in the AFE.
 
@@ -174,7 +174,7 @@ The **REF5025IDGK** (U5, VSSOP-8) provides a **precision external 2.5 V referenc
   improving the effective number of bits and baseline stability of a 24-bit acquisition.
 - **Decoupling design freedom** — an external reference can be cleanly filtered/buffered and placed
   for quiet layout, isolating it from digital activity.
-- **Determinism across devices** — when scaling to multiple ADS1298 devices (Section 12), a shared,
+- **Determinism across devices** — when scaling to multiple ADS1298 devices (Section 11), a shared,
   well-controlled reference helps keep inter-device gain matching consistent.
 
 REF5025 output is generously decoupled and routed as a quiet analog net into VREFP (with VREFN

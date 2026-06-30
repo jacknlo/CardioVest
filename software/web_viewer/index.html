@@ -79,8 +79,9 @@
   let channels = 0;
   let buffers  = [];          // per-channel arrays of counts (length-capped)
   let running  = false, paused = false, source = null; // 'ble' | 'demo'
-  let recording = false, recRows = [], recStart = 0;
+  let recording = false, recRows = [], recStart = 0, recChannels = 0;
   let btChar = null, btDevice = null;
+  let frameLen = 0;           // latched frame size (9 = 2ch ADS1292R, 27 = 8ch ADS1298)
 
   // ---- DOM ------------------------------------------------------------------
   const $ = id => document.getElementById(id);
@@ -105,8 +106,11 @@
       if (b.length > cap) b.splice(0, b.length - cap);
     }
     if (recording){
-      recRows.push([(performance.now()-recStart).toFixed(1), ...values]);
-      elRecCount.textContent = recRows.length;
+      if (recChannels === 0) recChannels = values.length;
+      if (values.length === recChannels){      // keep CSV rows rectangular
+        recRows.push([(performance.now()-recStart).toFixed(1), ...values]);
+        elRecCount.textContent = recRows.length;
+      }
     }
   }
 
@@ -117,26 +121,36 @@
     return v;
   }
   function frameLenFor(totalLen){
-    if (totalLen===9 || totalLen===27) return totalLen;   // 2ch or 8ch, one frame
-    if (totalLen%27===0) return 27;
-    if (totalLen%9===0)  return 9;
-    return totalLen;                                        // best effort
+    if (totalLen===9 || totalLen===27) return totalLen;          // unambiguous single frame
+    if (frameLen && totalLen % frameLen === 0) return frameLen;  // coalesced, known size
+    return 0;                                                     // unknown/ambiguous -> reject
   }
   function handleBytes(dv){
-    const flen = frameLenFor(dv.byteLength);
-    const nCh  = Math.max(1, (flen - STATUS_BYTES) / CH_BYTES | 0);
+    const len = dv.byteLength;
+    const flen = frameLenFor(len);
+    if (!flen) return;                           // malformed / unknown length -> ignore
+    if (flen===9 || flen===27) frameLen = flen;  // latch the detected frame size
+    const nCh = Math.max(1, ((flen - STATUS_BYTES) / CH_BYTES) | 0);
     ensureChannels(nCh);
-    for (let off=0; off+flen<=dv.byteLength; off+=flen){
+    for (let off=0; off+flen<=len; off+=flen){
       const vals = new Array(nCh);
       for (let c=0;c<nCh;c++) vals[c] = int24BE(dv, off + STATUS_BYTES + c*CH_BYTES);
       pushSample(vals);
     }
   }
+  function onCharValue(e){                        // named BLE handler (so it can be removed)
+    if (paused) return;
+    try { handleBytes(e.target.value); } catch(err){ console.error("frame parse error", err); }
+  }
 
   // ---- BLE source -----------------------------------------------------------
   async function connectBLE(){
-    if (!hasBLE){ setStatus("Web Bluetooth unavailable", "bad");
-      alert("Web Bluetooth needs Chrome/Edge over https:// or http://localhost (not file://). See the README."); return; }
+    if (!hasBLE || !window.isSecureContext){
+      setStatus("needs localhost / https", "bad");
+      alert("Web Bluetooth requires Chrome/Edge over http://localhost or https:// (not file://).\n" +
+            "Run `python -m http.server` in this folder and open http://localhost:8000 (see README).");
+      return;
+    }
     try {
       setStatus("requesting device…","idle");
       btDevice = await navigator.bluetooth.requestDevice({
@@ -148,12 +162,19 @@
       const svc    = await server.getPrimaryService(SVC_UUID);
       btChar       = await svc.getCharacteristic(DATA_UUID);
       await btChar.startNotifications();
-      btChar.addEventListener("characteristicvaluechanged", e => { if(!paused) handleBytes(e.target.value); });
+      btChar.addEventListener("characteristicvaluechanged", onCharValue);
       stopDemo();
+      frameLen = 0;                                       // re-detect on a fresh stream
+      sampleRate = 500; elRate.textContent = sampleRate;  // firmware DEFAULT_SPS (assumed)
       source="ble"; running=true; paused=false;
       $("btnPause").disabled=false; $("btnRecord").disabled=false;
       setStatus("connected to "+(btDevice.name||"device"), "ok");
-    } catch(err){ setStatus("connect failed", "bad"); console.error(err); }
+    } catch(err){
+      if (err && err.name === "NotFoundError")      setStatus("connection cancelled","idle");
+      else if (err && err.name === "SecurityError") setStatus("blocked: use localhost/https","bad");
+      else                                          setStatus("connect failed","bad");
+      console.error(err);
+    }
   }
 
   // ---- Demo source (synthetic 8-channel ECG) -------------------------------
@@ -174,7 +195,9 @@
     return Math.round(mv*1e-3 * pga / vref * 8388607);    // mV -> raw counts
   }
   function startDemo(){
+    if (btChar){ try { btChar.removeEventListener("characteristicvaluechanged", onCharValue); } catch(e){} btChar=null; }
     if (btDevice && btDevice.gatt && btDevice.gatt.connected) btDevice.gatt.disconnect();
+    frameLen = 0;
     source="demo"; running=true; paused=false; sampleRate=250; demoSample=0;
     ensureChannels(8); elRate.textContent=sampleRate;
     $("btnPause").disabled=false; $("btnRecord").disabled=false;
@@ -243,11 +266,12 @@
   // ---- CSV recording --------------------------------------------------------
   function toggleRecord(){
     recording = !recording;
-    if (recording){ recRows=[]; recStart=performance.now(); elRecPill.style.display="";
+    if (recording){ recRows=[]; recStart=performance.now(); recChannels=channels; elRecPill.style.display="";
       $("btnRecord").textContent="⏹ Stop & Save"; }
     else {
       $("btnRecord").textContent="⏺ Record CSV";
-      const head = ["t_ms", ...Array.from({length:channels},(_,i)=>"ch"+(i+1))].join(",");
+      const n = recChannels || channels;
+      const head = ["t_ms", ...Array.from({length:n},(_,i)=>"ch"+(i+1))].join(",");
       const csv = head+"\n"+recRows.map(r=>r.join(",")).join("\n");
       const a=document.createElement("a");
       a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));

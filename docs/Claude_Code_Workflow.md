@@ -23,7 +23,7 @@ well suited to:
 
 - Draft and maintain Markdown documents in `docs/` (architecture notes, analog
   front-end notes, bring-up plans, roadmaps, glossaries).
-- Cross-reference the **canonical Decisions (D1–D12)** and **Blockers (B1–B16)**
+- Cross-reference the **canonical Decisions (D1–D12)** and **Blockers (B1–B17)**
   so the same wording appears everywhere they are cited. These lists are the
   single source of truth — quote them verbatim, do not paraphrase or renumber.
 - Keep `docs/Glossary.md` consistent with terms introduced elsewhere.
@@ -37,8 +37,9 @@ stubs. Match the tone and depth of the existing files in `docs/`.
 
 Firmware lives under `firmware/`. Claude Code can scaffold:
 
-- An **ESP32-S3-WROOM-1-N16R8** project skeleton (ESP-IDF preferred), with build
-  config reflecting 16 MB flash / 8 MB PSRAM.
+- An **ESP32-S3-WROOM-1-N16R8** project skeleton (**PlatformIO + Arduino-ESP32 +
+  NimBLE**, the stack this project standardized on), with build config reflecting
+  16 MB flash / 8 MB PSRAM.
 - A **SPI driver layer for the ADS1298** AFE: register map constants, RDATAC /
   SDATAC framing, DRDY interrupt handling, and a clean separation between the
   byte-level transport and the higher-level channel API.
@@ -66,7 +67,7 @@ The repo is already well-organized (`docs/`, `firmware/`, `hardware/`,
 
 ### 1.4 Checklist / blocker management
 
-The blocker list (B1–B16) and decision list (D1–D12) are referenced by multiple
+The blocker list (B1–B17) and decision list (D1–D12) are referenced by multiple
 files. Claude Code should:
 
 - Treat the **canonical blocker text** as authoritative. When a blocker's status
@@ -118,7 +119,7 @@ of how a request is phrased.
 4. **The EDA tool is flux.ai — never call it KiCad.** Source design lives at
    `hardware/CardioCore_V1/flux_project/CardioCore_V1.flx`; the exported netlist
    is `schematics/CardioCore_V1.edif`. Reference flux.ai consistently.
-5. **Respect the canonical lists.** Use the exact B1–B16 / D1–D12 text as the
+5. **Respect the canonical lists.** Use the exact B1–B17 / D1–D12 text as the
    single source of truth; do not renumber, merge, or reword them.
 6. **No empty stubs.** Produce substantive, professional content.
 
@@ -155,16 +156,17 @@ Concrete tasks well-suited to Claude Code on this project:
    2–3 candidate right-leg-drive topologies with the trade-offs (feedback Rf/Cf,
    output series R, loop-stability considerations). Keep all component values
    **TBD pending verification** — do not finalize.
-3. **Scaffold the ESP32-S3 firmware skeleton.** Create an ESP-IDF project under
-   `firmware/` with a build config for ESP32-S3-WROOM-1-N16R8, a stub ADS1298 SPI
-   driver (DRDY interrupt + RDATAC framing), and TODO-marked `USB_PRESENT` /
-   `AFE_ENABLE` interlock handling (B9, B10).
+3. **Extend the ESP32-S3 firmware.** The skeleton already exists under
+   `firmware/esp32_s3/` (**PlatformIO + Arduino-ESP32 + NimBLE**: ADS1298/ADS1292R
+   SPI driver with DRDY handling + RDATAC framing, BLE, SD, and TODO-marked
+   `USB_PRESENT` / `AFE_ENABLE` interlock, B9/B10). Good next steps: the
+   symptom-marker button and a per-frame sample counter for annotation sync.
 4. **Build a dummy-data ECG viewer.** A small host-side tool under `software/`
    that streams/plots synthetic multi-channel ECG waveforms, so the firmware data
    path and visualization can be developed before hardware bring-up. Clearly
    label output as **synthetic / not from a person**.
 5. **Generate GitHub issues from the blocker list.** Create one `gh` issue per
-   open blocker (B1–B16) using the canonical title text, with context and an
+   open blocker (B1–B17) using the canonical title text, with context and an
    acceptance criterion, labeled by domain. Show the plan before creating.
 6. **Draft the ADS1298 decoupling checklist (B5).** Summarize the datasheet's
    recommendations for AVDD, AVSS, DVDD, VCAP, VREFP, and VREFN decoupling as a

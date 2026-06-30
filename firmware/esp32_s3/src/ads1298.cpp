@@ -99,7 +99,8 @@ void Ads1298::configureDefault() {
   //   NOTE: the board uses an EXTERNAL REF5025 on VREFP - decide whether the
   //   internal reference buffer (PD_REFBUF) should be OFF here. CANDIDATE - VERIFY (B4).
   writeReg(ads::REG_CONFIG3, 0xEC);
-  // CONFIG1 (0x06): high-resolution mode, DR=500 SPS. CANDIDATE - VERIFY.
+  // CONFIG1 (0x06): DR=500 SPS. NOTE: bit7 (HR) is 0 here = low-power mode;
+  // for high-resolution use 0x86 (HR | DR). CANDIDATE - VERIFY (SBAS459).
   writeReg(ads::REG_CONFIG1, 0x06);
   // CONFIG2 (0x00): internal test signal disabled. Use 0x10|0x03 to enable the
   // built-in square-wave test signal during bring-up (Bringup_Plan stage 5).
@@ -127,7 +128,9 @@ void Ads1298::stopConversions() {
 }
 
 bool Ads1298::readFrame(uint8_t* out) {
-  if (digitalRead(pins::ADS_DRDY) != LOW) return false;  // not ready
+  // Clock out one raw frame. The caller invokes this in response to the latched
+  // DRDY interrupt (RDATAC mode), so we do NOT re-gate on a fresh digitalRead -
+  // the brief DRDY low pulse may already have ended by the time we run.
   SPI.beginTransaction(spi_);
   csLow();
   for (uint16_t i = 0; i < cfg::FRAME_BYTES; ++i) {

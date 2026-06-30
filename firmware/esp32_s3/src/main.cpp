@@ -44,6 +44,7 @@ void IRAM_ATTR onDrdy() { g_drdy = true; }
 // --- Demo stream: synthesize ECG when no AFE is attached (dev aid) -----------
 bool     g_demo = false;
 uint32_t g_demoSample = 0, g_demoLastUs = 0;
+bool     g_demoInit = false;   // first-call latch (micros() can legitimately be 0)
 
 inline void put24be(uint8_t* p, int32_t v) { p[0]=(v>>16)&0xFF; p[1]=(v>>8)&0xFF; p[2]=v&0xFF; }
 
@@ -60,7 +61,7 @@ int32_t demoEcgCounts(float t, int lead) {
 void produceDemoFrames() {
   const uint32_t periodUs = 1000000UL / cfg::DEFAULT_SPS;
   const uint32_t now = micros();
-  if (g_demoLastUs == 0) g_demoLastUs = now;
+  if (!g_demoInit) { g_demoInit = true; g_demoLastUs = now; }
   uint8_t f[cfg::FRAME_BYTES];
   int guard = 0;
   while ((uint32_t)(now - g_demoLastUs) >= periodUs && guard++ < 64) {
@@ -159,10 +160,15 @@ void loop() {
   }
 
   // --- Producer: drain the ADS1298 on data-ready into the ring buffer -------
+  // DRDY fired at least once; read that frame, then drain any further ready
+  // samples (handles a loop stall spanning more than one sample period).
   if (g_acq && g_drdy) {
     g_drdy = false;
     uint8_t frame[cfg::FRAME_BYTES];
-    if (g_ads.readFrame(frame)) g_ring.push(frame);
+    do {
+      g_ads.readFrame(frame);
+      g_ring.push(frame);
+    } while (digitalRead(pins::ADS_DRDY) == LOW);
   }
 
   // --- Demo producer: synthesize frames when no AFE is attached -------------

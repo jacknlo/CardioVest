@@ -10,6 +10,9 @@ Status legend:
 - **VERIFY** — a part is placed, but a datasheet-level parameter must be confirmed before it is locked.
 - **FINALIZE** — direction is set; the exact figures (stackup, impedance, pinout) must be pinned down.
 - **CONSTRAINT** — a routing/placement rule to apply during layout (not a value to compute now).
+- **CONFIRM** — a part/choice is placed; confirm a detail (mating, manufacturer, cable) before locking.
+- **DECIDE** — a design decision is pending (e.g., the channel montage); pick a direction.
+- **FIX** — a known defect that must be corrected (treated as critical).
 
 Related documents:
 
@@ -27,7 +30,7 @@ Related documents:
 |----|-------|---------------------------------------------|--------|-----------|
 | B1 | ADS1298 input filter cap values (C15–C24 common-mode, C25–C29 differential) | Anti-alias / EMI filter caps set input bandwidth and CMRR balance at every channel; routing/footprints cannot be committed until values are chosen. Candidate values proposed in the AFE report. | TBD | `AFE_Verification_Report.md` |
 | B2 | Series input resistor values (R9–R18) | Per-line series resistors form the input filter with B1 and limit fault current (note: **no** defibrillation protection is claimed/designed); value drives noise, footprint, and placement near the connector. | TBD | `AFE_Verification_Report.md` |
-| B17 | ADS1298 clock strap (CLKSEL) | 🔴 **Critical:** CLKSEL is tied to **GND** (external-clock mode) but no clock source / CLK-pin connection exists — the device will not clock as wired. Re-strap CLKSEL **high** (internal oscillator) or add a clock source. | VERIFY | `AFE_Verification_Report.md` (F1) |
+| B17 | ADS1298 clock strap (CLKSEL) | 🔴 **Critical:** CLKSEL is tied to **GND** (external-clock mode) but no clock source / CLK-pin connection exists — the device will not clock as wired. Re-strap CLKSEL **high** (internal oscillator) or add a clock source. | FIX 🔴 | `AFE_Verification_Report.md` (F1) |
 | B8 | Lead / channel mapping & montage (electrode → INxP/INxN, WCT) | Mapping is now **extracted** from the netlist (5 differential pairs: RA-LA, LL-V1, V2-V3, V4-V5, V6-AUX; IN6–8 on J5). **Decide** whether this differential montage is intended, or whether precordials should be WCT-referenced. | DECIDE | `AFE_Verification_Report.md` (F2) |
 
 ## Group B — Reference & decoupling

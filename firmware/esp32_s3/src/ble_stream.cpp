@@ -26,6 +26,10 @@ ServerCb g_serverCb;
 void begin(const char* deviceName) {
   NimBLEDevice::init(deviceName);
   NimBLEDevice::setPower(ESP_PWR_LVL_P9);
+  // Request a larger ATT MTU. The default (23) yields a 20-byte notify payload,
+  // which would TRUNCATE the 27-byte ADS1298 frame. 64 covers 27 + overhead
+  // (and the 9-byte ADS1292R frame). The host still negotiates the final value.
+  NimBLEDevice::setMTU(64);
 
   NimBLEServer* server = NimBLEDevice::createServer();
   server->setCallbacks(&g_serverCb);

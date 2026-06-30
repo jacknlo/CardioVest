@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Safety & research-use policy (read first)
+    url: https://github.com/jacknlo/CardioVest/blob/main/docs/Safety_Research_Use.md
+    about: CardioVest is research / education only — NOT a medical device. Please read before filing.
+  - name: Contributing guide
+    url: https://github.com/jacknlo/CardioVest/blob/main/CONTRIBUTING.md
+    about: Hard rules, canonical docs, and the contribution workflow.

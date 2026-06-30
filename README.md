@@ -58,6 +58,7 @@ CardioCore V1 exposes 10 electrode connections supporting a standard limb + prec
 - **USB-C charge & program** for a single-connector workflow.
 - **Desktop viewer** for live visualization and recording of streamed/logged data.
 - **Mobile app** companion for configuration and live viewing.
+- **Web viewer** (Web Bluetooth + synthetic demo) — browser-based live visualization; **working in demo mode today** ([`software/web_viewer/`](software/web_viewer/)).
 - **Signal-processing research** support — datasets, filtering/denoising experiments, and analysis tooling (no diagnostic interpretation).
 
 ## Repository Structure
@@ -82,7 +83,10 @@ CardioVest/
 │   ├── Glossary.md
 │   ├── Blockers_Before_PCB_Layout.md
 │   ├── Design_Decisions_Log.md
-│   └── Claude_Code_Workflow.md
+│   ├── Claude_Code_Workflow.md
+│   ├── AFE_Verification_Report.md
+│   ├── Flux_Change_List.md
+│   └── README.md                        # docs index
 ├── hardware/
 │   └── CardioCore_V1/
 │       ├── README.md
@@ -102,11 +106,15 @@ CardioVest/
 ├── firmware/
 │   └── esp32_s3/
 │       ├── README.md
-│       ├── src/
-│       │   └── main.cpp
+│       ├── platformio.ini               # PlatformIO (Arduino + NimBLE)
+│       ├── include/                     # config.h, pins.h (pin map from EDIF)
+│       ├── src/                         # main.cpp, ads1298, ble_stream, sd_log, interlock, ring_buffer
 │       └── notes/
 │           └── firmware_plan.md
 ├── software/
+│   ├── web_viewer/                      # ✅ working today (demo mode)
+│   │   ├── README.md
+│   │   └── index.html
 │   ├── desktop_viewer/
 │   │   ├── README.md
 │   │   └── viewer_plan.md
@@ -123,8 +131,8 @@ CardioVest/
 
 - **docs/** — project-level documentation: see [Roadmap.md](docs/Roadmap.md) and [Safety_Research_Use.md](docs/Safety_Research_Use.md).
 - **hardware/CardioCore_V1/** — schematics, PCB layout, bill of materials, and manufacturing/fabrication files for the CardioCore V1 board.
-- **firmware/esp32_s3/** — ESP32-S3 firmware (`src/`) and engineering notes (`notes/`).
-- **software/** — host-side tooling: a `desktop_viewer/` and a `mobile_app/`.
+- **firmware/esp32_s3/** — ESP32-S3 firmware (PlatformIO): drivers in `src/`, build config + pin map in `include/`, notes in `notes/`.
+- **software/** — host-side tooling: a working `web_viewer/` (Web Bluetooth + demo), plus planned `desktop_viewer/` and `mobile_app/`.
 - **research/** — `signal_processing/` experiments and `datasets/` used for analysis.
 
 ## Development Roadmap
@@ -135,7 +143,7 @@ High-level order of work (see [docs/Roadmap.md](docs/Roadmap.md) for detail and 
 2. **Fabrication & bring-up** — manufacture the board, assemble, and validate power, references, and AFE communication.
 3. **Firmware foundation** — ESP32-S3 drivers for the ADS1298, simultaneous sampling, and data buffering.
 4. **Data paths** — microSD logging and BLE streaming of acquired channels.
-5. **Host software** — desktop viewer for live/recorded data, followed by the mobile companion app.
+5. **Host software** — web viewer (Web Bluetooth + demo, working today), then a desktop viewer and the mobile companion app.
 6. **Signal-processing research** — datasets, filtering/denoising, and analysis experiments.
 
 ## Safety Note

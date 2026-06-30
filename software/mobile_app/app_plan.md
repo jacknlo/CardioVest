@@ -190,7 +190,7 @@ the plot may apply display-only transforms that never touch the recorded stream.
 
 ---
 
-## 5.5 Voice & event annotations (symptom marking)
+### 5.5 Voice & event annotations (symptom marking)
 
 A spoken "symptom marker": the researcher taps **Annotate** (or presses a button on the board),
 speaks a short note, and the app saves a **timestamped text annotation aligned to the ECG

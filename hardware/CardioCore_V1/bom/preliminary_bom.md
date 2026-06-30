@@ -53,13 +53,13 @@ and assembly consumables are **out of scope** for this revision.
 | **U3** | 1 | 1S LiPo charger / power-path IC (Monolithic Power Systems) | `MP2662` | — | WLCSP-9 | Battery charger: USB-C 5 V LiPo charging + power-path (charge current set conservatively) |
 | **U4** | 1 | 3.3 V LDO, 600 mA, low-noise (Diodes Inc.) | `AP2112K-3.3TRG1` | — | SOT-23-5 | 3.3 V rail (~340 mA active + ESP32 transient margin) |
 | **U5** | 1 | 2.5 V precision voltage reference (TI) | `REF5025IDGK` | — | VSSOP-8 (DGK) | Low-noise external reference for ADS1298; place close to AFE, decouple per datasheet |
-| **D1, D2** | 2 | 5-channel low-capacitance ESD protection array | `PESD3V3L5UY` | — | SOT-363 (SC-70-6) | Electrode ESD protection at connector, ahead of AFE filters *(verify mfr/availability)* |
+| **D1, D2** | 2 | 5-channel low-capacitance ESD protection array | `PESD3V3L5UY` | — | SOT-363 (SC-70-6) | Electrode ESD protection at connector, ahead of AFE filters *(PESD3V3L5UY is a **Nexperia/NXP** part — the flux export mislabels the mfr as TI; verify part/availability)* |
 | **J1** | 1 | USB-C receptacle, 16-pin (CIKI) | `TYPE-C-2.0-16PIN-SMT-3-OR` | C2987387 | SMD | Sink-only USB-C: charging + USB2 D+/D− to ESP32-S3 native USB |
 | **J2** | 1 | microSD card socket (CONNFLY) | `DS1139-06-08SS4BSR` | C86574 | SMD | SPI-mode microSD logging (local decoupling + pull-ups) |
 | **J3** | 1 | ECG electrode connector (Molex) | `5034801000` | — | — | 10 electrodes: RA, LA, LL, RL/RLD, V1–V6 → ESD/protection/filter → ADS1298 |
 | **J4** | 1 | Battery connector, JST-PH (JST) | `B2B-PH-K-S` | — | THT | 1S LiPo input — **battery-powered only** |
 | **J5** | 1 | Expansion header, 2×20, 2.54 mm female (ZHOURI) | `2.54-2*20` | C2977589 | THT | Expansion: 3V3, GND, SPI, I2C, sync/control GPIO + spare GPIO for additional ECG-channel modules |
-| **SW1, SW2** | 2 | Tactile switch (XUNPU) | `TS-1088-AR02016` | C720477 | SMD | BOOT (GPIO0) and EN (reset) buttons |
+| **SW1, SW2** | 2 | Tactile switch (XUNPU) | `TS-1088-AR02016` | C720477 | SMD | SW1 = EN/reset, SW2 = BOOT (GPIO0) — per netlist |
 | **C1–C14** | 14 | Non-polarized capacitor, 100 nF, 16 V | — | — | 0402 | Supply decoupling |
 | **C15–C30** | 16 | Non-polarized capacitor, **value TBD**, 16 V | — | — | 0402 | **TBD** — ECG input / RLD filter caps; prefer low-leakage C0G/NP0 where capacitance permits |
 | **R1, R2** | 2 | Resistor, 5.1 kΩ | — | — | 0402 | USB-C CC1/CC2 sink pull-downs to GND |
@@ -96,7 +96,9 @@ REF5025 (U5) ──▶ 2.5 V reference ──▶ ADS1298 (U2) VREFP
   network against the chosen LiPo cell datasheet.
 - **Reference filtering (U5):** confirm whether the REF5025IDGK needs an additional
   buffer / extra filtering at the ADS1298 reference pins for the target noise.
-- **Electrode connector (J3):** confirm the Molex `5034801000` mating, strain relief, and
+- **Electrode connector (J3):** the Molex `5034801000` is a **0.50 mm FFC/FPC flat-flex**
+  connector — the electrode harness must terminate in a matching flat-flex cable/breakout.
+  Confirm the mating, strain relief, and
   shielding approach for the 10-electrode harness.
 - **Sourcing / second sources:** identify alternates and stock/lead-time risk for the
   long-lead parts (especially U2 AFE and U1 module).
