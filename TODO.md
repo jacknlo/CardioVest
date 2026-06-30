@@ -39,6 +39,8 @@ Research / prototyping / education only — not a medical device.
 - [x] Create an ECG viewer (web / Web Bluetooth, with synthetic demo) → `software/web_viewer/`
 - [ ] Build a signal-quality index (SQI): classify each segment good vs noise — *classify, don't delete* (first DSP brick)
 - [ ] Experiment with gentle, morphology-preserving filtering (baseline-wander HP, 50/60 Hz notch) — research only
+- [ ] Mobile app: on-device voice/event annotations (speech→text, text+timestamp, synced to ECG via `cardiovest.annotations.v1`) — see `software/mobile_app/app_plan.md` §5.5
+- [ ] Show annotation markers on the ECG viewer timeline (jump-to-event)
 
 ## Repo / docs
 

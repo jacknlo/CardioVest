@@ -57,6 +57,10 @@ general-purpose analysis tooling.
    - Share via the OS share sheet (files, email, cloud drive, USB transfer) and/or direct file
      export.
 
+5. **Voice / event annotations (on-device)**
+   - Let the researcher drop a **timestamped marker** on the ECG timeline — spoken (transcribed
+     on-device), typed, or from the board button — to flag moments of interest (see §5.5).
+
 ### 2.2 Explicitly out of scope
 
 - Any diagnosis, classification, anomaly flagging, arrhythmia detection, or interpretation.
@@ -186,6 +190,49 @@ the plot may apply display-only transforms that never touch the recorded stream.
 
 ---
 
+## 5.5 Voice & event annotations (symptom marking)
+
+A spoken "symptom marker": the researcher taps **Annotate** (or presses a button on the board),
+speaks a short note, and the app saves a **timestamped text annotation aligned to the ECG
+timeline** — the voice version of the Zio-style event button (see `docs/Roadmap.md`).
+
+**Design (chosen):**
+- **On-device speech-to-text** (Android `SpeechRecognizer` / iOS `Speech`, via the framework's
+  plugin if cross-platform). **No audio leaves the phone.**
+- **Store text + timestamp only** — the raw audio is discarded right after transcription (lighter
+  and more private). A "keep audio" option could be added later, off by default.
+- **Time alignment ("exact moment"):** an annotation references the **ECG session timeline** —
+  `t_ms` since session start (and `sample_index` once the firmware stamps frames), *not* phone
+  wall-clock — so it lands on the right spot on the trace despite BLE latency. ~1 s accuracy is
+  ample for symptom marking.
+- Same track also accepts a typed note and the board-button press (one unified marker stream).
+
+**Annotation track format** (`cardiovest.annotations.v1`, a JSON sidecar exported with the
+recording — see §6):
+
+```json
+{
+  "schema": "cardiovest.annotations.v1",
+  "session_id": "2026-06-29T2210Z-cc1",
+  "started_utc": "2026-06-29T22:10:04Z",
+  "sample_rate_sps": 500,
+  "annotations": [
+    { "t_ms": 132450, "sample_index": 66225, "type": "voice",
+      "text": "senti uma palpitacao agora", "source": "on-device-stt", "confidence": 0.86 },
+    { "t_ms": 145000, "type": "button", "text": "" }
+  ]
+}
+```
+
+- `type`: `voice` | `button` | `note`. `sample_index` is optional (present once frames are stamped).
+- The viewer overlays these as markers on the trace so analysts can jump to each event.
+
+**Privacy:** voice + health context is sensitive. On-device only, explicit consent, raw audio not
+retained, and the standard **research-only / no-diagnosis** framing. A transcript is a researcher's
+note — **not** an interpretation of the ECG.
+
+---
+
 ## 6. Data export format (TBD)
 
 The recording/export format is **TBD**, but must satisfy these requirements:
@@ -200,6 +247,9 @@ The recording/export format is **TBD**, but must satisfy these requirements:
   reconnect discontinuities, so analysts can trust timing.
 - **Analysis-friendly + interoperable:** importable by common tooling (e.g. Python/NumPy/pandas,
   MATLAB).
+- **Annotations travel with the data:** the voice/event annotation track (§5.5,
+  `cardiovest.annotations.v1`) is exported alongside the recording and references the same
+  timeline, so markers stay aligned to the samples.
 
 Candidate formats to evaluate (decision TBD):
 

@@ -169,9 +169,10 @@ Inspired by how long-term ambulatory ECG patches (e.g., the Zio patch) operate.
 - **Continuous-logging model.** Record the raw stream continuously and never filter it
   destructively; treat noise handling as *classification/labeling*, not deletion, so the raw
   data is always preserved and nothing real is silently lost.
-- **Symptom / event-marker button.** Use a board button (SW1/SW2) to timestamp moments of
-  interest in the data stream — a research event marker analogous to the patient button on
-  ambulatory patches. Firmware feature; no hardware change needed.
+- **Symptom / event markers (button + voice).** Timestamp moments of interest on the ECG
+  timeline — via a board button (SW1/SW2, firmware) and via **on-device voice annotations** in
+  the mobile app (speech→text transcribed on the phone, text+timestamp saved, raw audio not
+  retained). Markers share one track (`cardiovest.annotations.v1`, see `software/mobile_app/app_plan.md` §5.5).
 - **Signal-quality index (SQI).** A processing step that scores each segment and labels it
   "good" vs "noise / uninterpretable" instead of forcing noisy data into a clean/abnormal
   bin. First brick of the DSP track (pairs with M5/M6).
