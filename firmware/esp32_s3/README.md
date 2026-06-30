@@ -1,123 +1,83 @@
 # CardioCore V1 — ESP32-S3 Firmware
 
-Firmware target for the **CardioCore V1** hardware module of the **CardioVest** project — an 8-channel, battery-powered ECG acquisition board.
+Firmware for the **CardioCore V1** board of the **CardioVest** project — an 8-channel, battery-powered ECG acquisition board (ESP32-S3 + TI ADS1298).
 
-> **Research / prototyping / education only.** This firmware is **NOT** a certified medical device and is not intended for diagnosis, treatment, patient monitoring, emergency use, or any clinical decision-making.
+> **Research / prototyping / education only.** This firmware is **NOT** a medical device and is not for diagnosis, treatment, patient monitoring, emergency use, or any clinical decision-making. It only acquires, buffers, streams, and logs **raw** samples — it performs **no** clinical interpretation.
 
 ---
 
-## 1. Overview
-
-This firmware runs on the **ESP32-S3-WROOM-1-N16R8** (16 MB flash / 8 MB PSRAM) and is responsible for moving **raw** ECG samples off the board. It does the following:
-
-1. **Initialize the analog front-end (AFE).** Configure the **TI ADS1298** (8-channel, 24-bit, simultaneous-sampling) over SPI: reset, set sample rate, configure channel gains, enable the right-leg drive (RLD) circuit, and select the **REF5025** external 2.5 V precision reference.
-2. **Acquire samples on DRDY.** Service the ADS1298 `DRDY` (data-ready) interrupt and perform the SPI burst read of the status word plus all 8 channels per conversion frame.
-3. **Buffer.** Push frames into a ring/FIFO buffer (PSRAM-backed) to decouple acquisition timing from the BLE and microSD consumers.
-4. **Stream over BLE.** Publish buffered raw frames over a BLE GATT service for a host (PC / phone) to receive.
-5. **Log to microSD.** Optionally persist raw frames to the microSD card for offline analysis.
-6. **Report battery / charge status.** Read the 1S LiPo state (voltage / charge status) and surface it over BLE and/or local indicators.
-
-The firmware's job is strictly **acquire → buffer → stream/log**. It does **not** filter for clinical purposes, classify, or interpret the ECG (see [Safety](#6-safety)).
-
-### Signal / data path (high level)
+## 1. What it does
 
 ```
- Electrodes (RA, LA, LL, RL/RLD, V1..V6)
-        |
-        v
-   ADS1298 AFE  --(SPI + DRDY IRQ)-->  ESP32-S3
-   (REF5025 ref)                          |
-                                          +--> PSRAM ring buffer
-                                          |        |
-                                          |        +--> BLE GATT stream  --> host
-                                          |        +--> microSD log (raw frames)
-                                          +--> battery / charge status reporting
+ Electrodes ─▶ ADS1298 AFE ──(SPI + DRDY IRQ)──▶ ESP32-S3
+                                                   │
+                                                   ├─▶ ring buffer (RAW 27-byte frames)
+                                                   │        ├─▶ BLE GATT notify  ─▶ host
+                                                   │        └─▶ microSD log (.bin)
+                                                   └─▶ safety interlock gate
 ```
 
----
+Each frame is one ADS1298 RDATAC record: **24-bit status + 8 × 24-bit channels = 27 bytes**, raw.
 
-## 2. Toolchain
-
-**Framework:** Arduino framework for ESP32-S3.
-
-**Build environment:** **TBD** — final choice between the two options below is not yet decided:
-
-- **PlatformIO** (recommended candidate) — reproducible builds, pinned framework/toolchain versions, scripted CI. Likely `platform = espressif32`, `board = esp32-s3-devkitc-1` (or a custom board JSON for CardioCore V1), `framework = arduino`.
-- **Arduino IDE 2.x** — lower barrier to entry for quick bringup.
-
-The final decision (and the exact framework/core version pin) will be recorded here once made.
-
-### Expected dependencies (TBD until pinned)
-
-- Arduino-ESP32 core (version: **TBD**)
-- SPI (built-in)
-- BLE stack: NimBLE-Arduino vs. built-in BLE — **TBD**
-- SD / SD_MMC (microSD)
-- ADS1298 access: custom driver in `src/` (no assumed third-party library)
-
-> Board target, partition scheme (16 MB flash), and PSRAM (OPI, 8 MB) configuration flags are **TBD** and will be captured alongside the toolchain decision.
-
----
-
-## 3. Folder layout
+## 2. Module layout
 
 ```
 firmware/esp32_s3/
-├── README.md            <- this file
-├── src/                 <- firmware source (.cpp / .h): ADS1298 driver, BLE, SD, battery, main loop
-└── notes/               <- engineering notes, decisions, scratch design docs
-    └── firmware_plan.md <- detailed firmware architecture & task plan
+├── platformio.ini        # build config (env: cardiocore_v1)
+├── include/
+│   ├── config.h          # frame geometry, sample rate, feature flags
+│   └── pins.h            # ESP32-S3 pin map (from the verified EDIF netlist)
+├── src/
+│   ├── main.cpp          # setup/loop orchestration + DRDY ISR
+│   ├── ads1298.{h,cpp}   # ADS1298 SPI driver (register I/O + raw frame read)
+│   ├── ring_buffer.h     # SPSC fixed-size frame FIFO
+│   ├── ble_stream.{h,cpp}# NimBLE raw-frame notify service
+│   ├── sd_log.{h,cpp}    # microSD binary frame logger
+│   └── interlock.{h,cpp} # battery-only-measurement safety gate (B9/B10)
+└── notes/firmware_plan.md
 ```
 
-- **`src/`** — all compilable firmware source. Keep the ADS1298 driver, BLE service, microSD logger, and battery monitor in separate translation units; the acquisition ISR and buffering live close to the main entry point.
-- **`notes/`** — design rationale, register maps, pin assignments, open questions, and bringup observations. Not compiled.
+## 3. Pin map (ESP32-S3 / U1 — from `schematics/CardioCore_V1.edif`)
 
----
+| Function | Net | GPIO | | Function | Net | GPIO |
+|---|---|---|---|---|---|---|
+| ADS SCLK | SPI_SCLK | IO12 | | ADS CS | ADS_CS | IO10 |
+| ADS MOSI/DIN | SPI_MOSI | IO11 | | ADS DRDY | ADS_DRDY | IO14 |
+| ADS MISO/DOUT | SPI_MISO | IO13 | | ADS START | ADS_START | IO15 |
+| ADS RESET | ADS_RESET | IO16 | | ADS PWDN | ADS_PWDN | IO17 |
+| microSD CS | SD_CS | IO9 | | CHG INT | CHG_INT | IO6 |
+| I²C SDA | I2C_SDA | IO4 | | I²C SCL | I2C_SCL | IO5 |
+| EXP GPIO1 | EXP_GPIO1 | IO7 | | EXP GPIO2 | EXP_GPIO2 | IO8 |
+| USB D− | USB_DN | IO19 | | USB D+ | USB_DP | IO20 |
 
-## 4. Build & flash
+`USB_PRESENT` and `AFE_ENABLE` for the interlock are **not yet assigned** in hardware (blockers **B9/B10**) — see [`pins.h`](include/pins.h).
 
-> **Placeholder.** Concrete commands depend on the toolchain decision in [Section 2](#2-toolchain) and will be filled in once finalized.
-
-### PlatformIO (candidate)
+## 4. Build & flash (PlatformIO)
 
 ```bash
-# Build
-pio run
-
-# Flash over USB-C
-pio run --target upload
-
-# Serial monitor
-pio device monitor
+cd firmware/esp32_s3
+pio run                    # build
+pio run -t upload          # flash over USB-C
+pio device monitor         # serial @ 115200
 ```
 
-### Arduino IDE (candidate)
-
-1. Install the Arduino-ESP32 core (version **TBD**).
-2. Select board: ESP32-S3 (exact variant **TBD**), enable PSRAM (OPI), set flash size to 16 MB, choose partition scheme **TBD**.
-3. Connect CardioCore V1 over USB-C, select the serial port, and upload.
-
-> Exact board settings, partition table, upload speed, and any DFU/boot-button procedure are **TBD** pending hardware bringup.
-
----
+Board is set to `esp32-s3-devkitc-1` (same MCU family) until a custom CardioCore V1 board JSON is added. BLE uses **NimBLE-Arduino** (pinned in `platformio.ini`).
 
 ## 5. Status
 
-Early scaffolding. No verified build yet. Pin assignments, register configuration values, sample rates, and buffer sizes are **TBD** and will be confirmed during hardware bringup.
+**Skeleton — not yet hardware-verified.** The structure, ADS1298 register/command
+set, SPI transactions, ring buffer, BLE service, SD logger, and interlock are
+implemented, but:
 
----
+- Several ADS1298 register values in `configureDefault()` are **candidates** and must be verified against the datasheet (TI SBAS459) and the AFE review — see [`../../docs/AFE_Verification_Report.md`](../../docs/AFE_Verification_Report.md).
+- ⚠️ **Finding F1 (clock):** the schematic straps `CLKSEL` to GND (external clock) with no clock source; until that is fixed in flux.ai, the ADS1298 may not run on real hardware. See [`../../docs/Flux_Change_List.md`](../../docs/Flux_Change_List.md).
+- The microSD shares the SPI bus with the ADS1298; bus arbitration must be confirmed during bring-up.
 
 ## 6. Safety
 
-- This firmware and the CardioCore V1 hardware are for **research, prototyping, and education only**. They are **NOT** a certified medical device.
-- The firmware **only moves, buffers, streams, and logs raw ECG samples**. It performs **no clinical interpretation**: no diagnosis, no arrhythmia/condition detection, no clinical-grade filtering, and no treatment, patient-monitoring, or emergency-use functionality.
-- Any downstream display or analysis of the data is the responsibility of the user and must **not** be used for clinical decision-making.
-- No regulatory conformance (e.g., FDA / CE / ISO) is claimed or implied.
-- Electrical safety: the board is intended to be operated from its **1S LiPo battery** for any human-subject experimentation. Follow appropriate isolation practices; do **not** connect electrodes to a person while the board is powered from mains-connected USB.
+- Research / prototyping / education only — **not** a medical device; no diagnosis, treatment, monitoring, or emergency use; no clinical interpretation.
+- The `interlock` module encodes **battery-only operation during body-connected measurement**. The detection/enable hardware is still TBD (B9/B10), so the firmware **warns** that the interlock is not yet enforced in hardware — the operator must ensure battery-only operation. See [`../../docs/Safety_Research_Use.md`](../../docs/Safety_Research_Use.md).
 
----
+## 7. Related
 
-## 7. Related documents
-
-- [`notes/firmware_plan.md`](notes/firmware_plan.md) — detailed firmware architecture, module breakdown, and task plan.
-- [`docs/Bringup_Plan.md`](../../docs/Bringup_Plan.md) — hardware/firmware bringup sequence and verification steps.
+- [`notes/firmware_plan.md`](notes/firmware_plan.md) · [`../../docs/Bringup_Plan.md`](../../docs/Bringup_Plan.md) · [`../../docs/AFE_Verification_Report.md`](../../docs/AFE_Verification_Report.md)
