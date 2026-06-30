@@ -1,0 +1,28 @@
+CardioVest — License TBD
+=========================
+
+The license for this project has not been finalized yet.
+
+Until a formal license is selected and added to this file, all rights are
+reserved by the project authors. No permission is granted to use, copy,
+modify, or distribute this material except as explicitly agreed with the
+authors.
+
+A suitable set of licenses is expected to be chosen before any public
+release, for example:
+
+  - Software / firmware : a permissive OSS license (e.g., MIT or Apache-2.0)
+  - Hardware            : an open-hardware license (e.g., CERN-OHL-S/-W)
+  - Documentation       : a Creative Commons license (e.g., CC-BY-4.0)
+
+This placeholder will be replaced once the licensing decision is made.
+
+-------------------------------------------------------------------------
+RESEARCH / EDUCATIONAL USE ONLY
+
+This project is provided for research, prototyping, and educational
+purposes only. It is NOT a medical device and must not be used for
+diagnosis, treatment, patient monitoring, emergency use, or any clinical
+decision-making. See docs/Safety_Research_Use.md for the full safety
+notice.
+-------------------------------------------------------------------------

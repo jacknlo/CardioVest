@@ -1,0 +1,83 @@
+# ---------------------------------------------------------------------------
+# CardioVest .gitignore
+# ---------------------------------------------------------------------------
+
+# --- Operating system files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Generic build / output ---
+build/
+dist/
+out/
+bin/
+obj/
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+
+# --- PlatformIO ---
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# --- Arduino ---
+*.arduino/
+build-*/
+*.ino.cpp
+
+# --- ESP-IDF ---
+sdkconfig.old
+managed_components/
+
+# --- KiCad backups / autosave / generated ---
+*-backups/
+*.bak
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_prl
+fp-info-cache
+_autosave-*
+*.000
+*.net
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# --- Environment / secrets ---
+.env
+.env.*
+*.local
+secrets.*
+credentials.*
+
+# --- Node (if tooling is added later) ---
+node_modules/
+
+# --- Logs ---
+*.log
