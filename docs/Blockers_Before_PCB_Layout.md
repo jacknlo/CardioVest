@@ -14,6 +14,7 @@ Status legend:
 Related documents:
 
 - `docs/AFE_Verification_Report.md` — **verified netlist connectivity, channel map, findings (F1–F8), and candidate values** (start here).
+- `docs/Flux_Change_List.md` — punch list of schematic edits to apply when flux.ai access returns (~late July 2026).
 - `hardware/CardioCore_V1/Project_Specification.md` — board targets, power workflow, safety interlock concept.
 - `docs/ADS1298_Analog_Frontend_Notes.md` — AFE input network, decoupling, reference, RLD/DRL.
 - `bom/preliminary_bom.md` — placed parts and reference designators.
