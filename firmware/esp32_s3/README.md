@@ -65,9 +65,11 @@ Board is set to `esp32-s3-devkitc-1` (same MCU family) until a custom CardioCore
 
 ## 5. Status
 
-**Skeleton — not yet hardware-verified.** The structure, ADS1298 register/command
-set, SPI transactions, ring buffer, BLE service, SD logger, and interlock are
-implemented, but:
+**Compiles cleanly; not yet hardware-verified.** Builds for the ESP32-S3 under
+PlatformIO (`pio run` → SUCCESS, ~93 s; RAM ~11 %, Flash ~9 %; Arduino core +
+NimBLE + SD + SPI all link, no warnings from project sources). The structure,
+ADS1298 register/command set, SPI transactions, ring buffer, BLE service, SD
+logger, and interlock are implemented, but:
 
 - Several ADS1298 register values in `configureDefault()` are **candidates** and must be verified against the datasheet (TI SBAS459) and the AFE review — see [`../../docs/AFE_Verification_Report.md`](../../docs/AFE_Verification_Report.md).
 - ⚠️ **Finding F1 (clock):** the schematic straps `CLKSEL` to GND (external clock) with no clock source; until that is fixed in flux.ai, the ADS1298 may not run on real hardware. See [`../../docs/Flux_Change_List.md`](../../docs/Flux_Change_List.md).
