@@ -161,6 +161,28 @@ M0 (CardioCore Zero)
 
 ---
 
+## Future ideas (Zio-inspired) — candidate enhancements
+
+Inspired by how long-term ambulatory ECG patches (e.g., the Zio patch) operate.
+**Research / engineering only — still no diagnosis or clinical interpretation.**
+
+- **Continuous-logging model.** Record the raw stream continuously and never filter it
+  destructively; treat noise handling as *classification/labeling*, not deletion, so the raw
+  data is always preserved and nothing real is silently lost.
+- **Symptom / event-marker button.** Use a board button (SW1/SW2) to timestamp moments of
+  interest in the data stream — a research event marker analogous to the patient button on
+  ambulatory patches. Firmware feature; no hardware change needed.
+- **Signal-quality index (SQI).** A processing step that scores each segment and labels it
+  "good" vs "noise / uninterpretable" instead of forcing noisy data into a clean/abnormal
+  bin. First brick of the DSP track (pairs with M5/M6).
+- **Motion reference (accelerometer / IMU).** In a future board revision, add a small IMU
+  (e.g., LSM6DS3) so motion can be correlated with signal disturbances to flag movement
+  artifacts and provide activity context. **Not in the current BOM** — a future-revision idea.
+- **Morphology-preserving filtering.** Keep filtering gentle (baseline-wander high-pass,
+  50/60 Hz notch, conservative low-pass) so real waveform features are not distorted.
+
+---
+
 ## Notes
 
 - This roadmap is a living document; milestone ordering and scope may change as Phase 0/1

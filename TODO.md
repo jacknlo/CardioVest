@@ -30,12 +30,15 @@ Research / prototyping / education only — not a medical device.
 
 ## Firmware
 
-- [ ] Build the ESP32-S3 firmware skeleton (boot, SPI to ADS1298, USB enumeration)
+- [x] Build the ESP32-S3 firmware skeleton (PlatformIO; ADS1298/ADS1292R, BLE, SD, interlock, demo stream) — compiles clean
+- [ ] Add a symptom-marker button (SW1/SW2) that timestamps the data stream (Zio-style research event marker)
 - [ ] Wire AFE_ENABLE / USB_PRESENT GPIO handling into the firmware interlock logic
 
 ## Software
 
-- [ ] Create a dummy-data ECG viewer (multi-channel plot, no hardware required)
+- [x] Create an ECG viewer (web / Web Bluetooth, with synthetic demo) → `software/web_viewer/`
+- [ ] Build a signal-quality index (SQI): classify each segment good vs noise — *classify, don't delete* (first DSP brick)
+- [ ] Experiment with gentle, morphology-preserving filtering (baseline-wander HP, 50/60 Hz notch) — research only
 
 ## Repo / docs
 
