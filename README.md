@@ -24,7 +24,7 @@ The first hardware module in the platform is **CardioCore V1** — an 8-channel,
 - **Next milestone:** **ADS1298 analog front-end verification** — finalize the input RC filter, series protection resistors, RLD/DRL network, and reference/decoupling against the datasheet.
 - ⛔ **PCB layout is BLOCKED** until every item in [docs/Blockers_Before_PCB_Layout.md](docs/Blockers_Before_PCB_Layout.md) is resolved and the analog front-end is verified. No PCB layout or fabrication outputs (Gerbers) are produced yet.
 
-**Project controls:** [TODO.md](TODO.md) · [docs/Blockers_Before_PCB_Layout.md](docs/Blockers_Before_PCB_Layout.md) · [docs/Design_Decisions_Log.md](docs/Design_Decisions_Log.md) · [docs/Claude_Code_Workflow.md](docs/Claude_Code_Workflow.md) · [hardware/CardioCore_V1/Project_Specification.md](hardware/CardioCore_V1/Project_Specification.md)
+**Project controls:** [TODO.md](TODO.md) · [docs/AFE_Verification_Report.md](docs/AFE_Verification_Report.md) · [docs/Blockers_Before_PCB_Layout.md](docs/Blockers_Before_PCB_Layout.md) · [docs/Design_Decisions_Log.md](docs/Design_Decisions_Log.md) · [docs/Claude_Code_Workflow.md](docs/Claude_Code_Workflow.md) · [hardware/CardioCore_V1/Project_Specification.md](hardware/CardioCore_V1/Project_Specification.md)
 
 ---
 

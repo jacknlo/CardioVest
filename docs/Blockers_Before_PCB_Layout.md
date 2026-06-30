@@ -13,6 +13,7 @@ Status legend:
 
 Related documents:
 
+- `docs/AFE_Verification_Report.md` — **verified netlist connectivity, channel map, findings (F1–F8), and candidate values** (start here).
 - `hardware/CardioCore_V1/Project_Specification.md` — board targets, power workflow, safety interlock concept.
 - `docs/ADS1298_Analog_Frontend_Notes.md` — AFE input network, decoupling, reference, RLD/DRL.
 - `bom/preliminary_bom.md` — placed parts and reference designators.
@@ -23,16 +24,17 @@ Related documents:
 
 | ID | Title | Why it blocks layout / what must be decided | Status | Reference |
 |----|-------|---------------------------------------------|--------|-----------|
-| B1 | ADS1298 input RC filter values (C15–C30) | Anti-alias / EMI filter capacitor values set the input bandwidth and impedance balance at every channel; routing and footprints cannot be committed until values and packages are chosen. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
-| B2 | Series protection resistor values (R9–R20) | The series input resistors define defibrillation/protection behaviour and combine with B1 to form the input filter; their value drives footprint, power rating, and placement near the connector. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
-| B8 | Lead / channel mapping (electrode → ADS1298 INxP/INxN, WCT handling) | Assignment of RA/LA/LL/RL-RLD/V1..V6 to specific INxP/INxN pins and the Wilson Central Terminal handling determine the entire analog routing topology; layout cannot begin without a fixed mapping. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
+| B1 | ADS1298 input filter cap values (C15–C24 common-mode, C25–C29 differential) | Anti-alias / EMI filter caps set input bandwidth and CMRR balance at every channel; routing/footprints cannot be committed until values are chosen. Candidate values proposed in the AFE report. | TBD | `AFE_Verification_Report.md` |
+| B2 | Series input resistor values (R9–R18) | Per-line series resistors form the input filter with B1 and limit fault current (note: **no** defibrillation protection is claimed/designed); value drives noise, footprint, and placement near the connector. | TBD | `AFE_Verification_Report.md` |
+| B17 | ADS1298 clock strap (CLKSEL) | 🔴 **Critical:** CLKSEL is tied to **GND** (external-clock mode) but no clock source / CLK-pin connection exists — the device will not clock as wired. Re-strap CLKSEL **high** (internal oscillator) or add a clock source. | VERIFY | `AFE_Verification_Report.md` (F1) |
+| B8 | Lead / channel mapping & montage (electrode → INxP/INxN, WCT) | Mapping is now **extracted** from the netlist (5 differential pairs: RA-LA, LL-V1, V2-V3, V4-V5, V6-AUX; IN6–8 on J5). **Decide** whether this differential montage is intended, or whether precordials should be WCT-referenced. | DECIDE | `AFE_Verification_Report.md` (F2) |
 
 ## Group B — Reference & decoupling
 
 | ID | Title | Why it blocks layout / what must be decided | Status | Reference |
 |----|-------|---------------------------------------------|--------|-----------|
 | B4 | REF5025 reference implementation + decoupling | Decide standalone vs. buffered REF5025 (U5) and the associated capacitor values; this governs the reference node placement and the quiet-analog plane routing. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
-| B5 | ADS1298 decoupling (AVDD, AVSS, DVDD, VCAP, VREFP, VREFN) | Decoupling capacitor values and their placement directly around U2 are critical to ADC noise performance and must be finalized before the component fan-out is placed. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
+| B5 | ADS1298 decoupling (AVDD, AVSS, DVDD, VCAP1–4, VREFP, VREFN) | Decoupling values/placement around U2 are critical to ADC noise. **VREFP (C9) and VCAP1 (C10) need µF-range caps, not the 100 nF placeholder (F3)**; also confirm VREFN → AVSS (F4). | TBD | `AFE_Verification_Report.md` (F3, F4) |
 | B3 | RLD/DRL network values and loop stability | The Right-Leg-Drive feedback network (Rf, Cf, output series R) and its loop stability define the common-mode rejection path; component values and the driven-electrode return route must be settled first. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
 
 ## Group C — Protection & connector

@@ -7,13 +7,16 @@ Research / prototyping / education only — not a medical device.
 
 ## Analog front-end (highest priority / blocking)
 
-- [ ] Verify ADS1298 input RC filter values from datasheet (C15–C30 + R9–R20) and set them (B1, B2)
-- [ ] Verify ADS1298 decoupling from datasheet: AVDD, AVSS, DVDD, **VCAP**, VREFP, VREFN cap values (B5)
-- [ ] Verify/define RLD/DRL circuit: Rf, Cf, output series R, and loop stability (B3)
-- [ ] Verify REF5025 reference implementation + decoupling (standalone vs buffered, cap values) (B4)
-- [ ] Select/confirm low-leakage ESD parts: verify PESD3V3L5UY reverse-leakage + capacitance (B6)
-- [ ] Define lead/channel mapping (electrode → ADS1298 INxP/INxN, WCT handling) (B8)
-- [ ] Fill ADS1298 pin-audit "Connected To" column from the EDIF netlist (`schematics/CardioCore_V1.edif`)
+- [x] Extract ADS1298 connectivity + channel map from the EDIF netlist → see `docs/AFE_Verification_Report.md`
+- [ ] 🔴 Fix CLKSEL strap: tied to GND (external clock) with no clock source — re-strap high (internal osc) or add a clock (B17, F1)
+- [ ] Decide channel montage: keep the 5 differential pairs as wired, or reference precordials to WCT (B8, F2)
+- [ ] Set ADS1298 input filter values: R9–R18 (series), C15–C24 (common-mode), C25–C29 (differential) — candidates in the AFE report (B1, B2)
+- [ ] Fix decoupling: VREFP (C9) + VCAP1 (C10) need µF-range (not 100 nF); confirm VREFN → AVSS (B5, F3, F4)
+- [ ] Verify/define RLD/DRL: R20 (Rf), C30 (Cf), R19 (series to RL), C14 (RLDREF) + loop stability (B3)
+- [ ] Verify REF5025 implementation + decoupling (buffer? cap values; headroom on 3.3 V) (B4)
+- [ ] Verify PESD3V3L5UY (D1/D2) reverse-leakage + capacitance for high-Z inputs (B6)
+- [ ] Decide IN5N "AUX" input: documented spare vs reassign; terminate/bias properly (F5)
+- [ ] File findings F1–F8 as GitHub issues using the hardware_review template
 
 ## Safety interlock
 

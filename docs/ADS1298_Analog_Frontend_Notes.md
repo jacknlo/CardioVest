@@ -215,8 +215,10 @@ Working audit of the key ADS1298 signals. The package is now fixed —
 **ADS1298IPAGR, TQFP-64** (U2) — and the connectivity can be cross-checked
 against the committed EDIF netlist
 ([`../hardware/CardioCore_V1/schematics/CardioCore_V1.edif`](../hardware/CardioCore_V1/schematics/CardioCore_V1.edif)).
-The **Connected To** column is still being verified against that netlist and the
-datasheet, so each Status remains **TBD**. The table is organized by signal name.
+The connectivity has now been **extracted from that netlist** — see the verified pin
+map, channel mapping, and findings (F1–F8) in
+[`AFE_Verification_Report.md`](./AFE_Verification_Report.md). The placeholder table
+below predates that extraction and is kept for reference.
 
 | Pin / Signal      | Function                                              | Connected To                             | Status |
 |-------------------|------------------------------------------------------|------------------------------------------|--------|
