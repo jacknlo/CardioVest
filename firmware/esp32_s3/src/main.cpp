@@ -45,7 +45,8 @@ void printBanner() {
   Serial.println(F("============================================================"));
   Serial.print  (F("  ")); Serial.println(F(FW_PROJECT));
   Serial.print  (F("  Firmware: ")); Serial.println(F(FW_VERSION));
-  Serial.print  (F("  AFE: ADS1298  |  Channels: "));
+  Serial.print  (F("  AFE: ")); Serial.print(cfg::AFE_NAME);
+  Serial.print  (F("  |  Channels: "));
   Serial.print  (cfg::NUM_CHANNELS);
   Serial.print  (F(" x 24-bit  |  Frame: "));
   Serial.print  (cfg::FRAME_BYTES); Serial.println(F(" bytes"));
@@ -67,13 +68,13 @@ void setup() {
 
   interlock::begin();
 
-  Serial.println(F("[init] ADS1298..."));
+  Serial.printf("[init] %s...\n", cfg::AFE_NAME);
   if (g_ads.begin()) {
-    Serial.printf("[init] ADS1298 detected, ID=0x%02X\n", g_ads.readId());
+    Serial.printf("[init] %s detected, ID=0x%02X\n", cfg::AFE_NAME, g_ads.readId());
     g_ads.configureDefault();
   } else {
-    Serial.println(F("[init] ADS1298 NOT detected - check wiring and the CLKSEL"));
-    Serial.println(F("[init] strap (finding F1: external-clock mode with no clock)."));
+    Serial.printf("[init] %s NOT detected - check wiring and power.\n", cfg::AFE_NAME);
+    Serial.println(F("[init] (ADS1298 board: also check the CLKSEL strap - finding F1.)"));
   }
 
   attachInterrupt(digitalPinToInterrupt(pins::ADS_DRDY), onDrdy, FALLING);

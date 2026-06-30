@@ -63,6 +63,19 @@ pio device monitor         # serial @ 115200
 
 Board is set to `esp32-s3-devkitc-1` (same MCU family) until a custom CardioCore V1 board JSON is added. BLE uses **NimBLE-Arduino** (pinned in `platformio.ini`).
 
+> This board has **two USB-C ports**. The default config routes the serial console to the **UART bridge** port (one cable does flash + monitor). To use the native-USB port instead, set `ARDUINO_USB_CDC_ON_BOOT=1`.
+
+### Choosing the AFE (ADS1298 vs ADS1292R)
+
+The firmware supports the whole ADS129x family via a compile-time switch (`AFE_TYPE` in `config.h`), which sets the channel count and frame size automatically:
+
+```bash
+pio run                              # default: ADS1298 (8 ch, 27-byte frames) - CardioCore V1
+pio run -e cardiocore_v1_ads1292r    # 2-ch ADS1292R dev module (9-byte frames) - early bring-up
+```
+
+Use the `ads1292r` env with a 2-channel ADS1292R breakout to validate the firmware (SPI, ID read, internal test signal) on a breadboard before the CardioCore V1 PCB exists. The driver, ring buffer, BLE, and SD paths are shared; only the register map and frame size differ.
+
 ## 5. Status
 
 **Compiles cleanly; not yet hardware-verified.** Builds for the ESP32-S3 under

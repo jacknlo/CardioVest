@@ -31,15 +31,27 @@ constexpr uint8_t CMD_RREG    = 0x20;
 constexpr uint8_t CMD_WREG    = 0x40;
 
 // --- Register addresses (subset) --------------------------------------------
-constexpr uint8_t REG_ID        = 0x00;
-constexpr uint8_t REG_CONFIG1   = 0x01;
-constexpr uint8_t REG_CONFIG2   = 0x02;
+// The ADS129x family shares the command set but NOT the register map, so the
+// addresses below switch on the selected AFE (see config.h).
+constexpr uint8_t REG_ID      = 0x00;
+constexpr uint8_t REG_CONFIG1 = 0x01;
+constexpr uint8_t REG_CONFIG2 = 0x02;
+#if AFE_TYPE == AFE_ADS1292R
+// ADS1292R map (TI SBAS502)
+constexpr uint8_t REG_LOFF    = 0x03;
+constexpr uint8_t REG_CH1SET  = 0x04;  // CH1SET, CH2SET = 0x04, 0x05
+constexpr uint8_t REG_RLD_SENS= 0x06;
+constexpr uint8_t REG_RESP1   = 0x09;
+constexpr uint8_t REG_RESP2   = 0x0A;
+#else
+// ADS1298 map (TI SBAS459)
 constexpr uint8_t REG_CONFIG3   = 0x03;
 constexpr uint8_t REG_LOFF      = 0x04;
 constexpr uint8_t REG_CH1SET    = 0x05;  // CH1SET..CH8SET = 0x05..0x0C
 constexpr uint8_t REG_RLD_SENSP = 0x0D;
 constexpr uint8_t REG_RLD_SENSN = 0x0E;
 constexpr uint8_t REG_CONFIG4   = 0x17;
+#endif
 
 }  // namespace ads
 
