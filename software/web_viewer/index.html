@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CardioVest — Web ECG Viewer (research only)</title>
+<style>
+  :root {
+    --bg:#0e1116; --panel:#171c24; --ink:#e7edf5; --muted:#8a97a8;
+    --accent:#46d39a; --accent2:#5aa9ff; --warn:#ffcf5c; --line:#26303c; --grid:#1b2330;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:14px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif; }
+  header { padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
+  h1 { font-size:16px; margin:0 0 2px; }
+  .warn { color:var(--warn); font-size:12px; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+         padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
+  button { background:#222c38; color:var(--ink); border:1px solid var(--line);
+           padding:7px 12px; border-radius:7px; cursor:pointer; font-size:13px; }
+  button:hover { border-color:var(--accent2); }
+  button.primary { background:var(--accent); color:#06281c; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .pill { font-size:12px; color:var(--muted); padding:4px 8px; border:1px solid var(--line); border-radius:999px; }
+  .pill b { color:var(--ink); }
+  label { font-size:12px; color:var(--muted); display:inline-flex; gap:6px; align-items:center; }
+  input[type=range] { width:120px; }
+  select, input[type=number] { background:#222c38; color:var(--ink); border:1px solid var(--line);
+           border-radius:6px; padding:4px 6px; }
+  #status { font-weight:600; }
+  .ok { color:var(--accent); } .bad { color:#ff6b6b; } .idle { color:var(--muted); }
+  canvas { display:block; width:100%; background:var(--bg); }
+  footer { padding:8px 14px; color:var(--muted); font-size:11px; border-top:1px solid var(--line); }
+  code { background:#0a0d12; padding:1px 5px; border-radius:4px; color:var(--accent2); }
+</style>
+</head>
+<body>
+<header>
+  <h1>CardioVest — Web ECG Viewer</h1>
+  <div class="warn">⚠ Research / prototyping / education only — NOT a medical device. Shows RAW samples, no diagnosis or clinical interpretation.</div>
+</header>
+
+<div class="bar">
+  <button id="btnConnect" class="primary">🔗 Connect (BLE)</button>
+  <button id="btnDemo">▶ Demo (synthetic)</button>
+  <button id="btnPause" disabled>⏸ Pause</button>
+  <button id="btnRecord" disabled>⏺ Record CSV</button>
+  <span class="pill">Status: <span id="status" class="idle">idle</span></span>
+  <span class="pill">Channels: <b id="chCount">—</b></span>
+  <span class="pill">Rate: <b id="rate">—</b> SPS</span>
+  <span class="pill" id="recPill" style="display:none">Rec: <b id="recCount">0</b> samples</span>
+  <label>Gain <input id="gain" type="range" min="0.2" max="8" step="0.1" value="1.5"></label>
+  <label>Units
+    <select id="units"><option value="counts">raw counts</option><option value="mv" selected>mV (est.)</option></select>
+  </label>
+  <label>V<sub>REF</sub> <input id="vref" type="number" value="2.5" step="0.1" style="width:62px"></label>
+  <label>PGA <input id="pga" type="number" value="6" step="1" style="width:52px"></label>
+</div>
+
+<canvas id="scope"></canvas>
+
+<footer id="foot"></footer>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---- Firmware BLE UUIDs (must match firmware/esp32_s3/src/ble_stream.h) ----
+  const SVC_UUID  = "c0de0001-feed-4cad-b10c-0000cad10000";
+  const DATA_UUID = "c0de0002-feed-4cad-b10c-0000cad10000";
+
+  // ---- Acquisition geometry ------------------------------------------------
+  const STATUS_BYTES = 3, CH_BYTES = 3;     // ADS129x: 24-bit status + 24-bit/channel
+  const WINDOW_SEC = 5;                       // visible time window
+  let   sampleRate = 250;                     // assumed/displayed SPS (demo uses this)
+
+  // ---- State ----------------------------------------------------------------
+  let channels = 0;
+  let buffers  = [];          // per-channel arrays of counts (length-capped)
+  let running  = false, paused = false, source = null; // 'ble' | 'demo'
+  let recording = false, recRows = [], recStart = 0;
+  let btChar = null, btDevice = null;
+
+  // ---- DOM ------------------------------------------------------------------
+  const $ = id => document.getElementById(id);
+  const elStatus=$("status"), elCh=$("chCount"), elRate=$("rate"),
+        elRecPill=$("recPill"), elRecCount=$("recCount"), elFoot=$("foot");
+  const cv=$("scope"), ctx=cv.getContext("2d");
+
+  function setStatus(t, cls){ elStatus.textContent=t; elStatus.className=cls||"idle"; }
+  const hasBLE = !!(navigator.bluetooth && navigator.bluetooth.requestDevice);
+
+  // ---- Buffer helpers -------------------------------------------------------
+  function ensureChannels(n){
+    if (n === channels) return;
+    channels = n; buffers = Array.from({length:n}, () => []);
+    elCh.textContent = n;
+    resize();
+  }
+  function pushSample(values){          // values: array[channels] of counts
+    const cap = Math.max(2, Math.floor(WINDOW_SEC * sampleRate));
+    for (let c=0;c<channels;c++){
+      const b = buffers[c]; b.push(values[c]);
+      if (b.length > cap) b.splice(0, b.length - cap);
+    }
+    if (recording){
+      recRows.push([(performance.now()-recStart).toFixed(1), ...values]);
+      elRecCount.textContent = recRows.length;
+    }
+  }
+
+  // ---- Frame parsing (shared by BLE + demo) --------------------------------
+  function int24BE(dv, off){
+    let v = (dv.getUint8(off)<<16) | (dv.getUint8(off+1)<<8) | dv.getUint8(off+2);
+    if (v & 0x800000) v -= 0x1000000;      // two's complement sign-extend
+    return v;
+  }
+  function frameLenFor(totalLen){
+    if (totalLen===9 || totalLen===27) return totalLen;   // 2ch or 8ch, one frame
+    if (totalLen%27===0) return 27;
+    if (totalLen%9===0)  return 9;
+    return totalLen;                                        // best effort
+  }
+  function handleBytes(dv){
+    const flen = frameLenFor(dv.byteLength);
+    const nCh  = Math.max(1, (flen - STATUS_BYTES) / CH_BYTES | 0);
+    ensureChannels(nCh);
+    for (let off=0; off+flen<=dv.byteLength; off+=flen){
+      const vals = new Array(nCh);
+      for (let c=0;c<nCh;c++) vals[c] = int24BE(dv, off + STATUS_BYTES + c*CH_BYTES);
+      pushSample(vals);
+    }
+  }
+
+  // ---- BLE source -----------------------------------------------------------
+  async function connectBLE(){
+    if (!hasBLE){ setStatus("Web Bluetooth unavailable", "bad");
+      alert("Web Bluetooth needs Chrome/Edge over https:// or http://localhost (not file://). See the README."); return; }
+    try {
+      setStatus("requesting device…","idle");
+      btDevice = await navigator.bluetooth.requestDevice({
+        filters:[{ namePrefix:"CardioCore" }], optionalServices:[SVC_UUID]
+      });
+      btDevice.addEventListener("gattserverdisconnected", () => setStatus("disconnected","bad"));
+      setStatus("connecting…","idle");
+      const server = await btDevice.gatt.connect();
+      const svc    = await server.getPrimaryService(SVC_UUID);
+      btChar       = await svc.getCharacteristic(DATA_UUID);
+      await btChar.startNotifications();
+      btChar.addEventListener("characteristicvaluechanged", e => { if(!paused) handleBytes(e.target.value); });
+      stopDemo();
+      source="ble"; running=true; paused=false;
+      $("btnPause").disabled=false; $("btnRecord").disabled=false;
+      setStatus("connected to "+(btDevice.name||"device"), "ok");
+    } catch(err){ setStatus("connect failed", "bad"); console.error(err); }
+  }
+
+  // ---- Demo source (synthetic 8-channel ECG) -------------------------------
+  let demoTimer=null, demoSample=0;
+  function ecgCounts(t, lead){
+    const hr = 72/60;                          // beats per second
+    const ph = (t*hr) % 1;                      // phase within a beat [0,1)
+    const g = (c,w,a) => a*Math.exp(-((ph-c)*(ph-c))/(2*w*w));
+    let mv = g(0.20,0.025,0.10)   // P
+           - g(0.38,0.008,0.13)   // Q
+           + g(0.40,0.011,1.00)   // R
+           - g(0.43,0.010,0.28)   // S
+           + g(0.62,0.040,0.30);  // T
+    mv *= 0.55 + 0.5*Math.abs(Math.sin(1.3*lead+0.6));   // per-lead variation
+    mv += 0.015*(Math.random()-0.5);                      // noise
+    mv += 0.03*Math.sin(2*Math.PI*0.25*t);                // slow baseline wander
+    const vref=parseFloat($("vref").value)||2.5, pga=parseFloat($("pga").value)||6;
+    return Math.round(mv*1e-3 * pga / vref * 8388607);    // mV -> raw counts
+  }
+  function startDemo(){
+    if (btDevice && btDevice.gatt && btDevice.gatt.connected) btDevice.gatt.disconnect();
+    source="demo"; running=true; paused=false; sampleRate=250; demoSample=0;
+    ensureChannels(8); elRate.textContent=sampleRate;
+    $("btnPause").disabled=false; $("btnRecord").disabled=false;
+    setStatus("demo (synthetic ECG)", "ok");
+    clearInterval(demoTimer);
+    demoTimer = setInterval(() => {
+      if (paused) return;
+      const batch = 5;                          // 5 samples / 20 ms = 250 SPS
+      for (let i=0;i<batch;i++){
+        const t = demoSample/sampleRate; demoSample++;
+        const vals = new Array(8);
+        for (let c=0;c<8;c++) vals[c] = ecgCounts(t, c);
+        pushSample(vals);
+      }
+    }, 20);
+  }
+  function stopDemo(){ clearInterval(demoTimer); demoTimer=null; }
+
+  // ---- Rendering ------------------------------------------------------------
+  function resize(){
+    const lane = 92, dpr = window.devicePixelRatio||1;
+    const cssW = cv.clientWidth || cv.parentElement.clientWidth || 800;
+    const cssH = Math.max(lane, (channels||1)*lane);
+    cv.style.height = cssH+"px";
+    cv.width = Math.floor(cssW*dpr); cv.height = Math.floor(cssH*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener("resize", resize);
+
+  function draw(){
+    requestAnimationFrame(draw);
+    const W = cv.clientWidth, H = cv.clientHeight;
+    ctx.clearRect(0,0,W,H);
+    if (!channels){ ctx.fillStyle="#8a97a8"; ctx.font="14px system-ui";
+      ctx.fillText("Press “Demo” to see a synthetic ECG, or “Connect (BLE)” for a real device.", 16, 28); return; }
+
+    const lane = H/channels;
+    const gain = parseFloat($("gain").value)||1.5;
+    const useMv = $("units").value==="mv";
+    const vref=parseFloat($("vref").value)||2.5, pga=parseFloat($("pga").value)||6;
+    const toUnit = c => useMv ? (c * vref / 8388607 / pga * 1000) : c;
+
+    for (let c=0;c<channels;c++){
+      const y0 = c*lane, mid = y0 + lane/2, b = buffers[c]; if (!b.length) continue;
+      // lane separators + grid baseline
+      ctx.strokeStyle="#1b2330"; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(W,y0); ctx.stroke();
+      ctx.strokeStyle="#16202c"; ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.stroke();
+      // autoscale on window peak
+      let peak=1; for (let i=0;i<b.length;i++){ const a=Math.abs(toUnit(b[i])); if(a>peak)peak=a; }
+      const scale = (lane*0.42)/peak * gain;
+      // trace
+      ctx.strokeStyle = c%2 ? "#5aa9ff" : "#46d39a"; ctx.lineWidth=1.3; ctx.beginPath();
+      const n=b.length, dx = W/Math.max(1,n-1);
+      for (let i=0;i<n;i++){
+        const x=i*dx, y=mid - toUnit(b[i])*scale;
+        i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+      }
+      ctx.stroke();
+      // label
+      ctx.fillStyle="#8a97a8"; ctx.font="11px system-ui";
+      ctx.fillText("CH"+(c+1), 6, y0+14);
+    }
+  }
+
+  // ---- CSV recording --------------------------------------------------------
+  function toggleRecord(){
+    recording = !recording;
+    if (recording){ recRows=[]; recStart=performance.now(); elRecPill.style.display="";
+      $("btnRecord").textContent="⏹ Stop & Save"; }
+    else {
+      $("btnRecord").textContent="⏺ Record CSV";
+      const head = ["t_ms", ...Array.from({length:channels},(_,i)=>"ch"+(i+1))].join(",");
+      const csv = head+"\n"+recRows.map(r=>r.join(",")).join("\n");
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+      a.download="cardiovest_ecg_raw.csv"; a.click(); URL.revokeObjectURL(a.href);
+    }
+  }
+
+  // ---- Wire up --------------------------------------------------------------
+  $("btnConnect").onclick = connectBLE;
+  $("btnDemo").onclick     = startDemo;
+  $("btnPause").onclick     = () => { paused=!paused; $("btnPause").textContent = paused?"▶ Resume":"⏸ Pause"; };
+  $("btnRecord").onclick    = toggleRecord;
+
+  if (!hasBLE){ $("btnConnect").disabled=true; $("btnConnect").title="Web Bluetooth unavailable here"; }
+  elFoot.innerHTML = "Frame format: 24-bit status + N×24-bit channels (big-endian, two's complement). " +
+    "Real device: serve over <code>http://localhost</code> (e.g. <code>python -m http.server</code>) and use Chrome/Edge. " +
+    (hasBLE ? "" : "<b>Web Bluetooth is not available in this context — Demo still works.</b>");
+
+  resize(); requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
