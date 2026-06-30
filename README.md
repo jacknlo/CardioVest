@@ -18,6 +18,16 @@ The first hardware module in the platform is **CardioCore V1** — an 8-channel,
 
 ---
 
+## Project Status
+
+- **Current status:** Repository organized as an engineering workspace. The schematic concept is captured in flux.ai (project source + EDIF netlist committed), but the **ADS1298 analog front-end values are still TBD**.
+- **Next milestone:** **ADS1298 analog front-end verification** — finalize the input RC filter, series protection resistors, RLD/DRL network, and reference/decoupling against the datasheet.
+- ⛔ **PCB layout is BLOCKED** until every item in [docs/Blockers_Before_PCB_Layout.md](docs/Blockers_Before_PCB_Layout.md) is resolved and the analog front-end is verified. No PCB layout or fabrication outputs (Gerbers) are produced yet.
+
+**Project controls:** [TODO.md](TODO.md) · [docs/Blockers_Before_PCB_Layout.md](docs/Blockers_Before_PCB_Layout.md) · [docs/Design_Decisions_Log.md](docs/Design_Decisions_Log.md) · [docs/Claude_Code_Workflow.md](docs/Claude_Code_Workflow.md) · [hardware/CardioCore_V1/Project_Specification.md](hardware/CardioCore_V1/Project_Specification.md)
+
+---
+
 ## Core Hardware (CardioCore V1)
 
 CardioCore V1 is an 8-channel ECG acquisition board with the following key components:
@@ -57,22 +67,36 @@ CardioVest/
 ├── README.md
 ├── LICENSE
 ├── .gitignore
+├── TODO.md
+├── .github/
+│   └── ISSUE_TEMPLATE/
+│       ├── hardware_review.md
+│       ├── firmware_task.md
+│       └── documentation_task.md
 ├── docs/
 │   ├── CardioCore_Architecture_v1.md
 │   ├── Safety_Research_Use.md
 │   ├── ADS1298_Analog_Frontend_Notes.md
 │   ├── Bringup_Plan.md
 │   ├── Roadmap.md
-│   └── Glossary.md
+│   ├── Glossary.md
+│   ├── Blockers_Before_PCB_Layout.md
+│   ├── Design_Decisions_Log.md
+│   └── Claude_Code_Workflow.md
 ├── hardware/
 │   └── CardioCore_V1/
 │       ├── README.md
+│       ├── Project_Specification.md
+│       ├── flux_project/
+│       │   └── CardioCore_V1.flx          # editable flux.ai source (schematic + PCB)
 │       ├── schematics/
-│       │   └── README.md
+│       │   ├── README.md
+│       │   └── CardioCore_V1.edif         # EDIF netlist export
 │       ├── pcb/
 │       │   └── README.md
 │       ├── bom/
-│       │   └── preliminary_bom.md
+│       │   ├── preliminary_bom.md
+│       │   └── flux_export/               # per-vendor BOM CSVs + original zip
 │       └── manufacturing/
 │           └── README.md
 ├── firmware/

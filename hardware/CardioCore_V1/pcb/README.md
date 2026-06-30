@@ -6,7 +6,7 @@
 
 This folder will hold the physical board design for CardioCore V1:
 
-- **KiCad PCB layout files** (EDA tool **TBD** — KiCad is the working assumption)
+- **PCB layout files** (designed in **flux.ai**; the live layout is in the project source [`../flux_project/CardioCore_V1.flx`](../flux_project/CardioCore_V1.flx))
 - **Board renders** (top/bottom 3D exports, assembly views)
 - **Stackup notes** (layer count, copper weights, dielectric, impedance targets — all **TBD**)
 
@@ -49,3 +49,5 @@ These are guiding constraints to keep in mind once layout begins. Specific numer
 
 - Architecture and signal-chain overview:
   [`../../../docs/CardioCore_Architecture_v1.md`](../../../docs/CardioCore_Architecture_v1.md)
+- Pre-layout gating items (must be cleared first):
+  [`../../../docs/Blockers_Before_PCB_Layout.md`](../../../docs/Blockers_Before_PCB_Layout.md)

@@ -51,7 +51,7 @@ Conventions:
 - **Board name** (`CardioCore_V1`) stays fixed for this hardware module. A new
   major board revision (e.g. `V2`) lives in its own sibling folder, not here.
 - **`rev?`** is the schematic revision and increments by `1` on each released
-  change. Keep the source `.kicad_sch` and its matching PDF in sync (same `rev`).
+  change. Keep the flux.ai source, the exported `.edif` netlist, and the PDF in sync for each `rev`.
 - Use **underscores**, no spaces, and keep the casing exactly as shown.
 - Record every revision in the changelog with date, author, and a one-line
   summary of the change.
