@@ -10,8 +10,10 @@ Without a card it prints `microSD not available` and keeps running — expected.
 ## What to buy
 A cheap "microSD / TF card module" (~US$1–3). Two common kinds:
 - **3.3 V module** (bare, no regulator) → power **VCC = 3.3 V**. Simplest for the ESP32.
-- **Blue module with AMS1117 + level shifter** → power **VCC = 5 V** (the board's 5V/USB pin);
-  the SPI lines stay at 3.3 V (the module level-shifts).
+- **Blue module with AMS1117 + 74HC125 level shifter** (the common one — e.g. WWZMDiB, and
+  the one purchased for this project) → **power VCC = 5 V** (the board's 5V/USB pin). Its AMS1117
+  regulator needs ≥ ~4.5 V in to make 3.3 V, so **do NOT power this module's VCC from 3.3 V** — it
+  won't work reliably. The SPI lines stay at 3.3 V (the 74HC125 level-shifts).
 
 > ⚠️ Never drive 5 V into an ESP32-S3 GPIO. Power may be 3.3 V or 5 V (module dependent);
 > **SPI/control lines are always 3.3 V.**
@@ -24,7 +26,7 @@ A cheap "microSD / TF card module" (~US$1–3). Two common kinds:
 | SCK / CLK | IO12 | `ADS_SCLK` (shared SPI) |
 | MOSI / DI | IO11 | `ADS_MOSI` (shared SPI) |
 | MISO / DO | IO13 | `ADS_MISO` (shared SPI) |
-| VCC | 3V3 (bare module) **or** 5V (level-shifted module) | — |
+| VCC | **5V** for the AMS1117/74HC125 module (the one bought); 3V3 only for a bare 3.3 V module | — |
 | GND | GND | — |
 
 The SD shares the SPI bus with the ADS129x (SCK/MOSI/MISO common; only CS differs), so it
