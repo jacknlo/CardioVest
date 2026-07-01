@@ -2,8 +2,9 @@
 //  CardioVest / CardioCore V1 - safety interlock impl
 //  Encodes "battery-only during body-connected measurement". The supporting
 //  hardware (USB_PRESENT / AFE_ENABLE) is TBD (B9/B10); until wired, the
-//  interlock warns and cannot enforce in hardware. Research convenience only -
-//  NOT a certified medical safety system.
+//  interlock fails SAFE and inhibits real-AFE acquisition, unless the bench
+//  opt-out cfg::ALLOW_AFE_WITHOUT_USB_DETECT is set (no-electrode testing).
+//  Research convenience only - NOT a certified medical safety system.
 // ============================================================================
 #include "interlock.h"
 #include "config.h"
@@ -45,15 +46,22 @@ bool acquisitionPermitted() {
   if (!cfg::ENABLE_INTERLOCK) return true;
 
   if (pins::USB_PRESENT < 0) {
-    // Detection hardware not wired yet (B9/B10): cannot enforce battery-only.
+    // Detection hardware not wired yet (B9/B10): cannot verify battery-only.
     if (!g_warned) {
       g_warned = true;
-      Serial.println(F("[interlock] WARNING: USB-present detection not wired (B9/B10)."));
-      Serial.println(F("[interlock] Battery-only body measurement is NOT enforced in hardware."));
-      Serial.println(F("[interlock] Operator MUST run on battery for any body-connected ECG"));
-      Serial.println(F("[interlock] (see docs/Safety_Research_Use.md)."));
+      if (cfg::ALLOW_AFE_WITHOUT_USB_DETECT) {
+        Serial.println(F("[interlock] WARNING: USB-present detection not wired (B9/B10)."));
+        Serial.println(F("[interlock] Bench opt-out ENABLED: AFE permitted with NO hardware"));
+        Serial.println(F("[interlock] battery-only enforcement. Use ONLY with no electrodes on"));
+        Serial.println(F("[interlock] a person (see docs/Safety_Research_Use.md)."));
+      } else {
+        Serial.println(F("[interlock] USB-present detection not wired (B9/B10):"));
+        Serial.println(F("[interlock] failing SAFE - real-AFE acquisition INHIBITED."));
+        Serial.println(F("[interlock] Wire the detector, or for bench/no-electrode testing set"));
+        Serial.println(F("[interlock] cfg::ALLOW_AFE_WITHOUT_USB_DETECT (see Safety_Research_Use.md)."));
+      }
     }
-    return true;
+    return cfg::ALLOW_AFE_WITHOUT_USB_DETECT;
   }
 
   // Hardware present: inhibit acquisition while on non-isolated USB.

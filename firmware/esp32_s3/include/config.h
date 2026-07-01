@@ -64,6 +64,14 @@ static constexpr bool ENABLE_BLE       = true;
 static constexpr bool ENABLE_SD        = true;
 static constexpr bool ENABLE_INTERLOCK = true;   // battery-only body-measurement gate
 
+// Bench opt-out for the interlock. When the USB-present detector (B9/B10) is NOT
+// wired, acquisitionPermitted() fails SAFE and INHIBITS real-AFE acquisition.
+// Set this true ONLY for bench/dev AFE testing with NO electrodes on a person
+// (e.g. ADS1292R bring-up over USB with the internal test signal). NEVER enable
+// it for body-connected measurement. Default false = safe. Does not affect the
+// synthetic demo stream, which never touches the interlock.
+static constexpr bool ALLOW_AFE_WITHOUT_USB_DETECT = false;
+
 // When no AFE is detected, synthesize ECG frames so the BLE/SD pipeline can be
 // tested end-to-end with just the ESP32-S3 (no analog front-end). Dev aid only;
 // synthetic data is clearly not a real measurement.

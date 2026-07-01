@@ -28,7 +28,12 @@ bool begin() {
 bool startSession() {
   if (!g_mounted) return false;
   char name[24];
-  snprintf(name, sizeof(name), "/ecg_%04lu.bin", static_cast<unsigned long>(g_seq++));
+  // Pick the first unused /ecg_NNNN.bin so a reboot never appends onto a prior
+  // session (FILE_WRITE opens with O_APPEND, and g_seq resets to 0 each boot).
+  for (uint32_t i = 0; i < 10000; ++i) {
+    snprintf(name, sizeof(name), "/ecg_%04lu.bin", static_cast<unsigned long>(i));
+    if (!SD.exists(name)) { g_seq = i; break; }
+  }
   g_file = SD.open(name, FILE_WRITE);
   return static_cast<bool>(g_file);
 }

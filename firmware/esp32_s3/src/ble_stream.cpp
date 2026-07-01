@@ -4,6 +4,7 @@
 // ============================================================================
 #include "ble_stream.h"
 #include "config.h"
+#include <Arduino.h>
 #include <NimBLEDevice.h>
 
 namespace ble_stream {
@@ -12,12 +13,19 @@ namespace {
 NimBLECharacteristic* g_data      = nullptr;
 NimBLECharacteristic* g_mark      = nullptr;
 volatile bool         g_connected = false;
+volatile uint16_t     g_mtu       = 247;    // negotiated ATT MTU (assume the requested value until told)
+volatile bool         g_mtuKnown  = false;  // true once the host negotiates an MTU
+bool                  g_mtuWarned = false;
 
 class ServerCb : public NimBLEServerCallbacks {
   void onConnect(NimBLEServer* /*server*/) override { g_connected = true; }
   void onDisconnect(NimBLEServer* /*server*/) override {
     g_connected = false;
+    g_mtuKnown = false; g_mtu = 247; g_mtuWarned = false;
     NimBLEDevice::startAdvertising();   // allow the host to reconnect
+  }
+  void onMTUChange(uint16_t mtu, ble_gap_conn_desc* /*desc*/) override {
+    g_mtu = mtu; g_mtuKnown = true;
   }
 };
 ServerCb g_serverCb;
@@ -51,6 +59,16 @@ bool connected() { return g_connected; }
 
 void sendFrame(const uint8_t* frame, size_t len) {
   if (!g_connected || g_data == nullptr) return;
+  // A notification payload must fit the negotiated MTU (ATT_MTU - 3). If the host
+  // negotiated a small MTU, skip rather than fail silently, and say so once.
+  if (g_mtuKnown && g_mtu > 3 && len > (size_t)(g_mtu - 3)) {
+    if (!g_mtuWarned) {
+      g_mtuWarned = true;
+      Serial.printf("[ble] negotiated MTU %u too small for %u-byte batch; notifications skipped. Lower cfg::BATCH_FRAMES.\n",
+                    (unsigned)g_mtu, (unsigned)len);
+    }
+    return;
+  }
   g_data->setValue(frame, len);
   g_data->notify();
 }

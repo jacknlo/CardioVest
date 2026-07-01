@@ -46,6 +46,13 @@ pio device monitor       # or capture serial
 The web viewer auto-detects 2 channels (9-byte frames).
 
 ## First test — NO body connection
+
+> **Interlock note:** the safety interlock now **fails safe** — with a real AFE detected and the
+> USB-present detector unwired (B9/B10), it INHIBITS acquisition by default. For this bench test
+> (no electrodes, USB powered) set `cfg::ALLOW_AFE_WITHOUT_USB_DETECT = true` in
+> [`../include/config.h`](../include/config.h) before flashing. Leave it **off** for any
+> battery-only electrode experiment.
+
 1. Wire + power per the table, flash the `ads1292r` build.
 2. Serial should show `ADS1292R detected, ID=0x..` (expected ~`0x73`). If "NOT detected",
    recheck wiring / power / CS.

@@ -171,7 +171,7 @@ void setup() {
     Serial.println(F("[init] No AFE -> DEMO STREAM: synthesizing ECG over BLE/SD"));
     Serial.println(F("[init] (test the wireless pipeline with just the ESP32-S3)."));
   } else if (afe) {
-    Serial.println(F("[init] Acquisition INHIBITED by interlock (USB present)."));
+    Serial.println(F("[init] Acquisition INHIBITED by interlock (not battery-verified; see above)."));
   }
 
   Serial.println(F("[init] Setup complete."));
@@ -195,7 +195,6 @@ void loop() {
   // DRDY fired at least once; read that frame, then drain any further ready
   // samples (handles a loop stall spanning more than one sample period).
   if (g_acq && g_drdy) {
-    g_drdy = false;
     uint8_t raw[cfg::FRAME_BYTES];
     uint8_t tx[cfg::TX_FRAME_BYTES];
     do {
@@ -204,6 +203,7 @@ void loop() {
       memcpy(tx + cfg::SEQ_BYTES, raw, cfg::FRAME_BYTES);
       g_ring.push(tx);
     } while (digitalRead(pins::ADS_DRDY) == LOW);
+    g_drdy = false;   // clear AFTER draining: an edge serviced mid-drain must not re-trigger a phantom read
   }
 
   // --- Demo producer: synthesize frames when no AFE is attached -------------
