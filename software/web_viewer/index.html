@@ -5,318 +5,334 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CardioVest — Web ECG Viewer (research only)</title>
 <style>
-  :root {
-    --bg:#0e1116; --panel:#171c24; --ink:#e7edf5; --muted:#8a97a8;
-    --accent:#46d39a; --accent2:#5aa9ff; --warn:#ffcf5c; --line:#26303c; --grid:#1b2330;
-  }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink);
-         font:14px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif; }
-  header { padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
-  h1 { font-size:16px; margin:0 0 2px; }
-  .warn { color:var(--warn); font-size:12px; }
-  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-         padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
-  button { background:#222c38; color:var(--ink); border:1px solid var(--line);
-           padding:7px 12px; border-radius:7px; cursor:pointer; font-size:13px; }
-  button:hover { border-color:var(--accent2); }
-  button.primary { background:var(--accent); color:#06281c; border-color:var(--accent); font-weight:600; }
-  button:disabled { opacity:.45; cursor:not-allowed; }
-  .pill { font-size:12px; color:var(--muted); padding:4px 8px; border:1px solid var(--line); border-radius:999px; }
-  .pill b { color:var(--ink); }
-  label { font-size:12px; color:var(--muted); display:inline-flex; gap:6px; align-items:center; }
-  input[type=range] { width:120px; }
-  select, input[type=number] { background:#222c38; color:var(--ink); border:1px solid var(--line);
-           border-radius:6px; padding:4px 6px; }
-  #status { font-weight:600; }
-  .ok { color:var(--accent); } .bad { color:#ff6b6b; } .idle { color:var(--muted); }
-  canvas { display:block; width:100%; background:var(--bg); }
-  footer { padding:8px 14px; color:var(--muted); font-size:11px; border-top:1px solid var(--line); }
-  code { background:#0a0d12; padding:1px 5px; border-radius:4px; color:var(--accent2); }
+  :root{--bg:#0e1116;--panel:#171c24;--ink:#e7edf5;--muted:#8a97a8;--accent:#46d39a;
+        --accent2:#5aa9ff;--warn:#ffcf5c;--bad:#ff6b6b;--line:#26303c;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;}
+  header{padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line);}
+  h1{font-size:16px;margin:0 0 2px;}
+  .warn{color:var(--warn);font-size:12px;}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line);}
+  button{background:#222c38;color:var(--ink);border:1px solid var(--line);padding:7px 12px;border-radius:7px;cursor:pointer;font-size:13px;}
+  button:hover{border-color:var(--accent2);}
+  button.primary{background:var(--accent);color:#06281c;border-color:var(--accent);font-weight:600;}
+  button:disabled{opacity:.45;cursor:not-allowed;}
+  .pill{font-size:12px;color:var(--muted);padding:4px 8px;border:1px solid var(--line);border-radius:999px;}
+  .pill b{color:var(--ink);}
+  label{font-size:12px;color:var(--muted);display:inline-flex;gap:6px;align-items:center;}
+  input[type=range]{width:110px;}
+  select,input[type=number]{background:#222c38;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 6px;}
+  #status{font-weight:600;} .ok{color:var(--accent);} .bad{color:var(--bad);} .idle{color:var(--muted);}
+  #bpm{color:var(--accent);font-weight:700;}
+  canvas{display:block;width:100%;background:var(--bg);}
+  footer{padding:8px 14px;color:var(--muted);font-size:11px;border-top:1px solid var(--line);}
+  code{background:#0a0d12;padding:1px 5px;border-radius:4px;color:var(--accent2);}
 </style>
 </head>
 <body>
 <header>
   <h1>CardioVest — Web ECG Viewer</h1>
-  <div class="warn">⚠ Research / prototyping / education only — NOT a medical device. Shows RAW samples, no diagnosis or clinical interpretation.</div>
+  <div class="warn">⚠ Research / prototyping / education only — NOT a medical device. Raw data; BPM/R-peak/SQI are engineering estimates, not diagnosis.</div>
 </header>
 
 <div class="bar">
   <button id="btnConnect" class="primary">🔗 Connect (BLE)</button>
-  <button id="btnDemo">▶ Demo (synthetic)</button>
+  <button id="btnDemo">▶ Demo</button>
   <button id="btnPause" disabled>⏸ Pause</button>
-  <button id="btnRecord" disabled>⏺ Record CSV</button>
+  <button id="btnRecord" disabled>⏺ Record</button>
   <span class="pill">Status: <span id="status" class="idle">idle</span></span>
-  <span class="pill">Channels: <b id="chCount">—</b></span>
-  <span class="pill">Rate: <b id="rate">—</b> SPS</span>
-  <span class="pill" id="recPill" style="display:none">Rec: <b id="recCount">0</b> samples</span>
+  <span class="pill">Ch: <b id="chCount">—</b></span>
+  <span class="pill">Rate: <b id="rate">—</b></span>
+  <span class="pill">BPM: <b id="bpm">—</b></span>
+  <span class="pill">Drops: <b id="drops">0</b></span>
+  <span class="pill" id="recPill" style="display:none">Rec: <b id="recCount">0</b></span>
+  <label><input type="checkbox" id="filtOn" checked> Filters</label>
+  <label>Mains <select id="mains"><option value="50">50 Hz</option><option value="60" selected>60 Hz</option></select></label>
+  <label>Analysis <select id="analysisCh"></select></label>
   <label>Gain <input id="gain" type="range" min="0.2" max="8" step="0.1" value="1.5"></label>
-  <label>Units
-    <select id="units"><option value="counts">raw counts</option><option value="mv" selected>mV (est.)</option></select>
-  </label>
-  <label>V<sub>REF</sub> <input id="vref" type="number" value="2.5" step="0.1" style="width:62px"></label>
-  <label>PGA <input id="pga" type="number" value="6" step="1" style="width:52px"></label>
+  <label>Units <select id="units"><option value="counts">counts</option><option value="mv" selected>mV (est.)</option></select></label>
+  <label>V<sub>REF</sub><input id="vref" type="number" value="2.5" step="0.1" style="width:56px"></label>
+  <label>PGA<input id="pga" type="number" value="6" step="1" style="width:46px"></label>
 </div>
 
 <canvas id="scope"></canvas>
-
 <footer id="foot"></footer>
 
 <script>
 (() => {
   "use strict";
-
-  // ---- Firmware BLE UUIDs (must match firmware/esp32_s3/src/ble_stream.h) ----
+  // ---- Firmware BLE UUIDs (match firmware/esp32_s3/src/ble_stream.h) --------
   const SVC_UUID  = "c0de0001-feed-4cad-b10c-0000cad10000";
   const DATA_UUID = "c0de0002-feed-4cad-b10c-0000cad10000";
-  const MARK_UUID = "c0de0004-feed-4cad-b10c-0000cad10000";   // event markers (notify)
+  const MARK_UUID = "c0de0004-feed-4cad-b10c-0000cad10000";
 
-  // ---- Acquisition geometry ------------------------------------------------
-  // Transport frame = [u32 sample_index LE] + 24-bit status + N x 24-bit channels.
+  // ---- Transport frame: [u32 sample_index LE] + status(3) + N*ch(3) ---------
   const SEQ_BYTES = 4, STATUS_BYTES = 3, CH_BYTES = 3;
-  const WINDOW_SEC = 5;                       // visible time window
-  let   sampleRate = 250;                     // assumed/displayed SPS (demo uses this)
+  const WINDOW_SEC = 5;
+  let   sampleRate = 250;
 
-  // ---- State ----------------------------------------------------------------
-  let channels = 0;
-  let buffers  = [];          // per-channel arrays of counts (length-capped)
-  let running  = false, paused = false, source = null; // 'ble' | 'demo'
-  let recording = false, recRows = [], recStart = 0, recChannels = 0;
-  let btChar = null, btDevice = null;
-  let frameLen = 0;           // latched frame size (13 = 2ch ADS1292R, 31 = 8ch ADS1298)
-  let markers = [], totalSamples = 0;   // event markers (as sample positions) + running sample count
+  // ---- State ---------------------------------------------------------------
+  let channels = 0, buffers = [], fbuffers = [];       // raw + filtered ring arrays
+  let running = false, paused = false, source = null;
+  let recording = false, recRows = [], recStart = 0, recStartSamples = 0, recChannels = 0, recMarks = [];
+  let btChar = null, btDevice = null, frameLen = 0;
+  let markers = [], totalSamples = 0;
+  let drops = 0, expectSeq = -1;                        // BLE dropped-frame counter (seq gaps)
+  let rPeaks = [], bpm = 0;                             // R-peak positions + smoothed BPM
+  let sqi = [];                                         // per-channel quality string
 
-  // ---- DOM ------------------------------------------------------------------
+  // ---- DSP: per-channel filter state + coefficients ------------------------
+  let hpR = 0.99, nb0=1,nb1=0,nb2=0,na1=0,na2=0;       // HP pole + notch biquad (a0 normalized)
+  let fstate = [];                                      // per ch: {hx,hy, x1,x2,y1,y2}
+  // R-peak detector state (on the analysis channel)
+  let rpPeak = 1, rpPrev = 0, rpPrev2 = 0, rpLastIdx = -1;
+
+  function recomputeFilters(){
+    const fs = sampleRate;
+    hpR = Math.exp(-2*Math.PI*0.5/fs);                  // baseline-wander HP, fc = 0.5 Hz
+    const f0 = parseFloat($("mains").value)||60, Q = 30;
+    const w0 = 2*Math.PI*f0/fs, c = Math.cos(w0), alpha = Math.sin(w0)/(2*Q);
+    const a0 = 1+alpha;
+    nb0 = 1/a0; nb1 = (-2*c)/a0; nb2 = 1/a0; na1 = (-2*c)/a0; na2 = (1-alpha)/a0;
+    for (const s of fstate){ s.hx=0;s.hy=0;s.x1=0;s.x2=0;s.y1=0;s.y2=0; }
+  }
+  function filterSample(c, x){
+    const s = fstate[c];
+    const hp = hpR*(s.hy + x - s.hx); s.hx = x; s.hy = hp;   // DC-block / baseline HP
+    const y = nb0*hp + nb1*s.x1 + nb2*s.x2 - na1*s.y1 - na2*s.y2;  // notch biquad (DF1)
+    s.x2 = s.x1; s.x1 = hp; s.y2 = s.y1; s.y1 = y;
+    return y;
+  }
+
+  // ---- DOM -----------------------------------------------------------------
   const $ = id => document.getElementById(id);
-  const elStatus=$("status"), elCh=$("chCount"), elRate=$("rate"),
-        elRecPill=$("recPill"), elRecCount=$("recCount"), elFoot=$("foot");
+  const elStatus=$("status"), elCh=$("chCount"), elRate=$("rate"), elBpm=$("bpm"),
+        elDrops=$("drops"), elRecPill=$("recPill"), elRecCount=$("recCount"), elFoot=$("foot");
   const cv=$("scope"), ctx=cv.getContext("2d");
-
-  function setStatus(t, cls){ elStatus.textContent=t; elStatus.className=cls||"idle"; }
+  const setStatus=(t,cls)=>{elStatus.textContent=t;elStatus.className=cls||"idle";};
   const hasBLE = !!(navigator.bluetooth && navigator.bluetooth.requestDevice);
 
-  // ---- Buffer helpers -------------------------------------------------------
   function ensureChannels(n){
     if (n === channels) return;
-    channels = n; buffers = Array.from({length:n}, () => []);
+    channels = n;
+    buffers  = Array.from({length:n}, ()=>[]);
+    fbuffers = Array.from({length:n}, ()=>[]);
+    fstate   = Array.from({length:n}, ()=>({hx:0,hy:0,x1:0,x2:0,y1:0,y2:0}));
+    sqi      = Array.from({length:n}, ()=>"—");
     elCh.textContent = n;
+    const sel = $("analysisCh"); sel.innerHTML="";
+    for (let i=0;i<n;i++){ const o=document.createElement("option"); o.value=i; o.textContent="CH"+(i+1); sel.appendChild(o); }
+    recomputeFilters();
     resize();
   }
-  function pushSample(values){          // values: array[channels] of counts
+
+  function pushSample(values){
     totalSamples++;
     const cap = Math.max(2, Math.floor(WINDOW_SEC * sampleRate));
     for (let c=0;c<channels;c++){
-      const b = buffers[c]; b.push(values[c]);
-      if (b.length > cap) b.splice(0, b.length - cap);
+      const raw = values[c];
+      const b = buffers[c];  b.push(raw);  if (b.length>cap) b.splice(0,b.length-cap);
+      const f = filterSample(c, raw);
+      const fb = fbuffers[c]; fb.push(f);  if (fb.length>cap) fb.splice(0,fb.length-cap);
     }
+    // R-peak / BPM on the (filtered) analysis channel
+    const ac = Math.min(channels-1, parseInt($("analysisCh").value)||0);
+    if (ac>=0 && fbuffers[ac]) detectR(fbuffers[ac][fbuffers[ac].length-1]);
+    // recording (RAW only)
     if (recording){
-      if (recChannels === 0) recChannels = values.length;
-      if (values.length === recChannels){      // keep CSV rows rectangular
+      if (recChannels===0) recChannels = values.length;
+      if (values.length===recChannels){
         recRows.push([(performance.now()-recStart).toFixed(1), ...values]);
         elRecCount.textContent = recRows.length;
       }
     }
   }
 
-  // ---- Frame parsing (shared by BLE + demo) --------------------------------
-  function int24BE(dv, off){
-    let v = (dv.getUint8(off)<<16) | (dv.getUint8(off+1)<<8) | dv.getUint8(off+2);
-    if (v & 0x800000) v -= 0x1000000;      // two's complement sign-extend
-    return v;
+  function detectR(x){
+    rpPeak = Math.max(Math.abs(x), rpPeak*0.9995);
+    const thr = 0.45*rpPeak;
+    // local max on the previous sample (rpPrev), using 3-sample window
+    if (rpPrev>thr && rpPrev>=rpPrev2 && rpPrev>=x){
+      const peak = totalSamples-1;
+      if (rpLastIdx<0 || (peak-rpLastIdx) > 0.25*sampleRate){   // 250 ms refractory
+        if (rpLastIdx>=0){
+          const inst = 60*sampleRate/(peak-rpLastIdx);
+          if (inst>25 && inst<240) bpm = bpm ? (0.8*bpm+0.2*inst) : inst;
+        }
+        rpLastIdx = peak; rPeaks.push(peak);
+      }
+    }
+    rpPrev2 = rpPrev; rpPrev = x;
   }
-  // Valid single-frame transport lengths: 13 (2ch ADS1292R) and 31 (8ch ADS1298).
-  function frameLenFor(totalLen){
-    if (totalLen===13 || totalLen===31) return totalLen;
-    if (frameLen && totalLen % frameLen === 0) return frameLen;
-    return 0;                                                     // unknown/ambiguous -> reject
-  }
+
+  // ---- Frame parsing -------------------------------------------------------
+  function int24BE(dv,o){ let v=(dv.getUint8(o)<<16)|(dv.getUint8(o+1)<<8)|dv.getUint8(o+2); if(v&0x800000)v-=0x1000000; return v; }
+  function frameLenFor(t){ if(t===13||t===31)return t; if(frameLen && t%frameLen===0)return frameLen; return 0; }
   function handleBytes(dv){
-    const len = dv.byteLength;
-    const flen = frameLenFor(len);
-    if (!flen) return;                              // malformed / unknown length -> ignore
-    if (flen===13 || flen===31) frameLen = flen;    // latch the detected frame size
-    const nCh = Math.max(1, ((flen - SEQ_BYTES - STATUS_BYTES) / CH_BYTES) | 0);
+    const len=dv.byteLength, flen=frameLenFor(len);
+    if(!flen) return;
+    if(flen===13||flen===31) frameLen=flen;
+    const nCh=Math.max(1,((flen-SEQ_BYTES-STATUS_BYTES)/CH_BYTES)|0);
     ensureChannels(nCh);
-    for (let off=0; off+flen<=len; off+=flen){
-      const base = off + SEQ_BYTES + STATUS_BYTES;  // skip u32 sample_index + 3-byte status
-      const vals = new Array(nCh);
-      for (let c=0;c<nCh;c++) vals[c] = int24BE(dv, base + c*CH_BYTES);
+    for(let off=0; off+flen<=len; off+=flen){
+      const seq=dv.getUint32(off,true);                 // sample index (LE)
+      if(expectSeq>=0 && seq!==expectSeq){ if(seq>expectSeq) drops+=(seq-expectSeq); }
+      expectSeq=(seq+1)>>>0;
+      const base=off+SEQ_BYTES+STATUS_BYTES;
+      const vals=new Array(nCh);
+      for(let c=0;c<nCh;c++) vals[c]=int24BE(dv, base+c*CH_BYTES);
       pushSample(vals);
     }
   }
-  function onCharValue(e){                        // named BLE handler (so it can be removed)
-    if (paused) return;
-    try { handleBytes(e.target.value); } catch(err){ console.error("frame parse error", err); }
-  }
-  function addMarker(){ markers.push(totalSamples); if (markers.length > 300) markers.shift(); }
-  function onMarker(){ addMarker(); }            // BLE event-marker -> line at current position
+  function onCharValue(e){ if(paused)return; try{handleBytes(e.target.value);}catch(err){console.error("parse",err);} }
+  function addMarker(){ const p=totalSamples; markers.push(p); if(markers.length>300)markers.shift(); if(recording)recMarks.push(p); }
+  function onMarker(){ addMarker(); }
 
-  // ---- BLE source -----------------------------------------------------------
+  // ---- BLE -----------------------------------------------------------------
   async function connectBLE(){
-    if (!hasBLE || !window.isSecureContext){
-      setStatus("needs localhost / https", "bad");
-      alert("Web Bluetooth requires Chrome/Edge over http://localhost or https:// (not file://).\n" +
-            "Run `python -m http.server` in this folder and open http://localhost:8000 (see README).");
+    if(!hasBLE || !window.isSecureContext){
+      setStatus("needs localhost/https","bad");
+      alert("Web Bluetooth needs Chrome/Edge over http://localhost or https:// (not file://).\nRun `python -m http.server` and open http://localhost:8000.");
       return;
     }
-    try {
-      setStatus("requesting device…","idle");
-      btDevice = await navigator.bluetooth.requestDevice({
-        filters:[{ namePrefix:"CardioCore" }], optionalServices:[SVC_UUID]
-      });
-      btDevice.addEventListener("gattserverdisconnected", () => setStatus("disconnected","bad"));
+    try{
+      setStatus("requesting…","idle");
+      btDevice=await navigator.bluetooth.requestDevice({filters:[{namePrefix:"CardioCore"}],optionalServices:[SVC_UUID]});
+      btDevice.addEventListener("gattserverdisconnected",()=>setStatus("disconnected","bad"));
       setStatus("connecting…","idle");
-      const server = await btDevice.gatt.connect();
-      const svc    = await server.getPrimaryService(SVC_UUID);
-      btChar       = await svc.getCharacteristic(DATA_UUID);
+      const server=await btDevice.gatt.connect();
+      const svc=await server.getPrimaryService(SVC_UUID);
+      btChar=await svc.getCharacteristic(DATA_UUID);
       await btChar.startNotifications();
-      btChar.addEventListener("characteristicvaluechanged", onCharValue);
-      try {   // optional event-marker characteristic
-        const mk = await svc.getCharacteristic(MARK_UUID);
-        await mk.startNotifications();
-        mk.addEventListener("characteristicvaluechanged", onMarker);
-      } catch(e){ /* marker characteristic not present */ }
+      btChar.addEventListener("characteristicvaluechanged",onCharValue);
+      try{ const mk=await svc.getCharacteristic(MARK_UUID); await mk.startNotifications(); mk.addEventListener("characteristicvaluechanged",onMarker);}catch(e){}
       stopDemo();
-      markers = [];
-      frameLen = 0;                                       // re-detect on a fresh stream
-      sampleRate = 500; elRate.textContent = sampleRate;  // firmware DEFAULT_SPS (assumed)
+      resetStream(); sampleRate=500; elRate.textContent=sampleRate; recomputeFilters();
       source="ble"; running=true; paused=false;
       $("btnPause").disabled=false; $("btnRecord").disabled=false;
-      setStatus("connected to "+(btDevice.name||"device"), "ok");
-    } catch(err){
-      if (err && err.name === "NotFoundError")      setStatus("connection cancelled","idle");
-      else if (err && err.name === "SecurityError") setStatus("blocked: use localhost/https","bad");
-      else                                          setStatus("connect failed","bad");
+      setStatus("connected to "+(btDevice.name||"device"),"ok");
+    }catch(err){
+      if(err&&err.name==="NotFoundError") setStatus("connection cancelled","idle");
+      else if(err&&err.name==="SecurityError") setStatus("blocked: use localhost/https","bad");
+      else setStatus("connect failed","bad");
       console.error(err);
     }
   }
 
-  // ---- Demo source (synthetic 8-channel ECG) -------------------------------
+  // ---- Demo ----------------------------------------------------------------
   let demoTimer=null, demoSample=0;
-  function ecgCounts(t, lead){
-    const hr = 72/60;                          // beats per second
-    const ph = (t*hr) % 1;                      // phase within a beat [0,1)
-    const g = (c,w,a) => a*Math.exp(-((ph-c)*(ph-c))/(2*w*w));
-    let mv = g(0.20,0.025,0.10)   // P
-           - g(0.38,0.008,0.13)   // Q
-           + g(0.40,0.011,1.00)   // R
-           - g(0.43,0.010,0.28)   // S
-           + g(0.62,0.040,0.30);  // T
-    mv *= 0.55 + 0.5*Math.abs(Math.sin(1.3*lead+0.6));   // per-lead variation
-    mv += 0.015*(Math.random()-0.5);                      // noise
-    mv += 0.03*Math.sin(2*Math.PI*0.25*t);                // slow baseline wander
+  function ecgCounts(t,lead){
+    const hr=72/60, ph=(t*hr)%1;
+    const g=(c,w,a)=>a*Math.exp(-((ph-c)*(ph-c))/(2*w*w));
+    let mv=g(0.20,0.025,0.10)-g(0.38,0.008,0.13)+g(0.40,0.011,1.0)-g(0.43,0.010,0.28)+g(0.62,0.040,0.30);
+    mv*=0.55+0.5*Math.abs(Math.sin(1.3*lead+0.6));
+    mv+=0.015*(Math.random()-0.5)+0.03*Math.sin(2*Math.PI*0.25*t);
     const vref=parseFloat($("vref").value)||2.5, pga=parseFloat($("pga").value)||6;
-    return Math.round(mv*1e-3 * pga / vref * 8388607);    // mV -> raw counts
+    return Math.round(mv*1e-3*pga/vref*8388607);
   }
   function startDemo(){
-    if (btChar){ try { btChar.removeEventListener("characteristicvaluechanged", onCharValue); } catch(e){} btChar=null; }
-    if (btDevice && btDevice.gatt && btDevice.gatt.connected) btDevice.gatt.disconnect();
-    frameLen = 0; markers = [];
-    source="demo"; running=true; paused=false; sampleRate=250; demoSample=0;
-    ensureChannels(8); elRate.textContent=sampleRate;
+    if(btChar){ try{btChar.removeEventListener("characteristicvaluechanged",onCharValue);}catch(e){} btChar=null; }
+    if(btDevice&&btDevice.gatt&&btDevice.gatt.connected) btDevice.gatt.disconnect();
+    resetStream(); source="demo"; running=true; paused=false; sampleRate=250; demoSample=0; recomputeFilters();
+    elRate.textContent=sampleRate; ensureChannels(8);
     $("btnPause").disabled=false; $("btnRecord").disabled=false;
-    setStatus("demo (synthetic ECG)", "ok");
+    setStatus("demo (synthetic ECG)","ok");
     clearInterval(demoTimer);
-    demoTimer = setInterval(() => {
-      if (paused) return;
-      const batch = 5;                          // 5 samples / 20 ms = 250 SPS
-      for (let i=0;i<batch;i++){
-        const t = demoSample/sampleRate; demoSample++;
-        const vals = new Array(8);
-        for (let c=0;c<8;c++) vals[c] = ecgCounts(t, c);
-        pushSample(vals);
-      }
-    }, 20);
+    demoTimer=setInterval(()=>{ if(paused)return;
+      for(let i=0;i<5;i++){ const t=demoSample/sampleRate; demoSample++;
+        const v=new Array(channels||8); for(let c=0;c<(channels||8);c++) v[c]=ecgCounts(t,c); pushSample(v); } },20);
   }
   function stopDemo(){ clearInterval(demoTimer); demoTimer=null; }
+  function resetStream(){ frameLen=0; markers=[]; rPeaks=[]; bpm=0; drops=0; expectSeq=-1; rpLastIdx=-1; rpPeak=1; rpPrev=0; rpPrev2=0; }
 
-  // ---- Rendering ------------------------------------------------------------
-  function resize(){
-    const lane = 92, dpr = window.devicePixelRatio||1;
-    const cssW = cv.clientWidth || cv.parentElement.clientWidth || 800;
-    const cssH = Math.max(lane, (channels||1)*lane);
-    cv.style.height = cssH+"px";
-    cv.width = Math.floor(cssW*dpr); cv.height = Math.floor(cssH*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+  // ---- SQI (per channel, over the window) ----------------------------------
+  function computeSQI(){
+    for(let c=0;c<channels;c++){
+      const b=fbuffers[c]; if(!b||b.length<20){ sqi[c]="—"; continue; }
+      let mn=Infinity,mx=-Infinity,dsum=0;
+      for(let i=0;i<b.length;i++){ if(b[i]<mn)mn=b[i]; if(b[i]>mx)mx=b[i]; if(i)dsum+=Math.abs(b[i]-b[i-1]); }
+      const p2p=mx-mn, rough=dsum/b.length/(p2p||1);   // high-freq roughness normalized
+      sqi[c] = p2p<300 ? "flat" : (rough>0.6 ? "noisy" : "good");
+    }
   }
-  window.addEventListener("resize", resize);
 
+  // ---- Rendering -----------------------------------------------------------
+  function resize(){
+    const lane=92, dpr=window.devicePixelRatio||1;
+    const w=cv.clientWidth||cv.parentElement.clientWidth||800, h=Math.max(lane,(channels||1)*lane);
+    cv.style.height=h+"px"; cv.width=Math.floor(w*dpr); cv.height=Math.floor(h*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener("resize",resize);
+
+  let frameCtr=0;
   function draw(){
     requestAnimationFrame(draw);
-    const W = cv.clientWidth, H = cv.clientHeight;
-    ctx.clearRect(0,0,W,H);
-    if (!channels){ ctx.fillStyle="#8a97a8"; ctx.font="14px system-ui";
-      ctx.fillText("Press “Demo” to see a synthetic ECG, or “Connect (BLE)” for a real device.", 16, 28); return; }
+    const W=cv.clientWidth,H=cv.clientHeight; ctx.clearRect(0,0,W,H);
+    if(!channels){ ctx.fillStyle="#8a97a8"; ctx.font="14px system-ui";
+      ctx.fillText("Press “Demo” for a synthetic ECG, or “Connect (BLE)” for a real device.",16,28); return; }
+    if((frameCtr++ % 20)===0) computeSQI();               // SQI ~ 3x/s
+    elBpm.textContent = bpm ? Math.round(bpm) : "—";
+    elDrops.textContent = drops;
 
-    const lane = H/channels;
-    const gain = parseFloat($("gain").value)||1.5;
-    const useMv = $("units").value==="mv";
+    const lane=H/channels, gain=parseFloat($("gain").value)||1.5;
+    const filt=$("filtOn").checked, useMv=$("units").value==="mv";
     const vref=parseFloat($("vref").value)||2.5, pga=parseFloat($("pga").value)||6;
-    const toUnit = c => useMv ? (c * vref / 8388607 / pga * 1000) : c;
+    const toUnit=v=>useMv?(v*vref/8388607/pga*1000):v;
+    const ac=Math.min(channels-1,parseInt($("analysisCh").value)||0);
+    const cap=Math.max(2,Math.floor(WINDOW_SEC*sampleRate));
 
-    for (let c=0;c<channels;c++){
-      const y0 = c*lane, mid = y0 + lane/2, b = buffers[c]; if (!b.length) continue;
-      // lane separators + grid baseline
-      ctx.strokeStyle="#1b2330"; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(W,y0); ctx.stroke();
+    for(let c=0;c<channels;c++){
+      const y0=c*lane, mid=y0+lane/2, b=filt?fbuffers[c]:buffers[c]; if(!b||!b.length)continue;
+      ctx.strokeStyle="#1b2330"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(W,y0); ctx.stroke();
       ctx.strokeStyle="#16202c"; ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.stroke();
-      // autoscale on window peak
-      let peak=1; for (let i=0;i<b.length;i++){ const a=Math.abs(toUnit(b[i])); if(a>peak)peak=a; }
-      const scale = (lane*0.42)/peak * gain;
-      // trace
-      ctx.strokeStyle = c%2 ? "#5aa9ff" : "#46d39a"; ctx.lineWidth=1.3; ctx.beginPath();
-      const n=b.length, dx = W/Math.max(1,n-1);
-      for (let i=0;i<n;i++){
-        const x=i*dx, y=mid - toUnit(b[i])*scale;
-        i?ctx.lineTo(x,y):ctx.moveTo(x,y);
-      }
-      ctx.stroke();
-      // label
-      ctx.fillStyle="#8a97a8"; ctx.font="11px system-ui";
-      ctx.fillText("CH"+(c+1), 6, y0+14);
+      let peak=1; for(let i=0;i<b.length;i++){ const a=Math.abs(toUnit(b[i])); if(a>peak)peak=a; }
+      const scale=(lane*0.42)/peak*gain, n=b.length, dx=W/Math.max(1,n-1);
+      ctx.strokeStyle=c%2?"#5aa9ff":"#46d39a"; ctx.lineWidth=1.3; ctx.beginPath();
+      for(let i=0;i<n;i++){ const x=i*dx,y=mid-toUnit(b[i])*scale; i?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.stroke();
+      // labels + SQI badge
+      ctx.fillStyle="#8a97a8"; ctx.font="11px system-ui"; ctx.fillText("CH"+(c+1),6,y0+14);
+      const q=sqi[c]||"—", qc=q==="good"?"#46d39a":q==="noisy"?"#ffcf5c":q==="flat"?"#ff6b6b":"#8a97a8";
+      ctx.fillStyle=qc; ctx.fillText(q,44,y0+14);
+      if(c===ac){ ctx.fillStyle="#8a97a8"; ctx.fillText("◀ analysis",84,y0+14);
+        // R-peak dots on the analysis channel
+        ctx.fillStyle="#ff6b6b";
+        for(const p of rPeaks){ const ago=totalSamples-p; if(ago<0||ago>=n)continue;
+          const idx=n-1-ago, x=idx*dx, y=mid-toUnit(b[idx])*scale; ctx.beginPath(); ctx.arc(x,y,2.5,0,7); ctx.fill(); } }
     }
-
-    // event markers (vertical lines that scroll left with the data)
-    if (markers.length){
-      const cap = Math.max(2, Math.floor(WINDOW_SEC*sampleRate));
-      markers = markers.filter(m => totalSamples - m <= cap);
+    if(rPeaks.length>512) rPeaks=rPeaks.filter(p=>totalSamples-p<=cap);
+    // event markers
+    if(markers.length){ markers=markers.filter(m=>totalSamples-m<=cap);
       ctx.strokeStyle="#ffcf5c"; ctx.lineWidth=1;
-      for (const m of markers){
-        const x = W - ((totalSamples - m)/cap)*W;
-        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
-      }
-    }
+      for(const m of markers){ const x=W-((totalSamples-m)/cap)*W; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); } }
   }
 
-  // ---- CSV recording --------------------------------------------------------
+  // ---- Recording / export --------------------------------------------------
   function toggleRecord(){
-    recording = !recording;
-    if (recording){ recRows=[]; recStart=performance.now(); recChannels=channels; elRecPill.style.display="";
-      $("btnRecord").textContent="⏹ Stop & Save"; }
-    else {
-      $("btnRecord").textContent="⏺ Record CSV";
-      const n = recChannels || channels;
-      const head = ["t_ms", ...Array.from({length:n},(_,i)=>"ch"+(i+1))].join(",");
-      const csv = head+"\n"+recRows.map(r=>r.join(",")).join("\n");
-      const a=document.createElement("a");
-      a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-      a.download="cardiovest_ecg_raw.csv"; a.click(); URL.revokeObjectURL(a.href);
+    recording=!recording;
+    if(recording){ recRows=[]; recMarks=[]; recStart=performance.now(); recStartSamples=totalSamples; recChannels=channels; elRecPill.style.display=""; $("btnRecord").textContent="⏹ Stop & Save"; }
+    else{
+      $("btnRecord").textContent="⏺ Record"; const n=recChannels||channels;
+      const head=["t_ms",...Array.from({length:n},(_,i)=>"ch"+(i+1))].join(",");
+      dl("cardiovest_ecg_raw.csv","text/csv", head+"\n"+recRows.map(r=>r.join(",")).join("\n"));
+      const anns=recMarks.map(p=>({t_ms:+(( (p-recStartSamples)/sampleRate*1000).toFixed(1)),sample_index:(p-recStartSamples),type:"marker"}));
+      const ann={schema:"cardiovest.annotations.v1",sample_rate_sps:sampleRate,annotations:anns};
+      dl("cardiovest_ecg_annotations.json","application/json",JSON.stringify(ann,null,2));
     }
   }
+  function dl(name,type,data){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([data],{type})); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
 
-  // ---- Wire up --------------------------------------------------------------
-  $("btnConnect").onclick = connectBLE;
-  $("btnDemo").onclick     = startDemo;
-  $("btnPause").onclick     = () => { paused=!paused; $("btnPause").textContent = paused?"▶ Resume":"⏸ Pause"; };
-  $("btnRecord").onclick    = toggleRecord;
-  window.addEventListener("keydown", e => { if ((e.key==='m'||e.key==='M') && running) addMarker(); });
-
-  if (!hasBLE){ $("btnConnect").disabled=true; $("btnConnect").title="Web Bluetooth unavailable here"; }
-  elFoot.innerHTML = "Frame: [u32 sample_index LE] + 24-bit status + N×24-bit channels (big-endian). " +
-    "Press <b>M</b> to drop an event marker. Real device: serve over <code>http://localhost</code> " +
-    "(e.g. <code>python -m http.server</code>) in Chrome/Edge. " +
-    (hasBLE ? "" : "<b>Web Bluetooth unavailable here — Demo still works.</b>");
-
+  // ---- Wire up -------------------------------------------------------------
+  $("btnConnect").onclick=connectBLE;
+  $("btnDemo").onclick=startDemo;
+  $("btnPause").onclick=()=>{paused=!paused;$("btnPause").textContent=paused?"▶ Resume":"⏸ Pause";};
+  $("btnRecord").onclick=toggleRecord;
+  $("mains").onchange=recomputeFilters;
+  $("analysisCh").onchange=()=>{ rpLastIdx=-1; rpPeak=1; rpPrev=0; rpPrev2=0; rPeaks=[]; bpm=0; };
+  window.addEventListener("keydown",e=>{ if((e.key==='m'||e.key==='M')&&running) addMarker(); });
+  if(!hasBLE){ $("btnConnect").disabled=true; $("btnConnect").title="Web Bluetooth unavailable here"; }
+  elFoot.innerHTML="Frame: [u32 sample_index LE] + 24-bit status + N×24-bit channels (big-endian). "+
+    "Filters/BPM/SQI are display-only engineering estimates — recording stays RAW. Press <b>M</b> or the board <b>BOOT</b> button to drop a marker. "+
+    "Real device: serve over <code>http://localhost</code> in Chrome/Edge. "+(hasBLE?"":"<b>Web Bluetooth unavailable here — Demo still works.</b>");
   resize(); requestAnimationFrame(draw);
 })();
 </script>
