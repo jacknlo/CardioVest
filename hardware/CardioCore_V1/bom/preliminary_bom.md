@@ -70,6 +70,28 @@ and assembly consumables are **out of scope** for this revision.
 
 ---
 
+## ⚠ Required additions before layout — bulk capacitors MISSING
+
+The current export has **no bulk capacitance**: C1–C14 are all 100 nF and C15–C30 are
+the input/RLD network. This is a **blocking gap** — the AP2112K LDO requires Cin/Cout ≥ 1 µF
+ceramic to be stable, and there is no bulk on the charger, VSYS, USB 5 V, VREFP, or VCAP1.
+Add the following to the flux.ai schematic (values candidate — confirm against each
+datasheet) and re-export before PCB layout:
+
+| Node | Proposed | Notes |
+|---|---|---|
+| AP2112K (U4) Vin | 1 µF X7R (+ optional 10 µF bulk) | LDO input stability |
+| AP2112K (U4) Vout / 3V3 rail | 1 µF X7R min (2.2–10 µF bulk recommended) | LDO output stability + ESP32 BLE-TX transient (350–500 mA) |
+| MP2662 (U3) VIN / SYS | 1–10 µF per datasheet | charger input/system bulk |
+| USB-C 5 V (J1) | 1–10 µF | input bulk / hot-plug |
+| ADS1298 VREFP (from REF5025) | ~1 µF + 100 nF | reference decoupling (currently only 100 nF) |
+| ADS1298 VCAP1 | ~1 µF per SBAS459 | internal reference cap |
+
+See finding **4.1** in the software/hardware review and **§7** of the AFE Verification
+Report. Until these exist in the export, the component count and power tree are incomplete.
+
+---
+
 ## Power chain summary
 
 ```text
