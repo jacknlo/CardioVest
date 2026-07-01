@@ -69,9 +69,11 @@
   // ---- Firmware BLE UUIDs (must match firmware/esp32_s3/src/ble_stream.h) ----
   const SVC_UUID  = "c0de0001-feed-4cad-b10c-0000cad10000";
   const DATA_UUID = "c0de0002-feed-4cad-b10c-0000cad10000";
+  const MARK_UUID = "c0de0004-feed-4cad-b10c-0000cad10000";   // event markers (notify)
 
   // ---- Acquisition geometry ------------------------------------------------
-  const STATUS_BYTES = 3, CH_BYTES = 3;     // ADS129x: 24-bit status + 24-bit/channel
+  // Transport frame = [u32 sample_index LE] + 24-bit status + N x 24-bit channels.
+  const SEQ_BYTES = 4, STATUS_BYTES = 3, CH_BYTES = 3;
   const WINDOW_SEC = 5;                       // visible time window
   let   sampleRate = 250;                     // assumed/displayed SPS (demo uses this)
 
@@ -81,7 +83,8 @@
   let running  = false, paused = false, source = null; // 'ble' | 'demo'
   let recording = false, recRows = [], recStart = 0, recChannels = 0;
   let btChar = null, btDevice = null;
-  let frameLen = 0;           // latched frame size (9 = 2ch ADS1292R, 27 = 8ch ADS1298)
+  let frameLen = 0;           // latched frame size (13 = 2ch ADS1292R, 31 = 8ch ADS1298)
+  let markers = [], totalSamples = 0;   // event markers (as sample positions) + running sample count
 
   // ---- DOM ------------------------------------------------------------------
   const $ = id => document.getElementById(id);
@@ -100,6 +103,7 @@
     resize();
   }
   function pushSample(values){          // values: array[channels] of counts
+    totalSamples++;
     const cap = Math.max(2, Math.floor(WINDOW_SEC * sampleRate));
     for (let c=0;c<channels;c++){
       const b = buffers[c]; b.push(values[c]);
@@ -120,21 +124,23 @@
     if (v & 0x800000) v -= 0x1000000;      // two's complement sign-extend
     return v;
   }
+  // Valid single-frame transport lengths: 13 (2ch ADS1292R) and 31 (8ch ADS1298).
   function frameLenFor(totalLen){
-    if (totalLen===9 || totalLen===27) return totalLen;          // unambiguous single frame
-    if (frameLen && totalLen % frameLen === 0) return frameLen;  // coalesced, known size
+    if (totalLen===13 || totalLen===31) return totalLen;
+    if (frameLen && totalLen % frameLen === 0) return frameLen;
     return 0;                                                     // unknown/ambiguous -> reject
   }
   function handleBytes(dv){
     const len = dv.byteLength;
     const flen = frameLenFor(len);
-    if (!flen) return;                           // malformed / unknown length -> ignore
-    if (flen===9 || flen===27) frameLen = flen;  // latch the detected frame size
-    const nCh = Math.max(1, ((flen - STATUS_BYTES) / CH_BYTES) | 0);
+    if (!flen) return;                              // malformed / unknown length -> ignore
+    if (flen===13 || flen===31) frameLen = flen;    // latch the detected frame size
+    const nCh = Math.max(1, ((flen - SEQ_BYTES - STATUS_BYTES) / CH_BYTES) | 0);
     ensureChannels(nCh);
     for (let off=0; off+flen<=len; off+=flen){
+      const base = off + SEQ_BYTES + STATUS_BYTES;  // skip u32 sample_index + 3-byte status
       const vals = new Array(nCh);
-      for (let c=0;c<nCh;c++) vals[c] = int24BE(dv, off + STATUS_BYTES + c*CH_BYTES);
+      for (let c=0;c<nCh;c++) vals[c] = int24BE(dv, base + c*CH_BYTES);
       pushSample(vals);
     }
   }
@@ -142,6 +148,8 @@
     if (paused) return;
     try { handleBytes(e.target.value); } catch(err){ console.error("frame parse error", err); }
   }
+  function addMarker(){ markers.push(totalSamples); if (markers.length > 300) markers.shift(); }
+  function onMarker(){ addMarker(); }            // BLE event-marker -> line at current position
 
   // ---- BLE source -----------------------------------------------------------
   async function connectBLE(){
@@ -163,7 +171,13 @@
       btChar       = await svc.getCharacteristic(DATA_UUID);
       await btChar.startNotifications();
       btChar.addEventListener("characteristicvaluechanged", onCharValue);
+      try {   // optional event-marker characteristic
+        const mk = await svc.getCharacteristic(MARK_UUID);
+        await mk.startNotifications();
+        mk.addEventListener("characteristicvaluechanged", onMarker);
+      } catch(e){ /* marker characteristic not present */ }
       stopDemo();
+      markers = [];
       frameLen = 0;                                       // re-detect on a fresh stream
       sampleRate = 500; elRate.textContent = sampleRate;  // firmware DEFAULT_SPS (assumed)
       source="ble"; running=true; paused=false;
@@ -197,7 +211,7 @@
   function startDemo(){
     if (btChar){ try { btChar.removeEventListener("characteristicvaluechanged", onCharValue); } catch(e){} btChar=null; }
     if (btDevice && btDevice.gatt && btDevice.gatt.connected) btDevice.gatt.disconnect();
-    frameLen = 0;
+    frameLen = 0; markers = [];
     source="demo"; running=true; paused=false; sampleRate=250; demoSample=0;
     ensureChannels(8); elRate.textContent=sampleRate;
     $("btnPause").disabled=false; $("btnRecord").disabled=false;
@@ -261,6 +275,17 @@
       ctx.fillStyle="#8a97a8"; ctx.font="11px system-ui";
       ctx.fillText("CH"+(c+1), 6, y0+14);
     }
+
+    // event markers (vertical lines that scroll left with the data)
+    if (markers.length){
+      const cap = Math.max(2, Math.floor(WINDOW_SEC*sampleRate));
+      markers = markers.filter(m => totalSamples - m <= cap);
+      ctx.strokeStyle="#ffcf5c"; ctx.lineWidth=1;
+      for (const m of markers){
+        const x = W - ((totalSamples - m)/cap)*W;
+        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+      }
+    }
   }
 
   // ---- CSV recording --------------------------------------------------------
@@ -284,11 +309,13 @@
   $("btnDemo").onclick     = startDemo;
   $("btnPause").onclick     = () => { paused=!paused; $("btnPause").textContent = paused?"▶ Resume":"⏸ Pause"; };
   $("btnRecord").onclick    = toggleRecord;
+  window.addEventListener("keydown", e => { if ((e.key==='m'||e.key==='M') && running) addMarker(); });
 
   if (!hasBLE){ $("btnConnect").disabled=true; $("btnConnect").title="Web Bluetooth unavailable here"; }
-  elFoot.innerHTML = "Frame format: 24-bit status + N×24-bit channels (big-endian, two's complement). " +
-    "Real device: serve over <code>http://localhost</code> (e.g. <code>python -m http.server</code>) and use Chrome/Edge. " +
-    (hasBLE ? "" : "<b>Web Bluetooth is not available in this context — Demo still works.</b>");
+  elFoot.innerHTML = "Frame: [u32 sample_index LE] + 24-bit status + N×24-bit channels (big-endian). " +
+    "Press <b>M</b> to drop an event marker. Real device: serve over <code>http://localhost</code> " +
+    "(e.g. <code>python -m http.server</code>) in Chrome/Edge. " +
+    (hasBLE ? "" : "<b>Web Bluetooth unavailable here — Demo still works.</b>");
 
   resize(); requestAnimationFrame(draw);
 })();

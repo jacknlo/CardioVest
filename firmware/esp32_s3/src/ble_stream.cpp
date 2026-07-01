@@ -10,6 +10,7 @@ namespace ble_stream {
 namespace {
 
 NimBLECharacteristic* g_data      = nullptr;
+NimBLECharacteristic* g_mark      = nullptr;
 volatile bool         g_connected = false;
 
 class ServerCb : public NimBLEServerCallbacks {
@@ -36,6 +37,7 @@ void begin(const char* deviceName) {
 
   NimBLEService* svc = server->createService(SVC_UUID);
   g_data = svc->createCharacteristic(DATA_UUID, NIMBLE_PROPERTY::NOTIFY);
+  g_mark = svc->createCharacteristic(MARK_UUID, NIMBLE_PROPERTY::NOTIFY);  // event markers
   svc->createCharacteristic(CTRL_UUID, NIMBLE_PROPERTY::WRITE);  // future start/stop/config
   svc->start();
 
@@ -51,6 +53,17 @@ void sendFrame(const uint8_t* frame, size_t len) {
   if (!g_connected || g_data == nullptr) return;
   g_data->setValue(frame, len);
   g_data->notify();
+}
+
+void sendMarker(uint32_t sampleIndex, uint32_t ms) {
+  if (!g_connected || g_mark == nullptr) return;
+  uint8_t p[8];
+  p[0]= sampleIndex        & 0xFF; p[1]=(sampleIndex >> 8)  & 0xFF;
+  p[2]=(sampleIndex >> 16) & 0xFF; p[3]=(sampleIndex >> 24) & 0xFF;
+  p[4]= ms         & 0xFF;         p[5]=(ms >> 8)  & 0xFF;
+  p[6]=(ms >> 16)  & 0xFF;         p[7]=(ms >> 24) & 0xFF;
+  g_mark->setValue(p, 8);
+  g_mark->notify();
 }
 
 }  // namespace ble_stream

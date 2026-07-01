@@ -17,9 +17,11 @@ namespace ble_stream {
 constexpr char SVC_UUID[]  = "c0de0001-feed-4cad-b10c-0000cad10000";
 constexpr char DATA_UUID[] = "c0de0002-feed-4cad-b10c-0000cad10000";
 constexpr char CTRL_UUID[] = "c0de0003-feed-4cad-b10c-0000cad10000";
+constexpr char MARK_UUID[] = "c0de0004-feed-4cad-b10c-0000cad10000";  // event markers (notify)
 
 void begin(const char* deviceName);          // init NimBLE, advertise
 bool connected();                            // host connected?
-void sendFrame(const uint8_t* frame, size_t len);  // notify if connected
+void sendFrame(const uint8_t* frame, size_t len);   // notify raw transport frame
+void sendMarker(uint32_t sampleIndex, uint32_t ms); // notify an event marker [u32 idx][u32 ms] LE
 
 }  // namespace ble_stream

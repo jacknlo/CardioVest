@@ -17,7 +17,9 @@ Firmware for the **CardioCore V1** board of the **CardioVest** project — an 8-
                                                    └─▶ safety interlock gate
 ```
 
-Each frame is one ADS1298 RDATAC record: **24-bit status + 8 × 24-bit channels = 27 bytes**, raw.
+Each BLE/SD **transport frame** = a little-endian **u32 sample counter** prepended to one raw ADS record (24-bit status + N × 24-bit channels): **31 bytes** (ADS1298) or **13 bytes** (ADS1292R). The counter enables dropped-frame detection and annotation time-sync.
+
+Press the **BOOT button** (SW2 on CardioCore V1) to drop a **Zio-style event marker** — timestamped with the current sample index and emitted on serial + a BLE marker characteristic (`c0de0004…`).
 
 > **Demo stream:** if **no AFE is detected**, the firmware synthesizes an ECG-like signal and streams it over BLE/SD anyway (`ENABLE_DEMO_STREAM` in `config.h`). This lets you validate the whole wireless pipeline (ESP32-S3 → BLE → web viewer) with **just the dev board**, before any ADS129x is wired. Synthetic data is obviously not a real measurement.
 

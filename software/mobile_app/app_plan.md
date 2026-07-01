@@ -224,7 +224,7 @@ recording — see §6):
 }
 ```
 
-- `type`: `voice` | `button` | `note`. `sample_index` is optional (present once frames are stamped).
+- `type`: `voice` | `button` | `note`. `sample_index` comes from the stream's per-frame counter (firmware ≥ v0.3 prepends a u32 sample index to every transport frame; the board also emits button markers on a BLE marker characteristic).
 - The viewer overlays these as markers on the trace so analysts can jump to each event.
 
 **Privacy:** voice + health context is sensitive. On-device only, explicit consent, raw audio not

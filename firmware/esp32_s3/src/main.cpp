@@ -23,6 +23,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <math.h>
+#include <string.h>
 
 #include "config.h"
 #include "pins.h"
@@ -35,9 +36,10 @@
 namespace {
 
 Ads1298 g_ads;
-FrameRing<cfg::FRAME_BYTES, cfg::RING_FRAMES> g_ring;
+FrameRing<cfg::TX_FRAME_BYTES, cfg::RING_FRAMES> g_ring;   // holds transport frames (seq + raw)
 volatile bool g_drdy = false;   // set by the DRDY ISR
 bool g_acq = false;             // conversions currently running?
+uint32_t g_sampleIndex = 0;     // monotonic per-sample counter (real + demo)
 
 void IRAM_ATTR onDrdy() { g_drdy = true; }
 
@@ -47,6 +49,7 @@ uint32_t g_demoSample = 0, g_demoLastUs = 0;
 bool     g_demoInit = false;   // first-call latch (micros() can legitimately be 0)
 
 inline void put24be(uint8_t* p, int32_t v) { p[0]=(v>>16)&0xFF; p[1]=(v>>8)&0xFF; p[2]=v&0xFF; }
+inline void putSeqLE(uint8_t* p, uint32_t v) { p[0]=v&0xFF; p[1]=(v>>8)&0xFF; p[2]=(v>>16)&0xFF; p[3]=(v>>24)&0xFF; }
 
 int32_t demoEcgCounts(float t, int lead) {
   const float hr = 72.0f/60.0f, ph = fmodf(t*hr, 1.0f);
@@ -62,16 +65,38 @@ void produceDemoFrames() {
   const uint32_t periodUs = 1000000UL / cfg::DEFAULT_SPS;
   const uint32_t now = micros();
   if (!g_demoInit) { g_demoInit = true; g_demoLastUs = now; }
-  uint8_t f[cfg::FRAME_BYTES];
+  uint8_t tx[cfg::TX_FRAME_BYTES];
   int guard = 0;
   while ((uint32_t)(now - g_demoLastUs) >= periodUs && guard++ < 64) {
     g_demoLastUs += periodUs;
     const float t = (float)g_demoSample / (float)cfg::DEFAULT_SPS;
     g_demoSample++;
-    f[0]=f[1]=f[2]=0;   // status word
+    putSeqLE(tx, g_sampleIndex++);
+    uint8_t* raw = tx + cfg::SEQ_BYTES;
+    raw[0]=raw[1]=raw[2]=0;   // status word
     for (uint8_t c=0; c<cfg::NUM_CHANNELS; ++c)
-      put24be(&f[cfg::STATUS_BYTES + c*cfg::CH_BYTES], demoEcgCounts(t, c));
-    g_ring.push(f);
+      put24be(&raw[cfg::STATUS_BYTES + c*cfg::CH_BYTES], demoEcgCounts(t, c));
+    g_ring.push(tx);
+  }
+}
+
+// Event-marker button (Zio-style): press the BOOT button to timestamp a moment
+// of interest. Emits a marker (serial + BLE) carrying the current sample index.
+void checkMarkerButton() {
+  static int stable = HIGH, lastRead = HIGH;
+  static uint32_t tChange = 0, markCount = 0;
+  const int r = digitalRead(pins::BTN_BOOT);   // BOOT button: active low (INPUT_PULLUP)
+  const uint32_t now = millis();
+  if (r != lastRead) { lastRead = r; tChange = now; }
+  if ((now - tChange) > 40 && r != stable) {   // 40 ms debounce
+    stable = r;
+    if (stable == LOW) {                        // press edge
+      const uint32_t idx = g_sampleIndex;
+      markCount++;
+      Serial.printf("[event] marker #%lu @ sample=%lu t=%lums\n",
+                    (unsigned long)markCount, (unsigned long)idx, (unsigned long)now);
+      ble_stream::sendMarker(idx, now);
+    }
   }
 }
 
@@ -102,6 +127,7 @@ void setup() {
   printBanner();
 
   interlock::begin();
+  pinMode(pins::BTN_BOOT, INPUT_PULLUP);   // event-marker button (BOOT)
 
   Serial.printf("[init] %s...\n", cfg::AFE_NAME);
   const bool afe = g_ads.begin();
@@ -151,6 +177,8 @@ void loop() {
   static uint32_t lastBeat = 0, lastFlush = 0;
   const uint32_t now = millis();
 
+  checkMarkerButton();   // BOOT-button event marker (Zio-style)
+
   // --- Safety interlock: stop acquiring if USB power appears ----------------
   if (g_acq && !interlock::acquisitionPermitted()) {
     g_ads.stopConversions();
@@ -164,10 +192,13 @@ void loop() {
   // samples (handles a loop stall spanning more than one sample period).
   if (g_acq && g_drdy) {
     g_drdy = false;
-    uint8_t frame[cfg::FRAME_BYTES];
+    uint8_t raw[cfg::FRAME_BYTES];
+    uint8_t tx[cfg::TX_FRAME_BYTES];
     do {
-      g_ads.readFrame(frame);
-      g_ring.push(frame);
+      g_ads.readFrame(raw);
+      putSeqLE(tx, g_sampleIndex++);
+      memcpy(tx + cfg::SEQ_BYTES, raw, cfg::FRAME_BYTES);
+      g_ring.push(tx);
     } while (digitalRead(pins::ADS_DRDY) == LOW);
   }
 
@@ -175,10 +206,10 @@ void loop() {
   if (g_demo) produceDemoFrames();
 
   // --- Consumer: forward buffered RAW frames to the sinks -------------------
-  uint8_t out[cfg::FRAME_BYTES];
+  uint8_t out[cfg::TX_FRAME_BYTES];
   while (g_ring.pop(out)) {
-    if (cfg::ENABLE_BLE) ble_stream::sendFrame(out, cfg::FRAME_BYTES);
-    if (cfg::ENABLE_SD)  sd_log::writeFrame(out, cfg::FRAME_BYTES);
+    if (cfg::ENABLE_BLE) ble_stream::sendFrame(out, cfg::TX_FRAME_BYTES);
+    if (cfg::ENABLE_SD)  sd_log::writeFrame(out, cfg::TX_FRAME_BYTES);
   }
 
   // --- Periodic SD flush ----------------------------------------------------
@@ -190,9 +221,10 @@ void loop() {
   // --- Heartbeat ------------------------------------------------------------
   if (now - lastBeat >= cfg::HEARTBEAT_MS) {
     lastBeat = now;
-    Serial.printf("[status] up=%lus | acq=%d | demo=%d | ble=%d | drops=%lu | research/edu only\n",
+    Serial.printf("[status] up=%lus | acq=%d | demo=%d | ble=%d | samples=%lu | drops=%lu | research/edu only\n",
                   static_cast<unsigned long>(now / 1000), static_cast<int>(g_acq),
                   static_cast<int>(g_demo), static_cast<int>(ble_stream::connected()),
+                  static_cast<unsigned long>(g_sampleIndex),
                   static_cast<unsigned long>(g_ring.dropped()));
   }
 }

@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #define FW_PROJECT "CardioVest / CardioCore V1"
-#define FW_VERSION "v0.2.0-dev"
+#define FW_VERSION "v0.3.0-dev"
 
 // --- AFE selection (ADS129x family) -----------------------------------------
 // ADS1298  = the CardioCore V1 board (8 channels).
@@ -37,6 +37,13 @@ static constexpr uint8_t     NUM_CHANNELS = 8;   // 8 ECG channels
 static constexpr uint8_t  CH_BYTES     = 3;                       // 24-bit/channel
 static constexpr uint8_t  STATUS_BYTES = 3;                       // 24-bit status
 static constexpr uint16_t FRAME_BYTES  = STATUS_BYTES + NUM_CHANNELS * CH_BYTES;
+
+// --- Transport frame: a little-endian u32 sample counter is PREPENDED to each
+//     raw frame before streaming/logging (drop detection + annotation sync).
+//     Wire layout: [u32 sample_index LE][status(3)][ch0..chN (3 each)]
+//     ADS1298 -> 4 + 27 = 31 bytes;  ADS1292R -> 4 + 9 = 13 bytes.
+static constexpr uint8_t  SEQ_BYTES      = 4;
+static constexpr uint16_t TX_FRAME_BYTES = SEQ_BYTES + FRAME_BYTES;
 
 // --- Default sample rate (candidate; finalize against datasheet) -------------
 // ADS1298 CONFIG1 DR[2:0] selects the rate; 500 SPS is a reasonable ECG start.
