@@ -159,12 +159,16 @@ def run(source, fs, ach, outdir):
         rr = (beat_t[i] - beat_t[i - 1]) * 1000.0
         if 300.0 <= rr <= 2000.0:                                          # reject non-physiological RR (gaps/artifact)
             rr_by_min.setdefault(int(beat_t[i] // 60), []).append(rr)
+    beats_by_min = {}                                                      # true detected-beat count per minute
+    for t in beat_t:
+        mm = int(t // 60)
+        beats_by_min[mm] = beats_by_min.get(mm, 0) + 1
     rows = []
     for m in range(n_min):
         rr = rr_by_min.get(m, [])
         mean_hr = 60000.0 / np.mean(rr) if rr else 0.0
         sdnn = float(np.std(rr)) if len(rr) > 1 else 0.0
-        rows.append([m, len(rr), round(mean_hr, 1), round(sdnn, 1), sqi_by_min.get(m, "-")])
+        rows.append([m, beats_by_min.get(m, 0), round(mean_hr, 1), round(sdnn, 1), sqi_by_min.get(m, "-")])
     with open(os.path.join(outdir, "summary_per_minute.csv"), "w", newline="") as f:
         w = csv.writer(f); w.writerow(["minute", "n_beats", "mean_hr", "sdnn_ms", "sqi"]); w.writerows(rows)
 

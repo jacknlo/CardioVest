@@ -78,6 +78,7 @@
   let btChar = null, btDevice = null, frameLen = 0;
   let markers = [], totalSamples = 0, lastMarkerId = -1;
   let drops = 0, expectSeq = -1;                        // BLE dropped-frame counter (seq gaps)
+  let seqToHostOffset = 0, haveSeqMap = false;          // map device sample_index -> host plot position
   let rPeaks = [], bpm = 0;                             // R-peak positions + smoothed BPM
   let sqi = [];                                         // per-channel quality string
 
@@ -142,7 +143,8 @@
     if (recording){
       if (recChannels===0) recChannels = values.length;
       if (values.length===recChannels){
-        recRows.push([(performance.now()-recStart).toFixed(1), ...values]);
+        const si=(totalSamples-1)-recStartSamples;                 // sample-counter timeline (shared with annotations)
+        recRows.push([si, (si/sampleRate*1000).toFixed(1), ...values]);
         elRecCount.textContent = recRows.length;
       }
     }
@@ -177,23 +179,33 @@
   }
   function handleBytes(dv){
     const len=dv.byteLength, flen=frameLenFor(len);
-    if(!flen) return;
+    if(!flen){ drops++; return; }                       // undecodable notification -> count as loss
     frameLen=flen;                                      // latch the per-frame length
     const nCh=Math.max(1,((flen-SEQ_BYTES-STATUS_BYTES)/CH_BYTES)|0);
     ensureChannels(nCh);
     for(let off=0; off+flen<=len; off+=flen){
-      const seq=dv.getUint32(off,true);                 // sample index (LE)
-      if(expectSeq>=0 && seq!==expectSeq){ if(seq>expectSeq) drops+=(seq-expectSeq); }
+      const seq=dv.getUint32(off,true);                 // device sample index (LE)
+      if(expectSeq>=0 && seq!==expectSeq){
+        if(seq>expectSeq) drops+=(seq-expectSeq);       // forward gap = missing frames
+        else drops++;                                   // out-of-order / backward = anomaly
+      }
       expectSeq=(seq+1)>>>0;
       const base=off+SEQ_BYTES+STATUS_BYTES;
       const vals=new Array(nCh);
       for(let c=0;c<nCh;c++) vals[c]=int24BE(dv, base+c*CH_BYTES);
       pushSample(vals);
+      seqToHostOffset=(totalSamples-1)-seq; haveSeqMap=true;   // device seq -> host plot index
     }
   }
   function onCharValue(e){ if(paused)return; try{handleBytes(e.target.value);}catch(err){console.error("parse",err);} }
-  function addMarker(){ const p=totalSamples; markers.push(p); if(markers.length>300)markers.shift(); if(recording)recMarks.push(p); }
-  function onMarker(e){ let id=-1; try{id=e.target.value.getUint32(0,true);}catch(_){}; if(id===lastMarkerId)return; lastMarkerId=id; addMarker(); }
+  function addMarker(p=totalSamples){ markers.push(p); if(markers.length>300)markers.shift(); if(recording)recMarks.push(p); }
+  function onMarker(e){
+    const dv=e.target.value; let id=-1, dsi=-1;
+    try{ id=dv.getUint32(0,true); if(dv.byteLength>=8) dsi=dv.getUint32(4,true); }catch(_){}
+    if(id===lastMarkerId)return; lastMarkerId=id;                       // de-dup resends by id
+    // Anchor to the DEVICE sample index (bytes 4-7), not host-receipt time.
+    addMarker(dsi>=0 && haveSeqMap ? dsi+seqToHostOffset : totalSamples);
+  }
 
   // ---- BLE -----------------------------------------------------------------
   async function connectBLE(){
@@ -250,7 +262,7 @@
         const v=new Array(channels||8); for(let c=0;c<(channels||8);c++) v[c]=ecgCounts(t,c); pushSample(v); } },20);
   }
   function stopDemo(){ clearInterval(demoTimer); demoTimer=null; }
-  function resetStream(){ frameLen=0; markers=[]; rPeaks=[]; bpm=0; drops=0; expectSeq=-1; rpLastIdx=-1; rpPeak=1; rpPrev=0; rpPrev2=0; lastMarkerId=-1; }
+  function resetStream(){ frameLen=0; markers=[]; rPeaks=[]; bpm=0; drops=0; expectSeq=-1; seqToHostOffset=0; haveSeqMap=false; rpLastIdx=-1; rpPeak=1; rpPrev=0; rpPrev2=0; lastMarkerId=-1; }
 
   // ---- SQI (per channel, over the window) ----------------------------------
   function computeSQI(){
@@ -319,7 +331,7 @@
     if(recording){ recRows=[]; recMarks=[]; recStart=performance.now(); recStartSamples=totalSamples; recChannels=channels; elRecPill.style.display=""; $("btnRecord").textContent="⏹ Stop & Save"; }
     else{
       $("btnRecord").textContent="⏺ Record"; const n=recChannels||channels;
-      const head=["t_ms",...Array.from({length:n},(_,i)=>"ch"+(i+1))].join(",");
+      const head=["sample_index","t_ms",...Array.from({length:n},(_,i)=>"ch"+(i+1))].join(",");
       dl("cardiovest_ecg_raw.csv","text/csv", head+"\n"+recRows.map(r=>r.join(",")).join("\n"));
       const anns=recMarks.map(p=>({t_ms:+(( (p-recStartSamples)/sampleRate*1000).toFixed(1)),sample_index:(p-recStartSamples),type:"marker"}));
       const ann={schema:"cardiovest.annotations.v1",sample_rate_sps:sampleRate,annotations:anns};
