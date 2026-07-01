@@ -1,4 +1,4 @@
 # CardioVest signal-processing pipeline (research only)
 numpy>=1.24
 matplotlib>=3.6   # optional — only needed for overview.png
-anthropic         # optional — only needed for ai_report.py (Claude API); not used by analyze_recording.py
+anthropic>=0.40,<1.0   # optional — only needed for ai_report.py (Claude API); not used by analyze_recording.py. Pin: <0.40 lacks output_config/adaptive-thinking used there.

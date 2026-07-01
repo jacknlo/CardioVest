@@ -29,11 +29,14 @@ support Web Bluetooth — use the demo there.)
 
 ## What it does
 
-- **Auto-detects channels** from the frame length: 9 bytes → 2 ch (ADS1292R), 27 bytes → 8 ch (ADS1298).
-- Decodes each frame as `24-bit status + N × 24-bit` samples (big-endian, two's complement) —
+- **Auto-detects channels** from the transport-frame length: **13 bytes → 2 ch** (ADS1292R),
+  **31 bytes → 8 ch** (ADS1298). Each transport frame is a little-endian `u32 sample_index`
+  prepended to the raw AFE frame (firmware ≥ v0.3).
+- Decodes each frame as `u32 sample_index (LE) + 24-bit status + N × 24-bit` samples — the
+  channel samples are big-endian two's-complement; the sample index is little-endian —
   matching `firmware/esp32_s3` (`config.h` frame geometry, `ble_stream.h` UUIDs).
 - Scrolling per-channel traces with auto-scale + manual **Gain**.
-- **Units:** raw counts or estimated **mV** (`counts × VREF / 2^23 / PGA × 1000`).
+- **Units:** raw counts or estimated **mV** (`counts × VREF / (2^23 − 1) / PGA × 1000`).
 - **Record CSV:** captures `t_ms, ch1..chN` and downloads `cardiovest_ecg_raw.csv` for offline analysis.
 
 ## BLE contract (must match the firmware)
