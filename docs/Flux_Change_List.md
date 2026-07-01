@@ -12,6 +12,9 @@
 - [ ] **F1 — CLKSEL strap.** Currently `CLKSEL → GND` (external-clock mode) with **no clock
   source** on the board → the ADS1298 will not clock. Re-strap **`CLKSEL → 3V3`** to use the
   internal oscillator (or add a 1–2.2 MHz clock source on `CLK`). *(Blocker B17)*
+- [ ] **F9 — RESV1 floating.** `RESV1` (U2) is connected to **no net**; TI SBAS459 requires
+  `RESV1 → DVDD`. Add the connection **`RESV1 → 3V3 (DVDD)`** — floating, the ADS1298 may not
+  configure/convert reliably. *(Blocker B18)*
 
 ## 2. Decisions to settle before editing
 
@@ -21,6 +24,14 @@
   This changes input wiring, so settle it first. *(B8)*
 - [ ] **F5 — IN5N "AUX".** Channel 5 negative input has **no electrode** (only D2.K5 / R18).
   Decide: keep as a documented spare (bias/terminate properly) or reassign to a real signal.
+
+## 2b. Wiring / connectivity fixes (add connections)
+
+- [ ] **F10 — Analog-supply isolation.** AVDD/AVDD1 and REF5025 `Vin` share the 3V3 rail with the
+  ESP32-S3 with **no ferrite/filtered feed**. Add a ferrite (FB) + local bulk branch feeding
+  `AVDD/AVDD1` + REF5025 `Vin` from 3V3, or explicitly accept/document the shared-rail risk. *(B20)*
+- [ ] **F11 — Floating ADS1298 control pins.** Tie `DAISY_IN → DGND` (or per `CONFIG1.DAISY_EN`),
+  give `GPIO1–GPIO4` a defined state (pull or firmware-driven); `WCT`/`TESTP`/`TESTN` may stay NC. *(B19)*
 
 ## 3. Component values to set (candidates — verify first)
 
@@ -35,7 +46,8 @@
 
 ## 4. Confirmations (check, fix only if wrong)
 
-- [ ] **F4 — VREFN → AVSS** (not found in netlist; confirm it ties to analog ground).
+- [x] **F4 — VREFN → AVSS** — already tied to analog ground (`Net GND`); confirmed OK, no action
+  (the earlier "not found" was a report error).
 - [ ] **REF5025 (U5):** confirm VREFP headroom at AVDD = 3.3 V and that the ADS1298 internal
   reference buffer is disabled in firmware (`CONFIG3`). *(B4)*
 

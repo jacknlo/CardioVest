@@ -235,9 +235,11 @@ Notes:
 - The 8 simultaneous channels are allocated across the precordial and/or limb-derived leads; the
   precise channel-to-electrode mapping (and how 6 precordial + limb leads map onto 8 channels) is a
   firmware/configuration decision marked **TBD**.
-- Each input includes series protection (**R9–R20**), high-impedance-friendly filtering
-  (**C15–C30**), and ESD protection (**PESD3V3L5UY**, D1/D2); component **values** are **TBD**
-  pending input-network design (see [`ADS1298_Analog_Frontend_Notes.md`](./ADS1298_Analog_Frontend_Notes.md)).
+- Each input includes series protection (**R9–R18**), high-impedance-friendly filtering
+  (common-mode **C15–C24** + differential **C25–C29**), and ESD protection (**PESD3V3L5UY**, D1/D2);
+  component **values** are **TBD** pending input-network design (see
+  [`ADS1298_Analog_Frontend_Notes.md`](./ADS1298_Analog_Frontend_Notes.md)). *(R19/R20/C30 are the
+  separate RLD network — see [`AFE_Verification_Report.md`](./AFE_Verification_Report.md) §4–§5.)*
 
 ---
 

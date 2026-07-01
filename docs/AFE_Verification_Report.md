@@ -31,6 +31,8 @@ input network were reconstructed. 61 nets and 64 components were resolved.
 | VCAP | `VCAP1..4` → `C10..C13` |
 | RLD ref | `RLDREF` → `C14` |
 | Clock | `CLKSEL` → **GND** ⚠️ (selects **external clock**; see Finding F1) |
+| Reserved | `RESV1` → **floating** ⚠️ (must tie to **DVDD**; see Finding F9) |
+| Ref return | `VREFN` → **GND / AVSS** ✅ (tied to analog ground; see Finding F4) |
 
 **Note (reference range):** with a ~3 V analog supply TI suggests VREFP ≈ AVSS + 2.4 V.
 REF5025 = 2.5 V on a 3.3 V AVDD is acceptable (extra headroom), but confirm the internal
@@ -136,11 +138,14 @@ The feedback net is literally named **`RLD_FB_TBD`** — values are open. `RLDIN
 | **F1** | 🔴 Critical | `CLKSEL` is tied to **GND** = external-clock mode (1–2.2 MHz), but **no clock source / CLK-pin connection** exists in the netlist. The device will not clock as wired. | For a single board, use the **internal oscillator**: strap `CLKSEL` **high (3V3)**. Or add a clock source on `CLK`. Verify against datasheet §"Clock". |
 | **F2** | 🟠 High | Inputs are wired as **5 differential electrode pairs**, not WCT-referenced precordials. Standard V1–V6 leads are not directly available. | Decide intended montage; if standard precordials are wanted, reference them to **WCT** (route via ADS1298). Update channel/lead-mapping (B8). |
 | **F3** | 🟠 High | `VREFP` / `VCAP1` (and bulk rails) are 100 nF placeholders; they need **µF-range** caps. | Set C9 (VREFP) and C10 (VCAP1) to ~1 µF (verify), add bulk; differentiate C1–C14 from a single 100 nF value. |
-| **F4** | 🟡 Med | `VREFN` connection was **not found** in the netlist (should tie to **AVSS**). | Confirm VREFN → AVSS in the schematic. |
+| **F4** | ✅ OK | `VREFN` (U2) **is** tied to analog ground — it sits on **Net GND** with `AVSS` (previously mis-reported as "not found"). | No action; connection confirmed against the netlist. |
 | **F5** | 🟡 Med | Channel 5 `IN5N` = **AUX** has **no electrode** (only D2.K5 / R18); it is effectively unused/floating. | Decide: leave as documented spare (bias/terminate properly) or reassign. |
 | **F6** | 🟡 Med | No explicit DC **bias path** to mid-supply on the inputs; common-mode is established only via RLD. With DC coupling, inputs must stay in the ADS1298 input CM range. | Confirm input biasing keeps INx within CM range at startup / lead-off; consider bias resistors if needed. |
 | **F7** | 🟢 Low | SPI bus shared across ADS1298 + microSD + expansion. | Confirm bus loading / max SCLK at target sample rate; OK in principle (separate CS). |
 | **F8** | 🟢 Low | `RLDIN` and `RLDINV` are tied to the same feedback net. | Confirm this matches the intended RLD amp configuration. |
+| **F9** | 🔴 Critical | `RESV1` (U2) is **floating** — it appears in the component pinout but in **no net**. TI SBAS459 requires `RESV1` → **DVDD**; floating, the ADS1298 may fail to configure/convert reliably. | Tie `RESV1` → **DVDD (3V3)** in the schematic before layout. *(Blocker B18)* |
+| **F10** | 🟠 High | Analog supply (`AVDD`/`AVDD1`) and REF5025 input (`U5.Vin`) share the single **3V3** rail with the ESP32-S3 — **no ferrite/filtered analog feed** exists in the netlist. ESP32 BLE-TX current peaks (~350–500 mA) modulate the shared rail, raising the AFE noise floor and coupling reference noise into every channel. | Add a **ferrite-isolated analog branch** (FB + local bulk) feeding `AVDD/AVDD1` + REF5025 `Vin` from 3V3, or explicitly accept/document the shared-rail risk. *(Blocker B20)* |
+| **F11** | 🟡 Med | Unused ADS1298 control pins `DAISY_IN`, `GPIO1–GPIO4`, `WCT`, `TESTP/TESTN` are **floating** (in no net). Floating `DAISY_IN`/GPIO inputs can couple noise or draw crowbar current. | Tie `DAISY_IN` → **DGND** (or per `CONFIG1.DAISY_EN`); give `GPIO1–4` a defined state (pull or firmware-driven); `WCT`/`TESTP`/`TESTN` may remain NC. *(Blocker B19)* |
 
 ---
 

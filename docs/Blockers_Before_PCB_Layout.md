@@ -16,7 +16,7 @@ Status legend:
 
 Related documents:
 
-- `docs/AFE_Verification_Report.md` — **verified netlist connectivity, channel map, findings (F1–F8), and candidate values** (start here).
+- `docs/AFE_Verification_Report.md` — **verified netlist connectivity, channel map, findings (F1–F11), and candidate values** (start here).
 - `docs/Flux_Change_List.md` — punch list of schematic edits to apply when flux.ai access returns (~late July 2026).
 - `hardware/CardioCore_V1/Project_Specification.md` — board targets, power workflow, safety interlock concept.
 - `docs/ADS1298_Analog_Frontend_Notes.md` — AFE input network, decoupling, reference, RLD/DRL.
@@ -32,14 +32,17 @@ Related documents:
 | B2 | Series input resistor values (R9–R18) | Per-line series resistors form the input filter with B1 and limit fault current (note: **no** defibrillation protection is claimed/designed); value drives noise, footprint, and placement near the connector. | TBD | `AFE_Verification_Report.md` |
 | B17 | ADS1298 clock strap (CLKSEL) | 🔴 **Critical:** CLKSEL is tied to **GND** (external-clock mode) but no clock source / CLK-pin connection exists — the device will not clock as wired. Re-strap CLKSEL **high** (internal oscillator) or add a clock source. | FIX 🔴 | `AFE_Verification_Report.md` (F1) |
 | B8 | Lead / channel mapping & montage (electrode → INxP/INxN, WCT) | Mapping is now **extracted** from the netlist (5 differential pairs: RA-LA, LL-V1, V2-V3, V4-V5, V6-AUX; IN6–8 on J5). **Decide** whether this differential montage is intended, or whether precordials should be WCT-referenced. | DECIDE | `AFE_Verification_Report.md` (F2) |
+| B18 | ADS1298 `RESV1` floating | 🔴 **Critical:** `RESV1` (U2) is in no net; TI SBAS459 requires `RESV1` → **DVDD**. Floating, the device may not configure/convert reliably. Tie `RESV1` → DVDD (3V3) before layout. | FIX 🔴 | `AFE_Verification_Report.md` (F9) |
+| B19 | ADS1298 floating control pins (`DAISY_IN`, `GPIO1–4`, `WCT`, `TESTP/TESTN`) | These pins are in no net. Tie `DAISY_IN` → DGND (or per `CONFIG1.DAISY_EN`), define `GPIO1–4` (pull or firmware-driven); `WCT`/`TESTP`/`TESTN` may remain NC. Resolve before layout. | FIX | `AFE_Verification_Report.md` (F11) |
 
 ## Group B — Reference & decoupling
 
 | ID | Title | Why it blocks layout / what must be decided | Status | Reference |
 |----|-------|---------------------------------------------|--------|-----------|
 | B4 | REF5025 reference implementation + decoupling | Decide standalone vs. buffered REF5025 (U5) and the associated capacitor values; this governs the reference node placement and the quiet-analog plane routing. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
-| B5 | ADS1298 decoupling (AVDD, AVSS, DVDD, VCAP1–4, VREFP, VREFN) | Decoupling values/placement around U2 are critical to ADC noise. **VREFP (C9) and VCAP1 (C10) need µF-range caps, not the 100 nF placeholder (F3)**; also confirm VREFN → AVSS (F4). | TBD | `AFE_Verification_Report.md` (F3, F4) |
+| B5 | ADS1298 decoupling (AVDD, AVSS, DVDD, VCAP1–4, VREFP, VREFN) | Decoupling values/placement around U2 are critical to ADC noise. **VREFP (C9) and VCAP1 (C10) need µF-range caps, not the 100 nF placeholder (F3)**. (VREFN → AVSS is already tied — F4 confirmed OK.) | TBD | `AFE_Verification_Report.md` (F3, F4) |
 | B3 | RLD/DRL network values and loop stability | The Right-Leg-Drive feedback network (Rf, Cf, output series R) and its loop stability define the common-mode rejection path; component values and the driven-electrode return route must be settled first. | TBD | `ADS1298_Analog_Frontend_Notes.md` |
+| B20 | Analog-supply isolation from the shared 3V3 rail | 🟠 AVDD/AVDD1 and REF5025 `Vin` share 3V3 with the ESP32-S3 and **no ferrite/filtered analog feed** exists; BLE-TX transients couple into the AFE. Add a ferrite-isolated analog branch (FB + local bulk), or explicitly accept/document the shared-rail risk. | FIX 🟠 | `AFE_Verification_Report.md` (F10) |
 
 ## Group C — Protection & connector
 

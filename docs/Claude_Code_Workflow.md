@@ -23,7 +23,7 @@ well suited to:
 
 - Draft and maintain Markdown documents in `docs/` (architecture notes, analog
   front-end notes, bring-up plans, roadmaps, glossaries).
-- Cross-reference the **canonical Decisions (D1–D12)** and **Blockers (B1–B17)**
+- Cross-reference the **canonical Decisions (D1–D12)** and **Blockers (B1–B20)**
   so the same wording appears everywhere they are cited. These lists are the
   single source of truth — quote them verbatim, do not paraphrase or renumber.
 - Keep `docs/Glossary.md` consistent with terms introduced elsewhere.
@@ -67,7 +67,7 @@ The repo is already well-organized (`docs/`, `firmware/`, `hardware/`,
 
 ### 1.4 Checklist / blocker management
 
-The blocker list (B1–B17) and decision list (D1–D12) are referenced by multiple
+The blocker list (B1–B20) and decision list (D1–D12) are referenced by multiple
 files. Claude Code should:
 
 - Treat the **canonical blocker text** as authoritative. When a blocker's status
@@ -107,11 +107,11 @@ of how a request is phrased.
    regulatory status (no FDA / CE / ISO / IEC claims). See
    `docs/Safety_Research_Use.md`.
 2. **Never finalize electrical values without datasheet confirmation.** Input RC
-   filters (C15–C30), series protection resistors (R9–R20), the RLD/DRL network,
-   reference and decoupling networks, battery/charge parameters, etc. must stay
-   **TBD** until verified against the ADS1298, REF5025, MP2662, and other
-   component datasheets. Mark provisional numbers explicitly; never present a
-   guessed value as confirmed.
+   filters (common-mode C15–C24, differential C25–C29), series protection
+   resistors (R9–R18), the RLD/DRL network (R19, R20, C30, C14), reference and
+   decoupling networks, battery/charge parameters, etc. must stay **TBD** until
+   verified against the ADS1298, REF5025, MP2662, and other component datasheets.
+   Mark provisional numbers explicitly; never present a guessed value as confirmed.
 3. **Do not start PCB layout and do not generate Gerbers.** Layout, stackup
    finalization, impedance control, keepouts, and fabrication outputs (B13–B15)
    depend on verification that has not happened yet. Stay in the
@@ -119,7 +119,7 @@ of how a request is phrased.
 4. **The EDA tool is flux.ai — never call it KiCad.** Source design lives at
    `hardware/CardioCore_V1/flux_project/CardioCore_V1.flx`; the exported netlist
    is `schematics/CardioCore_V1.edif`. Reference flux.ai consistently.
-5. **Respect the canonical lists.** Use the exact B1–B17 / D1–D12 text as the
+5. **Respect the canonical lists.** Use the exact B1–B20 / D1–D12 text as the
    single source of truth; do not renumber, merge, or reword them.
 6. **No empty stubs.** Produce substantive, professional content.
 
@@ -166,7 +166,7 @@ Concrete tasks well-suited to Claude Code on this project:
    path and visualization can be developed before hardware bring-up. Clearly
    label output as **synthetic / not from a person**.
 5. **Generate GitHub issues from the blocker list.** Create one `gh` issue per
-   open blocker (B1–B17) using the canonical title text, with context and an
+   open blocker (B1–B20) using the canonical title text, with context and an
    acceptance criterion, labeled by domain. Show the plan before creating.
 6. **Draft the ADS1298 decoupling checklist (B5).** Summarize the datasheet's
    recommendations for AVDD, AVSS, DVDD, VCAP, VREFP, and VREFN decoupling as a

@@ -15,7 +15,7 @@ CardioCore V1 is the first hardware module of the **CardioVest** research platfo
 - **microSD — DS1139-06-08SS4BSR (CONNFLY):** Push-style microSD socket for local raw-sample logging over SPI.
 - **USB-C — 16-pin receptacle (J1):** Sink-only USB-C for battery charging and native-USB programming/serial (D+/D− to the ESP32-S3). CC1/CC2 pull-downs (R1/R2, 5.1 kΩ) set the sink role.
 - **ECG electrode connector — Molex 5034801000 (J3):** Input connector for the 10 electrodes (RA, LA, LL, RL/RLD, V1–V6), routed through ESD/protection/filtering to the ADS1298.
-- **ESD / input protection — PESD3V3L5UY (D1/D2):** 5-channel low-capacitance ESD arrays at the electrode connector, ahead of the per-channel series resistors (R9–R20, **TBD**) and filter caps (C15–C30, **TBD**).
+- **ESD / input protection — PESD3V3L5UY (D1/D2):** 5-channel low-capacitance ESD arrays at the electrode connector, ahead of the per-channel series resistors (R9–R18, **TBD**) and filter caps (common-mode C15–C24 + differential C25–C29, **TBD**). *(R19/R20/C30 are the separate RLD network.)*
 - **Expansion header — 2×20, 2.54 mm (J5):** Carries 3V3, GND, SPI, I2C, sync/control GPIO, and spare GPIO for stacking additional ECG-channel modules (the path toward 16/32/64 channels).
 
 ## Current Status

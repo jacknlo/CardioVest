@@ -58,7 +58,11 @@ still open:
 
 Each electrode line should have a **series resistor** on the subject side,
 before the RC filter and the ADS1298 pin. In the flux.ai schematic these are
-**R9–R20** (12 × 0402, value **TBD**).
+**R9–R18** (10 × 0402, one per input line, value **TBD**).
+
+> **Note (netlist-verified):** per [`AFE_Verification_Report.md`](./AFE_Verification_Report.md) §4–§5,
+> the input series resistors are **R9–R18** (10). `R19`/`R20` belong to the **RLD network**, not the
+> input filter. (An earlier "R9–R20 (12)" grouping here was superseded.)
 
 - **Purpose:**
   - **Current limiting** — bound the worst-case current that could flow into or
@@ -86,7 +90,12 @@ before the RC filter and the ADS1298 pin. In the flux.ai schematic these are
 A passive **RC low-pass** per input line provides anti-alias attenuation and
 **EMI/RF input filtering** (rejecting RF that would otherwise rectify in the PGA
 and appear as offset/baseline error). In the flux.ai schematic the filter
-capacitors are **C15–C30** (16 × 0402, value **TBD**; prefer C0G/NP0).
+capacitors are the **common-mode caps C15–C24** (10, one per line to GND) and the
+**differential caps C25–C29** (5, across each pair) — 15 × 0402, value **TBD**; prefer C0G/NP0.
+
+> **Note (netlist-verified):** per [`AFE_Verification_Report.md`](./AFE_Verification_Report.md) §4–§5,
+> the input filter caps are **C15–C24** (CM) + **C25–C29** (diff). `C30` is the **RLD feedback cap**,
+> not an input filter cap. (An earlier "C15–C30 (16)" grouping here was superseded.)
 
 - **Considerations / what to size:**
   - **Anti-alias:** the ADS1298 has a built-in (sinc) digital decimation filter,
@@ -216,7 +225,7 @@ Working audit of the key ADS1298 signals. The package is now fixed —
 against the committed EDIF netlist
 ([`../hardware/CardioCore_V1/schematics/CardioCore_V1.edif`](../hardware/CardioCore_V1/schematics/CardioCore_V1.edif)).
 The connectivity has now been **extracted from that netlist** — see the verified pin
-map, channel mapping, and findings (F1–F8) in
+map, channel mapping, and findings (F1–F11) in
 [`AFE_Verification_Report.md`](./AFE_Verification_Report.md). The placeholder table
 below predates that extraction and is kept for reference.
 

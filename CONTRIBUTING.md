@@ -20,7 +20,7 @@ Thanks for helping with **CardioVest** (and its first board, **CardioCore V1**).
 | Topic | Canonical file |
 |---|---|
 | Safety / scope | [`docs/Safety_Research_Use.md`](docs/Safety_Research_Use.md) |
-| What blocks PCB layout | [`docs/Blockers_Before_PCB_Layout.md`](docs/Blockers_Before_PCB_Layout.md) (B1–B17) |
+| What blocks PCB layout | [`docs/Blockers_Before_PCB_Layout.md`](docs/Blockers_Before_PCB_Layout.md) (B1–B20) |
 | Decisions made | [`docs/Design_Decisions_Log.md`](docs/Design_Decisions_Log.md) (D1–D12) |
 | AFE verification | [`docs/AFE_Verification_Report.md`](docs/AFE_Verification_Report.md) |
 | Next flux.ai edits | [`docs/Flux_Change_List.md`](docs/Flux_Change_List.md) |

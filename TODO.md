@@ -16,7 +16,7 @@ Research / prototyping / education only — not a medical device.
 - [ ] Verify REF5025 implementation + decoupling (buffer? cap values; headroom on 3.3 V) (B4)
 - [ ] Verify PESD3V3L5UY (D1/D2) reverse-leakage + capacitance for high-Z inputs (B6)
 - [ ] Decide IN5N "AUX" input: documented spare vs reassign; terminate/bias properly (F5)
-- [ ] File findings F1–F8 as GitHub issues using the hardware_review template
+- [ ] File findings F1–F11 as GitHub issues using the hardware_review template
 
 ## Safety interlock
 

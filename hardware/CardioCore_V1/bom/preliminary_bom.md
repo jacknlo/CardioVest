@@ -61,12 +61,12 @@ and assembly consumables are **out of scope** for this revision.
 | **J5** | 1 | Expansion header, 2×20, 2.54 mm female (ZHOURI) | `2.54-2*20` | C2977589 | THT | Expansion: 3V3, GND, SPI, I2C, sync/control GPIO + spare GPIO for additional ECG-channel modules |
 | **SW1, SW2** | 2 | Tactile switch (XUNPU) | `TS-1088-AR02016` | C720477 | SMD | SW1 = EN/reset, SW2 = BOOT (GPIO0) — per netlist |
 | **C1–C14** | 14 | Non-polarized capacitor, 100 nF, 16 V | — | — | 0402 | Supply decoupling |
-| **C15–C30** | 16 | Non-polarized capacitor, **value TBD**, 16 V | — | — | 0402 | **TBD** — ECG input / RLD filter caps; prefer low-leakage C0G/NP0 where capacitance permits |
+| **C15–C30** | 16 | Non-polarized capacitor, **value TBD**, 16 V | — | — | 0402 | **TBD** — input CM caps (C15–C24) + differential caps (C25–C29) + RLD cap (C30); prefer low-leakage C0G/NP0 |
 | **R1, R2** | 2 | Resistor, 5.1 kΩ | — | — | 0402 | USB-C CC1/CC2 sink pull-downs to GND |
 | **R3, R4, R5** | 3 | Resistor, 10 kΩ | — | — | 0402 | Pull-ups: GPIO0 boot, ADS1298 CS (default inactive), ESP32 EN |
 | **R6, R7** | 2 | Resistor, 4.7 kΩ | — | — | 0402 | I2C SDA/SCL pull-ups (charger / expansion) |
 | **R8** | 1 | Resistor, 100 kΩ | — | — | 0402 | MP2662 NTC bias placeholder *(verify charger datasheet)* |
-| **R9–R20** | 12 | Resistor, **value TBD** | — | — | 0402 | **TBD** — ECG electrode series protection / filter resistors |
+| **R9–R20** | 12 | Resistor, **value TBD** | — | — | 0402 | **TBD** — ECG input series resistors (R9–R18); R19/R20 are the RLD network |
 
 ---
 
@@ -85,7 +85,7 @@ REF5025 (U5) ──▶ 2.5 V reference ──▶ ADS1298 (U2) VREFP
 
 ## Open BOM questions
 
-- **ECG input network (C15–C30, R9–R20):** finalize the per-channel series-resistor and
+- **ECG input network (series R9–R18, CM C15–C24, diff C25–C29; R19/R20/C30 = RLD):** finalize the per-channel series-resistor and
   filter-capacitor values from ADS1298 application guidance, input leakage/noise budget,
   and target ECG bandwidth **before** PCB layout. These are the last electrically critical
   TBDs (see [`../../../docs/ADS1298_Analog_Frontend_Notes.md`](../../../docs/ADS1298_Analog_Frontend_Notes.md)).
