@@ -45,6 +45,13 @@ static constexpr uint16_t FRAME_BYTES  = STATUS_BYTES + NUM_CHANNELS * CH_BYTES;
 static constexpr uint8_t  SEQ_BYTES      = 4;
 static constexpr uint16_t TX_FRAME_BYTES = SEQ_BYTES + FRAME_BYTES;
 
+// --- BLE batching: pack several transport frames into one notification to cut
+//     the notify rate (~500/s -> ~83/s) and reduce dropped frames. 6 * 31 =
+//     186 B fits a negotiated ATT MTU of 247 (payload 244). The viewer already
+//     parses multiple frames per notification.
+static constexpr uint8_t  BATCH_FRAMES   = 6;
+static constexpr uint16_t TX_BATCH_BYTES = BATCH_FRAMES * TX_FRAME_BYTES;
+
 // --- Default sample rate (candidate; finalize against datasheet) -------------
 // ADS1298 CONFIG1 DR[2:0] selects the rate; 500 SPS is a reasonable ECG start.
 static constexpr uint16_t DEFAULT_SPS = 500;  // TBD - verify

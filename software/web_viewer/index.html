@@ -167,11 +167,18 @@
 
   // ---- Frame parsing -------------------------------------------------------
   function int24BE(dv,o){ let v=(dv.getUint8(o)<<16)|(dv.getUint8(o+1)<<8)|dv.getUint8(o+2); if(v&0x800000)v-=0x1000000; return v; }
-  function frameLenFor(t){ if(t===13||t===31)return t; if(frameLen && t%frameLen===0)return frameLen; return 0; }
+  // A notification carries one OR MORE frames (BLE batching). Derive the per-frame
+  // length from the payload: a batch is a whole multiple of the frame size.
+  function frameLenFor(t){
+    if(frameLen && t%frameLen===0) return frameLen;   // known frame size
+    if(t%31===0) return 31;                            // batch of 8-ch frames
+    if(t%13===0) return 13;                            // batch of 2-ch frames
+    return 0;
+  }
   function handleBytes(dv){
     const len=dv.byteLength, flen=frameLenFor(len);
     if(!flen) return;
-    if(flen===13||flen===31) frameLen=flen;
+    frameLen=flen;                                      // latch the per-frame length
     const nCh=Math.max(1,((flen-SEQ_BYTES-STATUS_BYTES)/CH_BYTES)|0);
     ensureChannels(nCh);
     for(let off=0; off+flen<=len; off+=flen){

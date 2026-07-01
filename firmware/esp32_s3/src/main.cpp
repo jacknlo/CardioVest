@@ -210,10 +210,26 @@ void loop() {
   if (g_demo) produceDemoFrames();
 
   // --- Consumer: forward buffered RAW frames to the sinks -------------------
+  // Consumer: SD logs per-frame; BLE batches several frames per notification to
+  // cut the notify rate (throughput / fewer drops).
+  static uint8_t  batch[cfg::TX_BATCH_BYTES];
+  static uint16_t batchFill = 0;
+  static uint32_t lastTxMs  = 0;
   uint8_t out[cfg::TX_FRAME_BYTES];
   while (g_ring.pop(out)) {
-    if (cfg::ENABLE_BLE) ble_stream::sendFrame(out, cfg::TX_FRAME_BYTES);
-    if (cfg::ENABLE_SD)  sd_log::writeFrame(out, cfg::TX_FRAME_BYTES);
+    if (cfg::ENABLE_SD) sd_log::writeFrame(out, cfg::TX_FRAME_BYTES);
+    if (cfg::ENABLE_BLE) {
+      memcpy(batch + batchFill * cfg::TX_FRAME_BYTES, out, cfg::TX_FRAME_BYTES);
+      if (++batchFill >= cfg::BATCH_FRAMES) {
+        ble_stream::sendFrame(batch, (size_t)batchFill * cfg::TX_FRAME_BYTES);
+        batchFill = 0; lastTxMs = now;
+      }
+    }
+  }
+  // Flush a partial batch if the stream slows/pauses (keeps latency bounded).
+  if (cfg::ENABLE_BLE && batchFill > 0 && (now - lastTxMs) > 30) {
+    ble_stream::sendFrame(batch, (size_t)batchFill * cfg::TX_FRAME_BYTES);
+    batchFill = 0; lastTxMs = now;
   }
 
   // Deliver a pending event marker over BLE. A single notify can be dropped when
