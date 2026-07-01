@@ -32,6 +32,20 @@ python analyze_recording.py --input rec.bin --fs 500 --channels 8  # a real firm
 Outputs (in `out/`): `beats.csv`, `summary_per_minute.csv`, `overview.png`. All of it is a
 research / DSP exercise — **not** diagnosis. The sections below are the broader research plan.
 
+## AI report (v1) — `ai_report.py`
+
+Optional layer on top of the pipeline: it feeds the **reduced** outputs (never raw samples) to the
+**Claude API** and gets back a plain-language *research* summary plus a list of hour windows to
+**flag for research review**. Design + guardrail: [`../../docs/AI_Analysis.md`](../../docs/AI_Analysis.md).
+
+```bash
+python ai_report.py --dry-run          # preview the exact prompt, no API key needed
+export ANTHROPIC_API_KEY=sk-...        # (real run) your key
+python ai_report.py                    # reads out/summary_per_minute.csv -> out/ai_report.md + .json
+```
+
+Research / engineering aid only — it **describes** experimental data, it does **not** diagnose.
+
 ---
 
 ## Goals
