@@ -14,6 +14,26 @@ operate on ECG-like waveforms captured by the 8-channel ADS1298 front-end.
 
 ---
 
+## Pipeline (v1) — `analyze_recording.py`
+
+A working, dependency-light pipeline that reduces a long recording into compact layers
+(see [`../../docs/Data_Pipeline.md`](../../docs/Data_Pipeline.md)). It processes
+**minute-by-minute** (constant memory — built for ~15-day logs) and produces: per-minute
+**SQI** (good/noisy/flat), **R-peak detection** (Pan–Tompkins-lite), **RR/HR + HRV** with
+non-physiological-RR rejection, and a per-minute summary + overview plot.
+
+```bash
+cd research/signal_processing
+pip install -r requirements.txt
+python analyze_recording.py --synthetic 10                          # 10 min of synthetic ECG (no hardware)
+python analyze_recording.py --input rec.bin --fs 500 --channels 8  # a real firmware .bin log
+```
+
+Outputs (in `out/`): `beats.csv`, `summary_per_minute.csv`, `overview.png`. All of it is a
+research / DSP exercise — **not** diagnosis. The sections below are the broader research plan.
+
+---
+
 ## Goals
 
 The purpose of this research track is to characterize the raw signal produced by
