@@ -76,7 +76,7 @@
   let running = false, paused = false, source = null;
   let recording = false, recRows = [], recStart = 0, recStartSamples = 0, recChannels = 0, recMarks = [];
   let btChar = null, btDevice = null, frameLen = 0;
-  let markers = [], totalSamples = 0;
+  let markers = [], totalSamples = 0, lastMarkerId = -1;
   let drops = 0, expectSeq = -1;                        // BLE dropped-frame counter (seq gaps)
   let rPeaks = [], bpm = 0;                             // R-peak positions + smoothed BPM
   let sqi = [];                                         // per-channel quality string
@@ -186,7 +186,7 @@
   }
   function onCharValue(e){ if(paused)return; try{handleBytes(e.target.value);}catch(err){console.error("parse",err);} }
   function addMarker(){ const p=totalSamples; markers.push(p); if(markers.length>300)markers.shift(); if(recording)recMarks.push(p); }
-  function onMarker(){ addMarker(); }
+  function onMarker(e){ let id=-1; try{id=e.target.value.getUint32(0,true);}catch(_){}; if(id===lastMarkerId)return; lastMarkerId=id; addMarker(); }
 
   // ---- BLE -----------------------------------------------------------------
   async function connectBLE(){
@@ -243,7 +243,7 @@
         const v=new Array(channels||8); for(let c=0;c<(channels||8);c++) v[c]=ecgCounts(t,c); pushSample(v); } },20);
   }
   function stopDemo(){ clearInterval(demoTimer); demoTimer=null; }
-  function resetStream(){ frameLen=0; markers=[]; rPeaks=[]; bpm=0; drops=0; expectSeq=-1; rpLastIdx=-1; rpPeak=1; rpPrev=0; rpPrev2=0; }
+  function resetStream(){ frameLen=0; markers=[]; rPeaks=[]; bpm=0; drops=0; expectSeq=-1; rpLastIdx=-1; rpPeak=1; rpPrev=0; rpPrev2=0; lastMarkerId=-1; }
 
   // ---- SQI (per channel, over the window) ----------------------------------
   function computeSQI(){

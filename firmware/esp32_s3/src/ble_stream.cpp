@@ -55,13 +55,13 @@ void sendFrame(const uint8_t* frame, size_t len) {
   g_data->notify();
 }
 
-void sendMarker(uint32_t sampleIndex, uint32_t ms) {
+void sendMarker(uint32_t markerId, uint32_t sampleIndex) {
   if (!g_connected || g_mark == nullptr) return;
   uint8_t p[8];
-  p[0]= sampleIndex        & 0xFF; p[1]=(sampleIndex >> 8)  & 0xFF;
-  p[2]=(sampleIndex >> 16) & 0xFF; p[3]=(sampleIndex >> 24) & 0xFF;
-  p[4]= ms         & 0xFF;         p[5]=(ms >> 8)  & 0xFF;
-  p[6]=(ms >> 16)  & 0xFF;         p[7]=(ms >> 24) & 0xFF;
+  p[0]= markerId           & 0xFF; p[1]=(markerId    >> 8)  & 0xFF;
+  p[2]=(markerId    >> 16) & 0xFF; p[3]=(markerId    >> 24) & 0xFF;
+  p[4]= sampleIndex        & 0xFF; p[5]=(sampleIndex >> 8)  & 0xFF;
+  p[6]=(sampleIndex >> 16) & 0xFF; p[7]=(sampleIndex >> 24) & 0xFF;
   g_mark->setValue(p, 8);
   g_mark->notify();
 }

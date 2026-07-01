@@ -22,6 +22,6 @@ constexpr char MARK_UUID[] = "c0de0004-feed-4cad-b10c-0000cad10000";  // event m
 void begin(const char* deviceName);          // init NimBLE, advertise
 bool connected();                            // host connected?
 void sendFrame(const uint8_t* frame, size_t len);   // notify raw transport frame
-void sendMarker(uint32_t sampleIndex, uint32_t ms); // notify an event marker [u32 idx][u32 ms] LE
+void sendMarker(uint32_t markerId, uint32_t sampleIndex); // notify [u32 markerId][u32 sample_index] LE (resent a few times for reliability; viewer de-dups by id)
 
 }  // namespace ble_stream

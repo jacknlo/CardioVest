@@ -47,6 +47,9 @@ void IRAM_ATTR onDrdy() { g_drdy = true; }
 bool     g_demo = false;
 uint32_t g_demoSample = 0, g_demoLastUs = 0;
 bool     g_demoInit = false;   // first-call latch (micros() can legitimately be 0)
+bool     g_pendMark = false;   // an event marker is waiting to be delivered over BLE
+uint8_t  g_pendCount = 0;      // remaining resends
+uint32_t g_markerId = 0, g_pendId = 0, g_pendIdx = 0, g_pendLastMs = 0;
 
 inline void put24be(uint8_t* p, int32_t v) { p[0]=(v>>16)&0xFF; p[1]=(v>>8)&0xFF; p[2]=v&0xFF; }
 inline void putSeqLE(uint8_t* p, uint32_t v) { p[0]=v&0xFF; p[1]=(v>>8)&0xFF; p[2]=(v>>16)&0xFF; p[3]=(v>>24)&0xFF; }
@@ -95,7 +98,8 @@ void checkMarkerButton() {
       markCount++;
       Serial.printf("[event] marker #%lu @ sample=%lu t=%lums\n",
                     (unsigned long)markCount, (unsigned long)idx, (unsigned long)now);
-      ble_stream::sendMarker(idx, now);
+      g_markerId++;                                          // deliver over BLE, resent for reliability
+      g_pendId = g_markerId; g_pendIdx = idx; g_pendCount = 8; g_pendLastMs = 0; g_pendMark = true;
     }
   }
 }
@@ -210,6 +214,19 @@ void loop() {
   while (g_ring.pop(out)) {
     if (cfg::ENABLE_BLE) ble_stream::sendFrame(out, cfg::TX_FRAME_BYTES);
     if (cfg::ENABLE_SD)  sd_log::writeFrame(out, cfg::TX_FRAME_BYTES);
+  }
+
+  // Deliver a pending event marker over BLE. A single notify can be dropped when
+  // the data stream is busy, so resend it a few times spaced ~20 ms apart; the
+  // viewer de-duplicates by marker id.
+  if (g_pendMark) {
+    if (!ble_stream::connected()) {
+      g_pendMark = false;                                  // no client -> drop
+    } else if (now - g_pendLastMs >= 20) {
+      g_pendLastMs = now;
+      ble_stream::sendMarker(g_pendId, g_pendIdx);
+      if (--g_pendCount == 0) g_pendMark = false;
+    }
   }
 
   // --- Periodic SD flush ----------------------------------------------------
