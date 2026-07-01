@@ -41,10 +41,16 @@ void Ads1298::sendCommand(uint8_t cmd) {
 }
 
 void Ads1298::writeReg(uint8_t reg, uint8_t value) {
+  // The ADS129x needs t_SDECODE (>= 4 t_CLK ~= 2 us @ f_CLK 2.048 MHz) to decode
+  // each command byte. With SCLK at 4 MHz, back-to-back SPI.transfer() calls can
+  // clock the next byte before the previous one is decoded -> intermittently
+  // wrong register writes (classic ADS129x gotcha). Space the command bytes.
   SPI.beginTransaction(spi_);
   csLow();
   SPI.transfer(ads::CMD_WREG | reg);
+  delayMicroseconds(2);            // t_SDECODE
   SPI.transfer(0x00);              // write count - 1 == 0 (one register)
+  delayMicroseconds(2);            // t_SDECODE
   SPI.transfer(value);
   csHigh();
   SPI.endTransaction();
@@ -54,7 +60,9 @@ uint8_t Ads1298::readReg(uint8_t reg) {
   SPI.beginTransaction(spi_);
   csLow();
   SPI.transfer(ads::CMD_RREG | reg);
+  delayMicroseconds(2);            // t_SDECODE (see writeReg)
   SPI.transfer(0x00);              // read count - 1 == 0 (one register)
+  delayMicroseconds(2);            // t_SDECODE
   const uint8_t v = SPI.transfer(0x00);
   csHigh();
   SPI.endTransaction();
@@ -71,8 +79,9 @@ bool Ads1298::idLooksValid(uint8_t id) {
   // a console warning, the firmware continues either way.
   return id == 0x73 || id == 0x53 || (id & 0x10) != 0;
 #else
-  // ADS1298 family typically reads ~0x92 (0x9x device class).
-  return (id & 0xF8) == 0x90;
+  // ADS1298 reads ~0x92 (0x9x class); ADS1298R reads ~0xD2 (0xDx class). Accept
+  // both so an ADS1298R sourcing substitution is not rejected at bring-up.
+  return (id & 0xF8) == 0x90 || (id & 0xF8) == 0xD0;
 #endif
 }
 
@@ -95,13 +104,16 @@ void Ads1298::configureDefault() {
   writeReg(ads::REG_RESP2, 0x02);      // RESP2 default
 #else
   // ----- ADS1298 candidate config (VERIFY against TI SBAS459) ---------------
-  // CONFIG3 (0xEC): internal RLD reference, RLD buffer powered.
-  //   NOTE: the board uses an EXTERNAL REF5025 on VREFP - decide whether the
-  //   internal reference buffer (PD_REFBUF) should be OFF here. CANDIDATE - VERIFY (B4).
-  writeReg(ads::REG_CONFIG3, 0xEC);
-  // CONFIG1 (0x06): DR=500 SPS. NOTE: bit7 (HR) is 0 here = low-power mode;
-  // for high-resolution use 0x86 (HR | DR). CANDIDATE - VERIFY (SBAS459).
-  writeReg(ads::REG_CONFIG1, 0x06);
+  // CONFIG3 (0x6C): PD_REFBUF cleared (bit7=0) so the INTERNAL reference buffer
+  //   is powered DOWN - the board drives VREFP from the EXTERNAL REF5025 (2.5 V),
+  //   and enabling the internal buffer here would contend with it. Other bits
+  //   unchanged from the previous 0xEC (RLD_MEAS, RLDREF_INT). VREF_4V is a
+  //   don't-care with an external reference. CANDIDATE - VERIFY (B4).
+  writeReg(ads::REG_CONFIG3, 0x6C);
+  // CONFIG1 (0x86): HR (bit7=1, high-resolution) | DR=110 -> 500 SPS, matching
+  //   cfg::DEFAULT_SPS. With HR=0 the same DR gives 250 SPS (half rate), which
+  //   would make the host timebase wrong by 2x. CANDIDATE - VERIFY (SBAS459).
+  writeReg(ads::REG_CONFIG1, 0x86);
   // CONFIG2 (0x00): internal test signal disabled. Use 0x10|0x03 to enable the
   // built-in square-wave test signal during bring-up (Bringup_Plan stage 5).
   writeReg(ads::REG_CONFIG2, 0x00);
@@ -115,6 +127,27 @@ void Ads1298::configureDefault() {
   writeReg(ads::REG_RLD_SENSP, 0x00);
   writeReg(ads::REG_RLD_SENSN, 0x00);
 #endif
+
+  // Read back the key config registers and flag any mismatch. A silent SPI
+  // decode error (t_SDECODE, wiring, contention with the SD card on the shared
+  // bus) shows up here instead of as mysteriously bad data later.
+  struct { uint8_t reg, want; const char* name; } checks[] = {
+#if AFE_TYPE == AFE_ADS1292R
+    { ads::REG_CONFIG1, 0x02, "CONFIG1" },
+    { ads::REG_CONFIG2, 0xA0, "CONFIG2" },
+#else
+    { ads::REG_CONFIG1, 0x86, "CONFIG1" },
+    { ads::REG_CONFIG2, 0x00, "CONFIG2" },
+    { ads::REG_CONFIG3, 0x6C, "CONFIG3" },
+#endif
+  };
+  for (auto& c : checks) {
+    const uint8_t got = readReg(c.reg);
+    if (got != c.want) {
+      Serial.printf("[ads] WARN: %s read back 0x%02X, expected 0x%02X - check SPI/wiring.\n",
+                    c.name, got, c.want);
+    }
+  }
 }
 
 void Ads1298::startConversions() {

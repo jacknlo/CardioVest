@@ -59,10 +59,16 @@ bool connected() { return g_connected; }
 
 void sendFrame(const uint8_t* frame, size_t len) {
   if (!g_connected || g_data == nullptr) return;
-  // A notification payload must fit the negotiated MTU (ATT_MTU - 3). If the host
-  // negotiated a small MTU, skip rather than fail silently, and say so once.
-  if (g_mtuKnown && g_mtu > 3 && len > (size_t)(g_mtu - 3)) {
-    if (!g_mtuWarned) {
+  // A notification payload must fit the negotiated MTU (ATT_MTU - 3). Until the
+  // host negotiates the MTU we MUST assume the 23-byte default (20-byte payload):
+  // sending a 186-byte batch before onMTUChange fires gets silently truncated by
+  // the stack, corrupting frames on the host. So the safe payload is (MTU-3) once
+  // known, else 20. Skip anything larger rather than emit garbage.
+  const size_t maxPayload = g_mtuKnown ? (g_mtu > 3 ? (size_t)(g_mtu - 3) : 0) : 20;
+  if (len > maxPayload) {
+    // Only warn about a genuinely-too-small negotiated MTU; the brief pre-
+    // negotiation window is expected and self-heals once onMTUChange fires.
+    if (g_mtuKnown && !g_mtuWarned) {
       g_mtuWarned = true;
       Serial.printf("[ble] negotiated MTU %u too small for %u-byte batch; notifications skipped. Lower cfg::BATCH_FRAMES.\n",
                     (unsigned)g_mtu, (unsigned)len);
@@ -70,7 +76,7 @@ void sendFrame(const uint8_t* frame, size_t len) {
     return;
   }
   g_data->setValue(frame, len);
-  g_data->notify();
+  g_data->notify();   // NimBLE 1.4.x notify() returns void; drops (host buffers full) are not surfaced by this API
 }
 
 void sendMarker(uint32_t markerId, uint32_t sampleIndex) {

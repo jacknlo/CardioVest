@@ -16,5 +16,6 @@ void writeFrame(const uint8_t* frame, size_t len);
 void flush();                                    // commit buffered writes
 void stopSession();                              // close the current file
 bool active();                                   // a session file is open?
+uint32_t bytesLost();                            // bytes dropped during card outage/error
 
 }  // namespace sd_log

@@ -37,11 +37,23 @@ namespace {
 
 Ads1298 g_ads;
 FrameRing<cfg::TX_FRAME_BYTES, cfg::RING_FRAMES> g_ring;   // holds transport frames (seq + raw)
-volatile bool g_drdy = false;   // set by the DRDY ISR
-bool g_acq = false;             // conversions currently running?
-uint32_t g_sampleIndex = 0;     // monotonic per-sample counter (real + demo)
+// Count DRDY edges in the ISR: this is the number of samples the AFE has
+// produced. In RDATAC only the latest sample register is available, so if the
+// consumer stalls (SD/BLE) the AFE runs ahead and older samples are overwritten
+// in the chip. Stamping each frame we read with this AFE-side count makes those
+// lost samples show up as a JUMP in the sequence number on the host, instead of
+// vanishing silently. (Was: a plain bool flag + a locally incremented index,
+// which could neither detect the overwrite nor survive the clear/service race.)
+volatile uint32_t g_drdyCount = 0;   // samples the AFE has announced (ISR)
+uint32_t g_readCount   = 0;          // samples we have actually clocked out
+bool     g_acq         = false;      // conversions currently running?
+uint32_t g_sampleIndex = 0;          // demo-stream sample counter
 
-void IRAM_ATTR onDrdy() { g_drdy = true; }
+void IRAM_ATTR onDrdy() { g_drdyCount++; }
+
+// Current sample index for annotations/heartbeat: the AFE read count during real
+// acquisition, or the synthetic counter in demo mode.
+inline uint32_t currentSampleIndex() { return g_acq ? g_readCount : g_sampleIndex; }
 
 // --- Demo stream: synthesize ECG when no AFE is attached (dev aid) -----------
 bool     g_demo = false;
@@ -94,7 +106,7 @@ void checkMarkerButton() {
   if ((now - tChange) > 40 && r != stable) {   // 40 ms debounce
     stable = r;
     if (stable == LOW) {                        // press edge
-      const uint32_t idx = g_sampleIndex;
+      const uint32_t idx = currentSampleIndex();
       markCount++;
       Serial.printf("[event] marker #%lu @ sample=%lu t=%lums\n",
                     (unsigned long)markCount, (unsigned long)idx, (unsigned long)now);
@@ -192,18 +204,24 @@ void loop() {
   }
 
   // --- Producer: drain the ADS1298 on data-ready into the ring buffer -------
-  // DRDY fired at least once; read that frame, then drain any further ready
-  // samples (handles a loop stall spanning more than one sample period).
-  if (g_acq && g_drdy) {
+  // Read out every sample the AFE has announced (g_drdyCount). Stamp each frame
+  // with the AFE-side index so that if the loop stalled and the chip overwrote
+  // samples we could not read, the gap is visible in the sequence on the host.
+  // Snapshot the volatile counter once per pass; edges arriving mid-drain are
+  // picked up on the next loop iteration (no flag to clear, so no clear/service
+  // race).
+  if (g_acq) {
     uint8_t raw[cfg::FRAME_BYTES];
     uint8_t tx[cfg::TX_FRAME_BYTES];
-    do {
-      g_ads.readFrame(raw);
-      putSeqLE(tx, g_sampleIndex++);
+    const uint32_t produced = g_drdyCount;
+    while (g_readCount != produced) {
+      const uint32_t idx = produced;   // AFE has produced `produced` samples; latest index is produced-1
+      g_ads.readFrame(raw);            // RDATAC: reads the most recent sample register
+      putSeqLE(tx, idx - 1);           // 0-based sequence; a jump here == samples lost in the chip
       memcpy(tx + cfg::SEQ_BYTES, raw, cfg::FRAME_BYTES);
       g_ring.push(tx);
-    } while (digitalRead(pins::ADS_DRDY) == LOW);
-    g_drdy = false;   // clear AFTER draining: an edge serviced mid-drain must not re-trigger a phantom read
+      g_readCount = idx;               // account for every announced sample, even those we could not recover
+    }
   }
 
   // --- Demo producer: synthesize frames when no AFE is attached -------------
@@ -254,10 +272,11 @@ void loop() {
   // --- Heartbeat ------------------------------------------------------------
   if (now - lastBeat >= cfg::HEARTBEAT_MS) {
     lastBeat = now;
-    Serial.printf("[status] up=%lus | acq=%d | demo=%d | ble=%d | samples=%lu | drops=%lu | research/edu only\n",
+    Serial.printf("[status] up=%lus | acq=%d | demo=%d | ble=%d | samples=%lu | ringDrops=%lu | sdLostB=%lu | research/edu only\n",
                   static_cast<unsigned long>(now / 1000), static_cast<int>(g_acq),
                   static_cast<int>(g_demo), static_cast<int>(ble_stream::connected()),
-                  static_cast<unsigned long>(g_sampleIndex),
-                  static_cast<unsigned long>(g_ring.dropped()));
+                  static_cast<unsigned long>(currentSampleIndex()),
+                  static_cast<unsigned long>(g_ring.dropped()),
+                  static_cast<unsigned long>(sd_log::bytesLost()));
   }
 }
