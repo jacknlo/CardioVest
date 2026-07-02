@@ -203,24 +203,26 @@ void loop() {
     Serial.println(F("[interlock] Acquisition stopped (USB present)."));
   }
 
-  // --- Producer: drain the ADS1298 on data-ready into the ring buffer -------
-  // Read out every sample the AFE has announced (g_drdyCount). Stamp each frame
-  // with the AFE-side index so that if the loop stalled and the chip overwrote
-  // samples we could not read, the gap is visible in the sequence on the host.
-  // Snapshot the volatile counter once per pass; edges arriving mid-drain are
-  // picked up on the next loop iteration (no flag to clear, so no clear/service
-  // race).
+  // --- Producer: read the latest ADS1298 conversion into the ring buffer -----
+  // In RDATAC only the MOST RECENT conversion register is readable, so we can
+  // recover exactly one sample per pass. If the loop stalled and the chip
+  // overwrote samples we never read, those are gone in the chip -- we stamp the
+  // frame with the AFE-side index (g_drdyCount) so the loss shows up as a JUMP
+  // in the host-side sequence instead of vanishing silently. Snapshot the
+  // volatile counter once (no flag to clear, so no clear/service race); edges
+  // arriving mid-read are picked up on the next loop iteration.
+  // Single read BY DESIGN -- a true multi-sample drain would need an AFE mode
+  // that exposes backlogged samples (FIFO/DMA) plus a per-sample index here.
   if (g_acq) {
-    uint8_t raw[cfg::FRAME_BYTES];
-    uint8_t tx[cfg::TX_FRAME_BYTES];
-    const uint32_t produced = g_drdyCount;
-    while (g_readCount != produced) {
-      const uint32_t idx = produced;   // AFE has produced `produced` samples; latest index is produced-1
-      g_ads.readFrame(raw);            // RDATAC: reads the most recent sample register
-      putSeqLE(tx, idx - 1);           // 0-based sequence; a jump here == samples lost in the chip
+    const uint32_t produced = g_drdyCount;    // samples the AFE has announced
+    if (g_readCount != produced) {
+      uint8_t raw[cfg::FRAME_BYTES];
+      uint8_t tx[cfg::TX_FRAME_BYTES];
+      g_ads.readFrame(raw);                    // RDATAC: reads the most recent sample register
+      putSeqLE(tx, produced - 1);              // 0-based seq; a jump here == samples lost in the chip
       memcpy(tx + cfg::SEQ_BYTES, raw, cfg::FRAME_BYTES);
       g_ring.push(tx);
-      g_readCount = idx;               // account for every announced sample, even those we could not recover
+      g_readCount = produced;                  // account for every announced sample, even unrecoverable ones
     }
   }
 
